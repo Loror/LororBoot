@@ -16,6 +16,9 @@ import java.util.List;
 
 public class MainActivity extends LororActivity {
 
+    /**
+     * 修改变量值会自动重新显示内容
+     */
     @Bind(id = R.id.textView)
     String text = "绑定TextView显示";
     @Bind(id = R.id.editText)
