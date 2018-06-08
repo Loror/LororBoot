@@ -53,4 +53,9 @@ public class MainActivity extends LororActivity {
         Toast.makeText(this, "第" + position + "行点击", Toast.LENGTH_SHORT).show();
     }
 
+    @ItemClick(id = R.id.banner)
+    public void bannerClick(View view, int position) {
+        Toast.makeText(this, "第" + position + "横幅点击", Toast.LENGTH_SHORT).show();
+    }
+
 }
