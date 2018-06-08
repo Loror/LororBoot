@@ -1,6 +1,5 @@
 package com.loror.demo;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -8,7 +7,6 @@ import android.widget.Toast;
 import com.loror.lororboot.annotation.Bind;
 import com.loror.lororboot.annotation.Click;
 import com.loror.lororboot.annotation.ItemClick;
-import com.loror.lororboot.bind.BindAbleItem;
 import com.loror.lororboot.startable.LororActivity;
 
 import java.util.ArrayList;
@@ -50,14 +48,4 @@ public class MainActivity extends LororActivity {
         Toast.makeText(this, "第" + position + "行点击", Toast.LENGTH_SHORT).show();
     }
 
-    class ListItem extends BindAbleItem {
-
-        @Bind(id = R.id.text)
-        public String text;
-
-        @Override
-        public int getLayout() {
-            return R.layout.item_list_view;
-        }
-    }
 }
