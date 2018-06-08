@@ -1,0 +1,194 @@
+package com.loror.lororboot.startable;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Handler;
+import android.support.annotation.IdRes;
+import android.support.v7.app.AppCompatActivity;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import com.loror.lororboot.bind.BindAble;
+import com.loror.lororboot.bind.BindHolder;
+import com.loror.lororboot.bind.BindUtils;
+import com.loror.lororboot.bind.BinderAdapter;
+import com.loror.lororboot.click.ClickUtils;
+import com.loror.lororboot.views.BindAbleBannerView;
+
+import java.lang.ref.WeakReference;
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
+public class LororActivity extends AppCompatActivity implements BindAble {
+    protected Context context = this;
+    private List<BindHolder> bindHolders = new LinkedList<>();
+    private List<BindAble> registedBinders = new ArrayList<>();
+    private WeakReference<List<BindHolder>> weakReferenceList = new WeakReference<>(bindHolders);
+    private WeakReference<List<BindAble>> weakReferenceBindAbleList = new WeakReference<>(registedBinders);
+    private Runnable bindRunnable;
+    private Handler handler;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        List<BindHolder> bindHolders = weakReferenceList.get();
+        if (bindHolders != null) {
+            for (BindHolder bindHolder : bindHolders) {
+                if (bindHolder.getView() instanceof BindAbleBannerView) {
+                    ((BindAbleBannerView) bindHolder.getView()).startScrol();
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        List<BindHolder> bindHolders = weakReferenceList.get();
+        if (bindHolders != null) {
+            for (BindHolder bindHolder : bindHolders) {
+                if (bindHolder.getView() instanceof BindAbleBannerView) {
+                    ((BindAbleBannerView) bindHolder.getView()).stopScrol();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onContentChanged() {
+        super.onContentChanged();
+        if (bindHolders.size() == 0) {
+            BindUtils.findBindHolders(bindHolders, this);
+            ClickUtils.findAndBindClick(this);
+            beginBind(this);
+        }
+    }
+
+    public void registerBinder(BindAble bindAble) {
+        if (!registedBinders.contains(bindAble)) {
+            registedBinders.add(bindAble);
+            beginBind(this);
+        }
+    }
+
+    public void unRegisterBinder(BindAble bindAble) {
+        registedBinders.remove(bindAble);
+    }
+
+    public BindHolder findHolderById(@IdRes int id) {
+        return BindUtils.findHolderById(bindHolders, id);
+    }
+
+    public void notifyListDataChangeById(@IdRes int id) {
+        BindHolder bindHolder = BindUtils.findHolderById(bindHolders, id);
+        if (bindHolder != null) {
+            bindHolder.notifyListChange();
+            if (bindHolder.getView() instanceof ListView) {
+                BinderAdapter adapter = (BinderAdapter) bindHolder.getView().getTag(bindHolder.getView().getId());
+                adapter.setShowEmpty(true);
+            }
+        }
+    }
+
+    @Override
+    public void onBindFind(BindHolder holder) {
+
+    }
+
+    @Override
+    public final void beginBind(Object tag) {
+        if (handler == null) {
+            handler = new Handler();
+            final WeakReference<LororActivity> weakReference = new WeakReference<>(this);
+            bindRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    LororActivity activity = weakReference.get();
+                    List<BindHolder> bindHolders = weakReferenceList.get();
+                    List<BindAble> registedBinders = weakReferenceBindAbleList.get();
+                    if (bindHolders != null && activity != null && !activity.isFinishing()) {
+                        if (bindHolders.size() > 0 || registedBinders.size() > 0) {
+                            BindUtils.showBindHolders(bindHolders, activity);
+                            if (registedBinders != null) {
+                                for (int i = 0; i < registedBinders.size(); i++) {
+                                    registedBinders.get(i).beginBind(this);
+                                }
+                            }
+                            handler.removeCallbacks(bindRunnable);
+                            handler.postDelayed(bindRunnable, 50);
+                        } else {
+                            handler.removeCallbacks(bindRunnable);
+                            handler = null;
+                        }
+                    } else {
+                        if (bindHolders != null) {
+                            bindHolders.clear();
+                        }
+                        if (registedBinders != null) {
+                            registedBinders.clear();
+                        }
+                    }
+                }
+            };
+            bindRunnable.run();
+        }
+    }
+
+    @Override
+    public void event(BindHolder holder, String oldValue, String newValue) {
+
+    }
+
+    /**
+     * 打开dialog
+     */
+    public void startDialog(Intent intent) {
+        try {
+            Class classType = Class.forName(intent.getComponent().getClassName());
+            Constructor<Dialog> con = classType.getConstructor(Context.class);
+            Dialog obj = con.newInstance(this);
+            if (obj instanceof LororDialog) {
+                ((LororDialog) obj).putIntent(intent);
+            } else if (intent.getFlags() != Intent.FLAG_ACTIVITY_NO_USER_ACTION) {
+                Toast.makeText(this, "你开启的弹窗不是StartAbleDialog，无法传递intent，如不需传递intent可以设置flags为FLAG_ACTIVITY_NO_USER_ACTION以忽略此信息。", Toast.LENGTH_LONG).show();
+            }
+            obj.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "开启弹窗失败", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * 打开dialog
+     */
+    public void startDialogForResult(Intent intent, final int requestCode) {
+        try {
+            Class classType = Class.forName(intent.getComponent().getClassName());
+            Constructor<Dialog> con = classType.getConstructor(Context.class);
+            Dialog obj = con.newInstance(this);
+            if (obj instanceof LororDialog) {
+                ((LororDialog) obj).putIntent(intent);
+                ((LororDialog) obj).forResult(requestCode, new LororDialog.ForResult() {
+                    @Override
+                    public void result(int requestCode, int resultCode, Intent data) {
+                        onDialogResult(requestCode, resultCode, data);
+                    }
+                });
+                obj.show();
+            } else {
+                Toast.makeText(this, "你开启的弹窗不是StartAbleDialog，无法以forResult方式开启。", Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "开启弹窗失败", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    protected void onDialogResult(int requestCode, int resultCode, Intent data) {
+
+    }
+}
