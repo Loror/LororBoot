@@ -25,6 +25,8 @@ public class MainActivity extends LororActivity {
     String image = "http://img.taopic.com/uploads/allimg/120727/201995-120HG1030762.jpg";
     @Bind(id = R.id.listView)
     List<ListItem> listItems = new ArrayList<>();
+    @Bind(id = R.id.banner)
+    List<String> listBanners = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +38,9 @@ public class MainActivity extends LororActivity {
             listItems.add(item);
         }
         notifyListDataChangeById(R.id.listView);
+        listBanners.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1528450620939&di=535a27dfdf37d32e9a3aab71a1b6da4c&imgtype=0&src=http%3A%2F%2Fimg.taopic.com%2Fuploads%2Fallimg%2F121019%2F234917-121019231h258.jpg");
+        listBanners.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1528450648908&di=a1293186949b6145edb76256bb20ac54&imgtype=0&src=http%3A%2F%2Fimg07.tooopen.com%2Fimages%2F20170316%2Ftooopen_sy_201956178977.jpg");
+        notifyListDataChangeById(R.id.banner);
     }
 
     @Click(id = R.id.button)
