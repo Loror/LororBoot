@@ -33,6 +33,7 @@
     * id() 控件id
     * clickSpace() 点击允许间隔
     
+
 推荐图片压缩框架Luban(https://github.com/Curzibn/Luban)
 
 License
