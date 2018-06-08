@@ -16,7 +16,7 @@
     * 绑定控件与变量关系，支持TextView，ImageView，ListView，GridView，RecyclerView，BandAbleBannerView等，自动为EditText双向绑定
     * id() 控件id
     * format() 格式化显示，%s填充变量值
-    * event() 注册事件名
+    * event() 注册事件名,如被注册变量值变更时会触发event方法
     * empty() 空值显示
     * imagePlace() ImageView加载占位图
     * imageWidth() 指定ImageView缓存图宽度
