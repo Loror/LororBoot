@@ -25,7 +25,7 @@ public class MainActivity extends LororActivity {
     String image = "http://img.taopic.com/uploads/allimg/120727/201995-120HG1030762.jpg";
     @Bind(id = R.id.listView)
     List<ListItem> listItems = new ArrayList<>();
-    @Bind(id = R.id.banner)
+    @Bind(id = R.id.banner, imagePlace = R.mipmap.ic_launcher)
     List<String> listBanners = new ArrayList<>();
 
     @Override
