@@ -14,7 +14,8 @@
         <com.loror.lororboot.views.BindAbleBannerView
             android:id="@+id/banner"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            app:changePeroid="5000" />
 
         <com.loror.lororboot.views.BindAblePointView
             android:layout_width="wrap_content"
@@ -23,7 +24,9 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="10dp"
             android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp" />
+            android:layout_marginRight="20dp"
+            app:backColor="#FF888888"
+            app:foreColor="#FFFFFFFF" />
     </RelativeLayout>
 
     <TextView
