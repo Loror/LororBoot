@@ -8,7 +8,7 @@
 待完善
 ```
 
-可参考demo使用
+可参考demo使用，使用时需继承LororActivity，LororFragment，LororDialog，BindAbleItem使用，以上均实现于BindAble接口，也可自己实现BindAble接口复写绑定、事件处理。
 
 ## annotation包
 
@@ -25,9 +25,13 @@
     
 * 注解@Click
     * 绑定控件点击事件
+    * id() 控件id
+    * clickSpace() 点击允许间隔
     
 * 注解@ItemClick
     * 绑定AdapterView，RecyclerView，BandAbleBannerView控件item点击事件
+    * id() 控件id
+    * clickSpace() 点击允许间隔
 
 License
 -------
