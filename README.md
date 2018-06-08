@@ -12,8 +12,8 @@
 
 ## annotation包
 
-* 注解@bind
-    * 绑定控件与变量关系，支持TextView，ImageView，ListView，GridView，RecyclerView等，自动为EditText双向绑定
+* 注解@Bind
+    * 绑定控件与变量关系，支持TextView，ImageView，ListView，GridView，RecyclerView，BandAbleBannerView等，自动为EditText双向绑定
     * id() 控件id
     * format() 格式化显示，%s填充变量值
     * event() 注册事件名
@@ -22,6 +22,12 @@
     * imageWidth() 指定ImageView缓存图宽度
     * visibility() 控件显示状态
     * onlyEvent() 是否不显示变量到控件只触发事件
+    
+* 注解@Click
+    * 绑定控件点击事件
+    
+* 注解@ItemClick
+    * 绑定AdapterView，RecyclerView，BandAbleBannerView控件item点击事件
 
 License
 -------
