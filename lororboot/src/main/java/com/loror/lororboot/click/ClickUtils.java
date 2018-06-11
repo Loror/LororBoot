@@ -15,6 +15,7 @@ import com.loror.lororboot.bind.BindAbleItem;
 import com.loror.lororboot.bind.BinderAdapter;
 import com.loror.lororboot.views.BindAbleBannerView;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class ClickUtils {
@@ -60,9 +61,12 @@ public class ClickUtils {
                                 clickTime = System.currentTimeMillis();
                                 try {
                                     method.invoke(object, v);
-                                } catch (Exception e) {
+                                } catch (IllegalAccessException e) {
+                                    e.printStackTrace();
+                                } catch (InvocationTargetException e) {
                                     e.printStackTrace();
                                 }
+
                             }
                         }
                     });
@@ -85,7 +89,9 @@ public class ClickUtils {
                                         clickTime = System.currentTimeMillis();
                                         try {
                                             method.invoke(object, view, position);
-                                        } catch (Exception e) {
+                                        } catch (IllegalAccessException e) {
+                                            e.printStackTrace();
+                                        } catch (InvocationTargetException e) {
                                             e.printStackTrace();
                                         }
                                     }
@@ -101,7 +107,9 @@ public class ClickUtils {
                                         clickTime = System.currentTimeMillis();
                                         try {
                                             method.invoke(object, view, position);
-                                        } catch (Exception e) {
+                                        } catch (IllegalAccessException e) {
+                                            e.printStackTrace();
+                                        } catch (InvocationTargetException e) {
                                             e.printStackTrace();
                                         }
                                     }
@@ -138,7 +146,9 @@ public class ClickUtils {
                                 clickTime = System.currentTimeMillis();
                                 try {
                                     method.invoke(object, v);
-                                } catch (Exception e) {
+                                } catch (IllegalAccessException e) {
+                                    e.printStackTrace();
+                                } catch (InvocationTargetException e) {
                                     e.printStackTrace();
                                 }
                             }
@@ -162,7 +172,9 @@ public class ClickUtils {
                                     clickTime = System.currentTimeMillis();
                                     try {
                                         method.invoke(object, view, position);
-                                    } catch (Exception e) {
+                                    } catch (IllegalAccessException e) {
+                                        e.printStackTrace();
+                                    } catch (InvocationTargetException e) {
                                         e.printStackTrace();
                                     }
                                 }
@@ -194,7 +206,9 @@ public class ClickUtils {
                                         if (!clicked) {
                                             try {
                                                 method.invoke(item, view, position);
-                                            } catch (Exception e) {
+                                            } catch (IllegalAccessException e) {
+                                                e.printStackTrace();
+                                            } catch (InvocationTargetException e) {
                                                 e.printStackTrace();
                                             }
                                         }
@@ -212,7 +226,9 @@ public class ClickUtils {
                                     clickTime = System.currentTimeMillis();
                                     try {
                                         method.invoke(object, v);
-                                    } catch (Exception e) {
+                                    } catch (IllegalAccessException e) {
+                                        e.printStackTrace();
+                                    } catch (InvocationTargetException e) {
                                         e.printStackTrace();
                                     }
                                 }
