@@ -96,7 +96,7 @@ public abstract class HolderbaseAdapter<T extends HolderbaseAdapter.BaseViewHold
             } else {
                 holder = (T) convertView.getTag();
             }
-            holder.convertView = convertView;
+            holder.itemView = convertView;
             bindView(holder, position);
         }
         return convertView;
@@ -117,6 +117,6 @@ public abstract class HolderbaseAdapter<T extends HolderbaseAdapter.BaseViewHold
     }
 
     public static class BaseViewHolder {
-        public View convertView;
+        public View itemView;
     }
 }
