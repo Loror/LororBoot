@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.AbsListView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -136,33 +138,52 @@ public class BindUtils {
                     String value = bindHolder.format == null ?
                             s.toString() : s.toString().replace(bindHolder.format.replace("%s", ""), "");
                     if (bindHolder.event != null) {
-                        bindAble.event(bindHolder, bindHolder.remark, value);
+                        bindAble.event(bindHolder, bindHolder.tag == null ? null : String.valueOf(bindHolder.tag), value);
                     }
                     try {
                         Class<?> type = field.getType();
                         if (type == String.class) {
-                            field.set(bindAble, value);
+                            field.set(bindAble, bindHolder.tag = value);
                         } else if (type == Integer.class) {
-                            field.set(bindAble, Integer.parseInt(value));
+                            field.set(bindAble, bindHolder.tag = Integer.parseInt(value));
                         } else if (type == Long.class) {
-                            field.set(bindAble, Long.parseLong(value));
+                            field.set(bindAble, bindHolder.tag = Long.parseLong(value));
                         } else if (type == Float.class) {
-                            field.set(bindAble, Float.parseFloat(value));
+                            field.set(bindAble, bindHolder.tag = Float.parseFloat(value));
                         } else if (type == Double.class) {
-                            field.set(bindAble, Double.parseDouble(value));
+                            field.set(bindAble, bindHolder.tag = Double.parseDouble(value));
                         } else if (type == CharSequence.class) {
-                            field.set(bindAble, s.toString());
+                            field.set(bindAble, bindHolder.tag = s);
                         } else {
                             throw new IllegalStateException("EditText为双向绑定，只支持属性为String，CharSequence，Integer，Long，Float，Double类型");
                         }
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
-                    bindHolder.remark = value;
                 }
             };
             ((EditText) view).addTextChangedListener(watcher);
             view.setTag(id, watcher);
+        } else if (view instanceof CheckBox) {
+            Class<?> type = field.getType();
+            if (type != Boolean.class) {
+                throw new IllegalStateException("CheckBox为双向绑定，只支持绑定Boolean类型");
+            }
+            ((CheckBox) view).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    try {
+                        field.set(bindAble, bindHolder.tag = isChecked);
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } else if (view instanceof ProgressBar) {
+            Class<?> type = field.getType();
+            if (type != Integer.class && type != Long.class) {
+                throw new IllegalStateException("ProgressBar只支持绑定Integer,Long类型");
+            }
         } else if (view instanceof AbsListView) {
             Class<?> type = field.getType();
             if (type == List.class || type == ArrayList.class) {
@@ -176,7 +197,7 @@ public class BindUtils {
                     BinderAdapter adapter = new BinderAdapter(view.getContext(), list, bindAble);
                     ((AbsListView) view).setAdapter(adapter);
                     view.setTag(id, adapter);
-                    bindHolder.remark = String.valueOf(list.size());
+                    bindHolder.tag = list.size();
                     if (view instanceof ListView && bindHolder.empty != null) {
                         adapter.setEmptyString(bindHolder.empty);
                     }
@@ -199,17 +220,12 @@ public class BindUtils {
                     RecyclerBindAbleAdapter adapter = new RecyclerBindAbleAdapter(view.getContext(), list, bindAble);
                     ((RecyclerView) view).setAdapter(adapter);
                     view.setTag(id, adapter);
-                    bindHolder.remark = String.valueOf(list.size());
+                    bindHolder.tag = list.size();
                 } else {
                     throw new IllegalStateException("RecyclerView绑定的List<? extends BindAbleItem>不能为null");
                 }
             } else {
                 throw new IllegalStateException("RecyclerView只支持绑定List<? extends BindAbleItem>类型");
-            }
-        } else if (view instanceof ProgressBar) {
-            Class<?> type = field.getType();
-            if (type != Integer.class && type != Long.class) {
-                throw new IllegalStateException("ProgressBar只支持绑定Integer,Long类型");
             }
         } else if (view instanceof BindAbleBannerView) {
             Class<?> type = field.getType();
@@ -253,12 +269,15 @@ public class BindUtils {
      */
     public static void firstBinder(BindHolder bindHolder, BindAble bindAble) {
         try {
-            bindHolder.remark = null;
             Object value = bindHolder.field.get(bindAble);
-            String vol = value == null ? null : String.valueOf(value);
+            if (value instanceof List) {
+                bindHolder.tag = -1;
+            } else {
+                bindHolder.tag = null;
+            }
             BindUtils.showBindHolder(bindHolder, bindAble);
             //首次未在showBindHolder中触发事件则主动触发事件
-            if (vol == null) {
+            if (value == null) {
                 if (bindHolder.event != null) {
                     bindAble.event(bindHolder, null, null);
                 }
@@ -287,21 +306,21 @@ public class BindUtils {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        if (volume instanceof List) {
-            volume = ((List) volume).size();
-        }
-        if ((volume == null && bindHolder.remark != null) ||
-                (volume != null && !String.valueOf(volume).equals(bindHolder.remark))) {
-            String vol = volume == null ? null :
-                    (bindHolder.format == null ? String.valueOf(volume) : bindHolder.format.replace("%s", String.valueOf(volume)));
+        boolean isList = volume instanceof List;
+        if ((!isList && volume != bindHolder.tag) ||
+                (isList && (bindHolder.tag == null || (int) bindHolder.tag != ((List) volume).size()))) {
+            String vol = volume == null ? bindHolder.empty : String.valueOf(volume);
+            vol = vol == null ? null :
+                    (bindHolder.format == null ? vol : bindHolder.format.replace("%s", vol));
+            bindHolder.tag = volume;
             if (!bindHolder.onlyEvent) {
-                if (bindHolder.view instanceof TextView) {
+                if (bindHolder.view instanceof CheckBox) {
+                    ((CheckBox) bindHolder.view).setChecked(!(volume == null || !(Boolean) volume));
+                } else if (bindHolder.view instanceof TextView) {
                     if (bindHolder.field.getType() == CharSequence.class) {
                         ((TextView) bindHolder.view).setText((CharSequence) volume);
                     } else {
-                        ((TextView) bindHolder.view).setText(vol == null && bindHolder.empty != null ?
-                                (bindHolder.format == null ? bindHolder.empty : bindHolder.format.replace("%s", bindHolder.empty))
-                                : vol);
+                        ((TextView) bindHolder.view).setText(vol);
                     }
                 } else if (bindHolder.view instanceof ImageView) {
                     if (vol != null) {
@@ -325,43 +344,39 @@ public class BindUtils {
                         }
                         imageUtil.loadImage();
                     }
-                } else if (bindHolder.view instanceof WebView) {
-                    if (vol != null) {
-                        ((WebView) bindHolder.view).loadUrl(vol);
-                    } else if (bindHolder.empty != null) {
-                        ((WebView) bindHolder.view).loadUrl(bindHolder.format == null ?
-                                bindHolder.empty
-                                : bindHolder.format.replace("%s", bindHolder.empty));
-                    }
-                } else if (bindHolder.view instanceof AbsListView) {
-                    BinderAdapter adapter = (BinderAdapter) bindHolder.view.getTag(bindHolder.view.getId());
-                    adapter.notifyDataSetChanged();
-                } else if (bindHolder.view instanceof RecyclerView) {
-                    RecyclerBindAbleAdapter adapter = (RecyclerBindAbleAdapter) bindHolder.view.getTag(bindHolder.view.getId());
-                    adapter.notifyDataSetChanged();
                 } else if (bindHolder.view instanceof ProgressBar) {
                     if (volume == null) {
                         ((ProgressBar) bindHolder.view).setProgress(0);
                     } else {
                         ((ProgressBar) bindHolder.view).setProgress((int) Long.parseLong(String.valueOf(volume)));
                     }
-                } else if (bindHolder.view instanceof BindAbleBannerView) {
-                    List list = null;
-                    try {
-                        list = (List) bindHolder.field.get(bindAble);
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
+                } else if (bindHolder.view instanceof WebView) {
+                    if (vol != null) {
+                        ((WebView) bindHolder.view).loadUrl(vol);
                     }
-                    if (list != null && list.size() > 0) {
+                } else if (bindHolder.view instanceof AbsListView) {
+                    BinderAdapter adapter = (BinderAdapter) bindHolder.view.getTag(bindHolder.view.getId());
+                    adapter.notifyDataSetChanged();
+                    bindHolder.tag = ((List) volume).size();
+                } else if (bindHolder.view instanceof RecyclerView) {
+                    RecyclerBindAbleAdapter adapter = (RecyclerBindAbleAdapter) bindHolder.view.getTag(bindHolder.view.getId());
+                    adapter.notifyDataSetChanged();
+                    bindHolder.tag = ((List) volume).size();
+                } else if (bindHolder.view instanceof BindAbleBannerView) {
+                    if (volume == null) {
+                        throw new IllegalStateException("BindAbleBannerView绑定的List<?>不能为null");
+                    }
+                    List list = (List) volume;
+                    if (list.size() > 0) {
                         BindAbleBannerAdapter adapter = new BindAbleBannerAdapter(bindHolder.view.getContext(), list, bindHolder.imagePlace, bindHolder.imageWidth);
                         ((BindAbleBannerView) bindHolder.view).setAdapter(adapter);
                     }
+                    bindHolder.tag = list.size();
                 }
             }
             if (bindHolder.event != null) {
-                bindAble.event(bindHolder, bindHolder.remark, volume == null ? null : String.valueOf(volume));
+                bindAble.event(bindHolder, bindHolder.tag == null ? null : String.valueOf(bindHolder.tag), volume == null ? null : String.valueOf(volume));
             }
-            bindHolder.remark = volume == null ? null : String.valueOf(volume);
         }
     }
 

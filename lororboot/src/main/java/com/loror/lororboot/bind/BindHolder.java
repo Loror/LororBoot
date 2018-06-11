@@ -12,13 +12,13 @@ public class BindHolder {
     protected View view;
     protected String format;
     protected Field field;
-    protected String remark;
     protected String event;
     protected String empty;
     protected int visibility = NOTCHANGE;
     protected int imagePlace;
     protected int imageWidth;
     protected boolean onlyEvent;
+    protected Object tag;
 
     public View getView() {
         return view;
@@ -38,7 +38,7 @@ public class BindHolder {
 
     public void notifyListChange() {
         if (field.getType() == List.class || field.getType() == ArrayList.class) {
-            remark = "-1";
+            tag = -1;
         }
     }
 }
