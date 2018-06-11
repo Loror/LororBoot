@@ -166,7 +166,7 @@ public class BindUtils {
             view.setTag(id, watcher);
         } else if (view instanceof CheckBox) {
             Class<?> type = field.getType();
-            if (type != Boolean.class) {
+            if (type != boolean.class && type != Boolean.class) {
                 throw new IllegalStateException("CheckBox为双向绑定，只支持绑定Boolean类型");
             }
             ((CheckBox) view).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -181,7 +181,7 @@ public class BindUtils {
             });
         } else if (view instanceof ProgressBar) {
             Class<?> type = field.getType();
-            if (type != Integer.class && type != Long.class) {
+            if (type != Integer.class && type != Long.class && type != int.class && type != long.class) {
                 throw new IllegalStateException("ProgressBar只支持绑定Integer,Long类型");
             }
         } else if (view instanceof AbsListView) {
