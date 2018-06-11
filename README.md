@@ -5,7 +5,16 @@
 ## Studio中引入项目
 
 ```
-待完善
+dependencies {
+    compile 'com.github.Loror:LororBoot:0.0.1beta'
+}
+
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
 ```
 
 可参考demo使用，使用时需继承LororActivity，LororFragment，LororDialog，BindAbleItem使用，以上均实现于BindAble接口，也可自己实现BindAble接口复写绑定、事件处理。
