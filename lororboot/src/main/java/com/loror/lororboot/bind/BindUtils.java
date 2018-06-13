@@ -38,9 +38,9 @@ public class BindUtils {
         if (fields != null) {
             for (int i = 0; i < fields.length; ++i) {
                 final Field field = fields[i];
-                field.setAccessible(true);
                 Bind bind = (Bind) field.getAnnotation(Bind.class);
                 if (bind != null) {
+                    field.setAccessible(true);
                     View view = parent.findViewById(bind.id());
                     if (view != null) {
                         if (bind.visibility() != BindHolder.NOTCHANGE) {
@@ -75,9 +75,9 @@ public class BindUtils {
         if (fields != null) {
             for (int i = 0; i < fields.length; ++i) {
                 final Field field = fields[i];
-                field.setAccessible(true);
                 Bind bind = (Bind) field.getAnnotation(Bind.class);
                 if (bind != null) {
+                    field.setAccessible(true);
                     View view = null;
                     int id = bind.id();
                     if (bindAble instanceof LororActivity) {

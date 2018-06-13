@@ -41,7 +41,7 @@ public class ClickUtils {
      * 找到所有Click并注册监听
      */
     public static void findAndBindClick(final Object object) {
-        Method[] methods = object.getClass().getMethods();
+        Method[] methods = object.getClass().getDeclaredMethods();
         for (int i = 0; i < methods.length; i++) {
             final Method method = methods[i];
             Click click = (Click) method.getAnnotation(Click.class);
@@ -71,14 +71,13 @@ public class ClickUtils {
                         }
                     });
                 }
-            }
-            if (itemClick != null) {
+            } else if (itemClick != null) {
                 int id = itemClick.id();
                 if (id != 0) {
                     View view = findViewById(object, id);
-                    method.setAccessible(true);
                     final long clickSpace = itemClick.clickSpace();
                     if (view != null) {
+                        method.setAccessible(true);
                         if (view instanceof AbsListView) {
                             ((AbsListView) view).setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 long clickTime;
@@ -126,7 +125,7 @@ public class ClickUtils {
      * 找到BindAbleAdapter中所有Click并注册监听
      */
     public static void findAndBindClickOfAdapter(final Object object, View parent, ViewGroup group) {
-        Method[] methods = object.getClass().getMethods();
+        Method[] methods = object.getClass().getDeclaredMethods();
         for (int i = 0; i < methods.length; i++) {
             final Method method = methods[i];
             Click click = (Click) method.getAnnotation(Click.class);
@@ -160,9 +159,9 @@ public class ClickUtils {
                 int id = itemClick.id();
                 if (id != 0) {
                     View view = parent.findViewById(id);
-                    method.setAccessible(true);
                     final long clickSpace = itemClick.clickSpace();
                     if (view != null && view instanceof AbsListView) {
+                        method.setAccessible(true);
                         ((AbsListView) view).setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             long clickTime;
 
@@ -182,8 +181,8 @@ public class ClickUtils {
                         });
                     }
                 } else {
-                    method.setAccessible(true);
                     final long clickSpace = itemClick.clickSpace();
+                    method.setAccessible(true);
                     if (group instanceof AbsListView) {
                         final AbsListView absListView = (AbsListView) group;
                         if (absListView.getOnItemClickListener() == null) {
