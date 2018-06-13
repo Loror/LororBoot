@@ -373,6 +373,10 @@ public class BindUtils {
                         ((BindAbleBannerView) bindHolder.view).setAdapter(adapter);
                     }
                     bindHolder.tag = list.size();
+                }else {
+                    if(isList){
+                        throw new IllegalStateException("List只能绑定BindAbleBannerView，AbsListView，RecyclerView");
+                    }
                 }
             }
             if (bindHolder.event != null) {
