@@ -313,7 +313,11 @@ public class BindUtils {
             String vol = volume == null ? bindHolder.empty : String.valueOf(volume);
             vol = vol == null ? null :
                     (bindHolder.format == null ? vol : bindHolder.format.replace("%s", vol));
-            bindHolder.tag = volume;
+            if (isList) {
+                bindHolder.tag = ((List) volume).size();
+            } else {
+                bindHolder.tag = volume;
+            }
             if (!bindHolder.onlyEvent) {
                 if (bindHolder.view instanceof CheckBox) {
                     ((CheckBox) bindHolder.view).setChecked(!(volume == null || !(Boolean) volume));
@@ -358,11 +362,9 @@ public class BindUtils {
                 } else if (bindHolder.view instanceof AbsListView) {
                     BinderAdapter adapter = (BinderAdapter) bindHolder.view.getTag(bindHolder.view.getId());
                     adapter.notifyDataSetChanged();
-                    bindHolder.tag = ((List) volume).size();
                 } else if (bindHolder.view instanceof RecyclerView) {
                     RecyclerBindAbleAdapter adapter = (RecyclerBindAbleAdapter) bindHolder.view.getTag(bindHolder.view.getId());
                     adapter.notifyDataSetChanged();
-                    bindHolder.tag = ((List) volume).size();
                 } else if (bindHolder.view instanceof BindAbleBannerView) {
                     if (volume == null) {
                         throw new IllegalStateException("BindAbleBannerView绑定的List<?>不能为null");
@@ -371,11 +373,6 @@ public class BindUtils {
                     if (list.size() > 0) {
                         BindAbleBannerAdapter adapter = new BindAbleBannerAdapter(bindHolder.view.getContext(), list, bindHolder.imagePlace, bindHolder.imageWidth);
                         ((BindAbleBannerView) bindHolder.view).setAdapter(adapter);
-                    }
-                    bindHolder.tag = list.size();
-                }else {
-                    if(isList){
-                        throw new IllegalStateException("List只能绑定BindAbleBannerView，AbsListView，RecyclerView");
                     }
                 }
             }
