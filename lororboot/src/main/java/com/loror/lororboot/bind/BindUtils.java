@@ -255,6 +255,7 @@ public class BindUtils {
                         BindAbleBannerAdapter adapter = new BindAbleBannerAdapter(view.getContext(), list, bindHolder.imagePlace, bindHolder.imageWidth);
                         ((BindAbleBannerView) view).setAdapter(adapter);
                     }
+                    bindHolder.tag = list.size();
                 } else {
                     throw new IllegalStateException("BindAbleBannerView绑定的List<?>不能为null");
                 }
