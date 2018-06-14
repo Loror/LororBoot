@@ -308,7 +308,7 @@ public class BindUtils {
             e.printStackTrace();
         }
         boolean isList = volume instanceof List;
-        if ((!isList && volume != bindHolder.tag) ||
+        if ((!isList && (bindHolder.tag == null && volume != null) || (bindHolder.tag != null && !bindHolder.tag.equals(volume))) ||
                 (isList && (bindHolder.tag == null || (int) bindHolder.tag != ((List) volume).size()))) {
             String vol = volume == null ? bindHolder.empty : String.valueOf(volume);
             vol = vol == null ? null :
