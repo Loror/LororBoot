@@ -331,7 +331,6 @@ public class BindUtils {
                 } else if (bindHolder.view instanceof ImageView) {
                     if (vol != null) {
                         ImageView imageView = (ImageView) bindHolder.view;
-                        imageView.setTag(imageView.getDrawable());
                         int width = bindHolder.imageWidth;
                         if (width == 0) {
                             imageView.getWidth();
