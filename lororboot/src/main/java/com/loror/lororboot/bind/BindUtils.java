@@ -313,6 +313,7 @@ public class BindUtils {
             String vol = volume == null ? bindHolder.empty : String.valueOf(volume);
             vol = vol == null ? null :
                     (bindHolder.format == null ? vol : bindHolder.format.replace("%s", vol));
+            Object old = bindHolder.tag;
             if (isList) {
                 bindHolder.tag = ((List) volume).size();
             } else {
@@ -377,7 +378,7 @@ public class BindUtils {
                 }
             }
             if (bindHolder.event != null) {
-                bindAble.event(bindHolder, bindHolder.tag == null ? null : String.valueOf(bindHolder.tag), volume == null ? null : String.valueOf(volume));
+                bindAble.event(bindHolder, old == null ? null : String.valueOf(old), volume == null ? null : String.valueOf(volume));
             }
         }
     }
