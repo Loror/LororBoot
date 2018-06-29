@@ -2,7 +2,7 @@ package com.loror.lororboot.bind;
 
 import android.view.View;
 
-import com.loror.lororboot.click.ClickUtils;
+import com.loror.lororUtil.view.ViewUtil;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -38,7 +38,7 @@ public abstract class BindAbleItem implements BindAble {
             bindHolders = (List<BindHolder>) mark.convertView.getTag();
         }
         outBindAble = mark.bindAble;
-        ClickUtils.findAndBindClickOfAdapter(this, mark.convertView, mark.parent);
+        ViewUtil.click(this, mark.convertView);
         mark.parent = null;
         resetHolder(bindHolders);
         BindUtils.showBindHolders(bindHolders, this);

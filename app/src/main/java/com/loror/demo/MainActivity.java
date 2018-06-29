@@ -4,9 +4,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import com.loror.lororUtil.view.Click;
+import com.loror.lororUtil.view.ItemClick;
 import com.loror.lororboot.annotation.Bind;
-import com.loror.lororboot.annotation.Click;
-import com.loror.lororboot.annotation.ItemClick;
 import com.loror.lororboot.startable.LororActivity;
 
 import java.util.ArrayList;

@@ -12,11 +12,11 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.loror.lororUtil.view.ViewUtil;
 import com.loror.lororboot.bind.BindAble;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.bind.BindUtils;
 import com.loror.lororboot.bind.BinderAdapter;
-import com.loror.lororboot.click.ClickUtils;
 import com.loror.lororboot.views.BindAbleBannerView;
 
 import java.lang.ref.WeakReference;
@@ -37,7 +37,7 @@ public class LororFragment extends Fragment implements BindAble {
         if (activity instanceof LororActivity) {
             weakReference = new WeakReference<>((LororActivity) activity);
             BindUtils.findBindHolders(bindHolders, this);
-            ClickUtils.findAndBindClick(this);
+            ViewUtil.click(this);
             if (bindHolders.size() > 0) {
                 ((LororActivity) activity).registerBinder(this);
             }

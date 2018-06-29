@@ -10,15 +10,14 @@ import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StyleRes;
 import android.view.Window;
-import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.loror.lororUtil.view.ViewUtil;
 import com.loror.lororboot.bind.BindAble;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.bind.BindUtils;
 import com.loror.lororboot.bind.BinderAdapter;
-import com.loror.lororboot.click.ClickUtils;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
@@ -70,7 +69,7 @@ public class LororDialog extends AlertDialog implements BindAble {
         if (context instanceof LororActivity) {
             weakReference = new WeakReference<>((LororActivity) context);
             BindUtils.findBindHolders(bindHolders, this);
-            ClickUtils.findAndBindClick(this);
+            ViewUtil.click(this);
             if (bindHolders.size() > 0) {
                 ((LororActivity) context).registerBinder(this);
             }

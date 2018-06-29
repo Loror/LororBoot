@@ -15,14 +15,15 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.Scroller;
 
+import com.loror.lororUtil.view.ItemClickAble;
+import com.loror.lororUtil.view.OnItemClickListener;
 import com.loror.lororboot.R;
-import com.loror.lororboot.adapter.OnItemClicklistener;
 import com.loror.lororboot.bind.BindAbleBannerAdapter;
 
-public class BindAbleBannerView extends ViewPager {
+public class BindAbleBannerView extends ViewPager implements ItemClickAble{
 
     private PagerAdapter adapter;
-    private OnItemClicklistener onItemClicklistener;
+    private OnItemClickListener onItemClicklistener;
     private BindAblePointView pointView;
 
     public BindAbleBannerView(Context context) {
@@ -95,6 +96,7 @@ public class BindAbleBannerView extends ViewPager {
     private boolean pause, calledStart;
     private int peroid = 5000;
 
+
     public interface OnScrollChanged {
         void onScrollChanged(int x, int width);
     }
@@ -115,7 +117,8 @@ public class BindAbleBannerView extends ViewPager {
         return super.onInterceptTouchEvent(ev);
     }
 
-    public void setOnItemClicklistener(OnItemClicklistener onItemClicklistener) {
+    @Override
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClicklistener = onItemClicklistener;
         if (adapter != null && adapter instanceof BindAbleBannerAdapter) {
             ((BindAbleBannerAdapter) adapter).setOnItemClicklistener(onItemClicklistener);

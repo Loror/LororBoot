@@ -9,11 +9,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.loror.lororUtil.view.ViewUtil;
 import com.loror.lororboot.bind.BindAble;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.bind.BindUtils;
 import com.loror.lororboot.bind.BinderAdapter;
-import com.loror.lororboot.click.ClickUtils;
 import com.loror.lororboot.views.BindAbleBannerView;
 
 import java.lang.ref.WeakReference;
@@ -62,7 +62,7 @@ public class LororActivity extends AppCompatActivity implements BindAble {
         super.onContentChanged();
         if (bindHolders.size() == 0) {
             BindUtils.findBindHolders(bindHolders, this);
-            ClickUtils.findAndBindClick(this);
+            ViewUtil.click(this);
             beginBind(this);
         }
     }

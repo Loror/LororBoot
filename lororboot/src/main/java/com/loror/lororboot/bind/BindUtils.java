@@ -1,5 +1,6 @@
 package com.loror.lororboot.bind;
 
+import android.app.Activity;
 import android.support.annotation.IdRes;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -81,7 +82,7 @@ public class BindUtils {
                     View view = null;
                     int id = bind.id();
                     if (bindAble instanceof LororActivity) {
-                        view = ((LororActivity) bindAble).findViewById(id);
+                        view = ((Activity) bindAble).findViewById(id);
                     } else if (bindAble instanceof LororFragment) {
                         view = ((LororFragment) bindAble).getView().findViewById(id);
                     } else if (bindAble instanceof LororDialog) {

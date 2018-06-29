@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.loror.lororUtil.image.ImageUtil;
-import com.loror.lororboot.adapter.OnItemClicklistener;
+import com.loror.lororUtil.view.OnItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ public class BindAbleBannerAdapter extends PagerAdapter {
     private int widthLimit;
     private List<ImageView> views;
     private int tagKey = 4 << 24;
-    private OnItemClicklistener onItemClicklistener;
+    private OnItemClickListener onItemClicklistener;
 
     public BindAbleBannerAdapter(Context context, List list, int imagePlace, int widthLimit) {
         this.context = context;
@@ -120,7 +120,7 @@ public class BindAbleBannerAdapter extends PagerAdapter {
         return view == object;
     }
 
-    public void setOnItemClicklistener(OnItemClicklistener onItemClicklistener) {
+    public void setOnItemClicklistener(OnItemClickListener onItemClicklistener) {
         this.onItemClicklistener = onItemClicklistener;
     }
 
