@@ -20,7 +20,7 @@ import com.loror.lororUtil.view.OnItemClickListener;
 import com.loror.lororboot.R;
 import com.loror.lororboot.bind.BindAbleBannerAdapter;
 
-public class BindAbleBannerView extends ViewPager implements ItemClickAble{
+public class BindAbleBannerView extends ViewPager implements ItemClickAble {
 
     private PagerAdapter adapter;
     private OnItemClickListener onItemClicklistener;
@@ -118,7 +118,7 @@ public class BindAbleBannerView extends ViewPager implements ItemClickAble{
     }
 
     @Override
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListener onItemClicklistener) {
         this.onItemClicklistener = onItemClicklistener;
         if (adapter != null && adapter instanceof BindAbleBannerAdapter) {
             ((BindAbleBannerAdapter) adapter).setOnItemClicklistener(onItemClicklistener);
