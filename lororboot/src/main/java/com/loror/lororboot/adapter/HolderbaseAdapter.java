@@ -97,6 +97,7 @@ public abstract class HolderbaseAdapter<T extends HolderbaseAdapter.BaseViewHold
                 holder = (T) convertView.getTag();
             }
             holder.itemView = convertView;
+            ViewUtil.click(holder, convertView);
             bindView(holder, position);
         }
         return convertView;

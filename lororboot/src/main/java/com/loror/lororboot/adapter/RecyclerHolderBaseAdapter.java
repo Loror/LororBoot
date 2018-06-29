@@ -47,6 +47,7 @@ public abstract class RecyclerHolderBaseAdapter<VH extends ViewHolder> extends R
         View convertView = inflater.inflate(getLayout(viewType), parent, false);
         VH holder = newHolder(convertView);
         ViewUtil.find(holder, convertView);
+        ViewUtil.click(holder, convertView);
         return holder;
     }
 
