@@ -60,11 +60,9 @@ public class LororActivity extends AppCompatActivity implements BindAble {
     @Override
     public void onContentChanged() {
         super.onContentChanged();
-        if (bindHolders.size() == 0) {
-            BindUtils.findBindHolders(bindHolders, this);
-            ViewUtil.click(this);
-            beginBind(this);
-        }
+        BindUtils.findBindHolders(bindHolders, this);
+        ViewUtil.click(this);
+        beginBind(this);
     }
 
     public void registerBinder(BindAble bindAble) {
