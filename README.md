@@ -32,16 +32,8 @@ allprojects {
     * visibility() 控件显示状态
     * onlyEvent() 是否不显示变量到控件只触发事件
     
-* 注解@Click
-    * 绑定控件点击事件
-    * id() 控件id
-    * clickSpace() 点击允许间隔
-    
-* 注解@ItemClick
-    * 绑定AdapterView，RecyclerView，BandAbleBannerView控件item点击事件
-    * id() 控件id
-    * clickSpace() 点击允许间隔
-    
+</br>
+内部已引入库LororUtil(https://github.com/Loror/LororUtil)  
 </br>
 推荐图片压缩框架Luban(https://github.com/Curzibn/Luban)
 
