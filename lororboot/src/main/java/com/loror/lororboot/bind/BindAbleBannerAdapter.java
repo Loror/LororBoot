@@ -18,7 +18,7 @@ public class BindAbleBannerAdapter extends PagerAdapter {
     private List list;
     private int imagePlace;
     private int widthLimit;
-    private List<ImageView> views;
+    private List<View> views = new ArrayList<View>();
     private int tagKey = 4 << 24;
     private OnItemClickListener onItemClicklistener;
 
@@ -27,7 +27,6 @@ public class BindAbleBannerAdapter extends PagerAdapter {
         this.list = list;
         this.imagePlace = imagePlace;
         this.widthLimit = widthLimit == 0 ? getScreenWidth() : widthLimit;
-        views = new ArrayList<ImageView>();
     }
 
     protected int getScreenWidth() {
@@ -45,7 +44,7 @@ public class BindAbleBannerAdapter extends PagerAdapter {
             return new View(context);
         }
         final int index = position % getItemCount();
-        ImageView v = onBindView(container, getItemCount() < 4 ? position % 3 : index, getItemCount() == 1 ? 0 : index);
+        View v = onBindView(container, getItemCount() < 4 ? position % 3 : index, getItemCount() == 1 ? 0 : index);
         onViewSwitched(v, index);
         if (v.getParent() != null) {
             container.removeView(v);
@@ -61,8 +60,8 @@ public class BindAbleBannerAdapter extends PagerAdapter {
         return v;
     }
 
-    private void onViewSwitched(ImageView imageView, int position) {
-        ImageUtil imageUtil = ImageUtil.with(context).from(String.valueOf(list.get(position))).to(imageView);
+    protected void onViewSwitched(View view, int position) {
+        ImageUtil imageUtil = ImageUtil.with(context).from(String.valueOf(list.get(position))).to((ImageView) view);
         int width = widthLimit;
         if (width == 0) {
             width = 720;
@@ -71,15 +70,16 @@ public class BindAbleBannerAdapter extends PagerAdapter {
         if (imagePlace != 0) {
             imageUtil.setDefaultImage(imagePlace);
         }
+
         imageUtil.loadImage();
     }
 
     /**
      * 抽取布局
      */
-    private ImageView onBindView(ViewGroup container, int tag, int position) {
-        ImageView item = null;
-        for (ImageView view : views) {
+    protected View onBindView(ViewGroup container, int tag, int position) {
+        View item = null;
+        for (View view : views) {
             if (tag == (Integer) view.getTag(tagKey)) {
                 item = view;
                 break;
@@ -93,7 +93,7 @@ public class BindAbleBannerAdapter extends PagerAdapter {
         return item;
     }
 
-    public ImageView getItemView(ViewGroup container) {
+    private ImageView getItemView(ViewGroup container) {
         ImageView imageView = new ImageView(context);
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         imageView.setLayoutParams(params);
