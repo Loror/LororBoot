@@ -116,6 +116,20 @@ public class LororDialog extends AlertDialog implements BindAble {
 
     }
 
+    @Override
+    public void setData(int id, Object value) {
+        BindHolder holder = BindUtils.findHolderById(bindHolders, id);
+        if (holder != null) {
+            holder.getField().setAccessible(true);
+            try {
+                holder.getField().set(this, value);
+                BindUtils.showBindHolder(holder, this);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public void putIntent(Intent intent) {
         this.intent = intent;
     }

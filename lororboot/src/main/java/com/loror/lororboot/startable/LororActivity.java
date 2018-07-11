@@ -10,6 +10,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.loror.lororUtil.view.ViewUtil;
+import com.loror.lororboot.R;
 import com.loror.lororboot.bind.BindAble;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.bind.BindUtils;
@@ -138,6 +139,20 @@ public class LororActivity extends AppCompatActivity implements BindAble {
     @Override
     public void event(BindHolder holder, String oldValue, String newValue) {
 
+    }
+
+    @Override
+    public void setData(int id, Object value) {
+        BindHolder holder = BindUtils.findHolderById(bindHolders, id);
+        if (holder != null) {
+            holder.getField().setAccessible(true);
+            try {
+                holder.getField().set(this, value);
+                BindUtils.showBindHolder(holder, this);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**

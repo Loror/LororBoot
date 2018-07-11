@@ -24,6 +24,10 @@ public class BindHolder {
         return view;
     }
 
+    public Field getField() {
+        return field;
+    }
+
     public String getEvent() {
         return event;
     }

@@ -1,5 +1,7 @@
 package com.loror.lororboot.bind;
 
+import android.support.annotation.IdRes;
+
 public interface BindAble {
     /**
      * 找到bind触发
@@ -15,5 +17,8 @@ public interface BindAble {
      * 事件触发
      */
     void event(BindHolder holder, String oldValue, String newValue);
+
+
+    void setData(@IdRes int id, Object value);
 
 }

@@ -3,7 +3,9 @@ package com.loror.lororboot.bind;
 import android.view.View;
 
 import com.loror.lororUtil.view.ViewUtil;
+import com.loror.lororboot.annotation.Bind;
 
+import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,6 +26,24 @@ public abstract class BindAbleItem implements BindAble {
     @Override
     public void event(BindHolder holder, String oldValue, String newValue) {
 
+    }
+
+    @Override
+    public void setData(int id, Object value) {
+        Field[] fields = getClass().getDeclaredFields();
+        for (int i = 0; i < fields.length; i++) {
+            Field field = fields[i];
+            Bind bind = (Bind) field.getAnnotation(Bind.class);
+            if (bind != null && bind.id() == id) {
+                field.setAccessible(true);
+                try {
+                    field.set(this, value);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+        }
     }
 
     @Override
