@@ -72,18 +72,6 @@ public abstract class BindAbleItem implements BindAble {
         ViewUtil.click(this, mark.convertView);
         mark.parent = null;
         resetHolder(bindHolders);
-        for (BindHolder bindHolder : bindHolders) {
-            if (onBindFind(bindHolder)) {
-                Object volume = BindUtils.getVolume(bindHolder, this);
-                if (volume instanceof List) {
-                    bindHolder.tag = ((List) volume).size();
-                } else {
-                    bindHolder.tag = volume;
-                }
-            } else {
-                BindUtils.firstBinder(bindHolder, this);
-            }
-        }
         this.bindHolders = bindHolders;
     }
 
@@ -105,7 +93,16 @@ public abstract class BindAbleItem implements BindAble {
                         break;
                 }
             }
-            BindUtils.firstBinder(bindHolder, this);
+            if (onBindFind(bindHolder)) {
+                Object volume = BindUtils.getVolume(bindHolder, this);
+                if (volume instanceof List) {
+                    bindHolder.tag = ((List) volume).size();
+                } else {
+                    bindHolder.tag = volume;
+                }
+            } else {
+                BindUtils.firstBinder(bindHolder, this);
+            }
         }
     }
 
