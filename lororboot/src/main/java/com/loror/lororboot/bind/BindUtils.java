@@ -57,10 +57,18 @@ public class BindUtils {
                         bindHolder.imagePlace = bind.imagePlace();
                         bindHolder.imageWidth = bind.imageWidth();
                         bindHolder.onlyEvent = bind.onlyEvent();
-                        bindAble.onBindFind(bindHolder);
                         bindHolders.add(bindHolder);
                         specialBinder(bindHolder, view, bindAble);
-                        firstBinder(bindHolder, bindAble);
+                        if (bindAble.onBindFind(bindHolder)) {
+                            Object volume = getVolume(bindHolder, bindAble);
+                            if (volume instanceof List) {
+                                bindHolder.tag = ((List) volume).size();
+                            } else {
+                                bindHolder.tag = volume;
+                            }
+                        } else {
+                            firstBinder(bindHolder, bindAble);
+                        }
                     }
                 }
             }
@@ -102,10 +110,18 @@ public class BindUtils {
                         bindHolder.imagePlace = bind.imagePlace();
                         bindHolder.imageWidth = bind.imageWidth();
                         bindHolder.onlyEvent = bind.onlyEvent();
-                        bindAble.onBindFind(bindHolder);
                         bindHolders.add(bindHolder);
                         specialBinder(bindHolder, view, bindAble);
-                        firstBinder(bindHolder, bindAble);
+                        if (bindAble.onBindFind(bindHolder)) {
+                            Object volume = getVolume(bindHolder, bindAble);
+                            if (volume instanceof List) {
+                                bindHolder.tag = ((List) volume).size();
+                            } else {
+                                bindHolder.tag = volume;
+                            }
+                        } else {
+                            firstBinder(bindHolder, bindAble);
+                        }
                     }
                 }
             }
@@ -298,16 +314,21 @@ public class BindUtils {
         }
     }
 
-    /**
-     * 检测BindHolder变化并更新显示
-     */
-    public static void showBindHolder(BindHolder bindHolder, BindAble bindAble) {
+    private static Object getVolume(BindHolder bindHolder, BindAble bindAble) {
         Object volume = null;
         try {
             volume = bindHolder.field.get(bindAble);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+        return volume;
+    }
+
+    /**
+     * 检测BindHolder变化并更新显示
+     */
+    public static void showBindHolder(BindHolder bindHolder, BindAble bindAble) {
+        Object volume = getVolume(bindHolder, bindAble);
         boolean isList = volume instanceof List;
         if ((!isList && ((bindHolder.tag == null && volume != null) || (bindHolder.tag != null && !bindHolder.tag.equals(volume)))) ||
                 (isList && (bindHolder.tag == null || (int) bindHolder.tag != ((List) volume).size()))) {

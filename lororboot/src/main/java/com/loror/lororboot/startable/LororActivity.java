@@ -93,8 +93,8 @@ public class LororActivity extends AppCompatActivity implements BindAble {
     }
 
     @Override
-    public void onBindFind(BindHolder holder) {
-
+    public boolean onBindFind(BindHolder holder) {
+        return false;
     }
 
     @Override

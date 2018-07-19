@@ -4,9 +4,9 @@ import android.support.annotation.IdRes;
 
 public interface BindAble {
     /**
-     * 找到bind触发
+     * 找到bind触发,返回值控制是否拦截首次绑定显示
      */
-    void onBindFind(BindHolder holder);
+    boolean onBindFind(BindHolder holder);
 
     /**
      * 更新显示

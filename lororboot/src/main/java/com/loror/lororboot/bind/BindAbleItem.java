@@ -20,8 +20,8 @@ public abstract class BindAbleItem implements BindAble {
     public abstract int getLayout();
 
     @Override
-    public void onBindFind(BindHolder holder) {
-
+    public boolean onBindFind(BindHolder holder) {
+        return false;
     }
 
     @Override
