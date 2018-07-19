@@ -21,4 +21,6 @@ public interface BindAble {
 
     void setData(@IdRes int id, Object value);
 
+    void setData(String fieldName, Object value);
+
 }

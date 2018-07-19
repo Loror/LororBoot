@@ -47,6 +47,24 @@ public abstract class BindAbleItem implements BindAble {
     }
 
     @Override
+    public void setData(String fieldName, Object value) {
+        Field[] fields = getClass().getDeclaredFields();
+        for (int i = 0; i < fields.length; i++) {
+            Field field = fields[i];
+            Bind bind = (Bind) field.getAnnotation(Bind.class);
+            if (bind != null && field.getName().equals(fieldName)) {
+                field.setAccessible(true);
+                try {
+                    field.set(this, value);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+        }
+    }
+
+    @Override
     public final void beginBind(Object tag) {
         BinderAdapter.Mark mark = (BinderAdapter.Mark) tag;
         List<BindHolder> bindHolders;

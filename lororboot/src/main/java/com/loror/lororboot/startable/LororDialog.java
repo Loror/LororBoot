@@ -130,6 +130,20 @@ public class LororDialog extends AlertDialog implements BindAble {
         }
     }
 
+    @Override
+    public void setData(String fieldName, Object value) {
+        BindHolder holder = BindUtils.findHolderByName(bindHolders, fieldName);
+        if (holder != null) {
+            holder.getField().setAccessible(true);
+            try {
+                holder.getField().set(this, value);
+                BindUtils.showBindHolder(holder, this);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public void putIntent(Intent intent) {
         this.intent = intent;
     }
@@ -167,7 +181,7 @@ public class LororDialog extends AlertDialog implements BindAble {
         try {
             Class classType = Class.forName(intent.getComponent().getClassName());
             Constructor<Dialog> con = classType.getConstructor(Context.class);
-            Dialog obj = con.newInstance(this);
+            Dialog obj = con.newInstance(context);
             if (obj instanceof LororDialog) {
                 ((LororDialog) obj).putIntent(intent);
             } else if (intent.getFlags() != Intent.FLAG_ACTIVITY_NO_USER_ACTION) {
@@ -187,7 +201,7 @@ public class LororDialog extends AlertDialog implements BindAble {
         try {
             Class classType = Class.forName(intent.getComponent().getClassName());
             Constructor<Dialog> con = classType.getConstructor(Context.class);
-            Dialog obj = con.newInstance(this);
+            Dialog obj = con.newInstance(context);
             if (obj instanceof LororDialog) {
                 ((LororDialog) obj).putIntent(intent);
                 ((LororDialog) obj).forResult(requestCode, new LororDialog.ForResult() {

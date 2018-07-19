@@ -393,4 +393,15 @@ public class BindUtils {
         }
         return bindHolder;
     }
+
+    public static BindHolder findHolderByName(List<BindHolder> bindHolders, String feildName) {
+        BindHolder bindHolder = null;
+        for (BindHolder item : bindHolders) {
+            if (item.field.getName().equals(feildName)) {
+                bindHolder = item;
+                break;
+            }
+        }
+        return bindHolder;
+    }
 }

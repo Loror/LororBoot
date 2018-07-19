@@ -155,6 +155,20 @@ public class LororActivity extends AppCompatActivity implements BindAble {
         }
     }
 
+    @Override
+    public void setData(String fieldName, Object value) {
+        BindHolder holder = BindUtils.findHolderByName(bindHolders, fieldName);
+        if (holder != null) {
+            holder.getField().setAccessible(true);
+            try {
+                holder.getField().set(this, value);
+                BindUtils.showBindHolder(holder, this);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     /**
      * 打开dialog
      */
