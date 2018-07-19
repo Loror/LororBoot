@@ -9,10 +9,8 @@ public abstract class LororApplication extends Application {
     public void onCreate() {
         super.onCreate();
         ViewUtil.setGlobalIdClass(getIdClass());
-        ViewUtil.setSuiteHump(suiteIdHump());
     }
 
     protected abstract Class<?> getIdClass();
 
-    protected abstract boolean suiteIdHump();
 }
