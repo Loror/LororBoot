@@ -11,6 +11,7 @@ import java.util.List;
 
 public abstract class BindAbleItem implements BindAble {
     private BindAble outBindAble;
+    private List<BindHolder> bindHolders;
 
     public BindAble obtainOutBindAble() {
         return outBindAble;
@@ -30,36 +31,28 @@ public abstract class BindAbleItem implements BindAble {
 
     @Override
     public void setData(int id, Object value) {
-        Field[] fields = getClass().getDeclaredFields();
-        for (int i = 0; i < fields.length; i++) {
-            Field field = fields[i];
-            Bind bind = (Bind) field.getAnnotation(Bind.class);
-            if (bind != null && bind.id() == id) {
-                field.setAccessible(true);
-                try {
-                    field.set(this, value);
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-                break;
+        BindHolder holder = BindUtils.findHolderById(bindHolders, id);
+        if (holder != null) {
+            holder.getField().setAccessible(true);
+            try {
+                holder.getField().set(this, value);
+                BindUtils.showBindHolder(holder, this);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
             }
         }
     }
 
     @Override
     public void setData(String fieldName, Object value) {
-        Field[] fields = getClass().getDeclaredFields();
-        for (int i = 0; i < fields.length; i++) {
-            Field field = fields[i];
-            Bind bind = (Bind) field.getAnnotation(Bind.class);
-            if (bind != null && field.getName().equals(fieldName)) {
-                field.setAccessible(true);
-                try {
-                    field.set(this, value);
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-                break;
+        BindHolder holder = BindUtils.findHolderByName(bindHolders, fieldName);
+        if (holder != null) {
+            holder.getField().setAccessible(true);
+            try {
+                holder.getField().set(this, value);
+                BindUtils.showBindHolder(holder, this);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -80,6 +73,7 @@ public abstract class BindAbleItem implements BindAble {
         mark.parent = null;
         resetHolder(bindHolders);
         BindUtils.showBindHolders(bindHolders, this);
+        this.bindHolders = bindHolders;
     }
 
     /**
