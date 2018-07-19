@@ -59,16 +59,6 @@ public class BindUtils {
                         bindHolder.onlyEvent = bind.onlyEvent();
                         bindHolders.add(bindHolder);
                         specialBinder(bindHolder, view, bindAble);
-                        if (bindAble.onBindFind(bindHolder)) {
-                            Object volume = getVolume(bindHolder, bindAble);
-                            if (volume instanceof List) {
-                                bindHolder.tag = ((List) volume).size();
-                            } else {
-                                bindHolder.tag = volume;
-                            }
-                        } else {
-                            firstBinder(bindHolder, bindAble);
-                        }
                     }
                 }
             }
@@ -314,7 +304,7 @@ public class BindUtils {
         }
     }
 
-    private static Object getVolume(BindHolder bindHolder, BindAble bindAble) {
+    protected static Object getVolume(BindHolder bindHolder, BindAble bindAble) {
         Object volume = null;
         try {
             volume = bindHolder.field.get(bindAble);
