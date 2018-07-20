@@ -40,7 +40,7 @@ public class BindHolder {
         return format;
     }
 
-    public void notifyListChange() {
+    public void resetListTag() {
         if (field.getType() == List.class || field.getType() == ArrayList.class) {
             tag = -1;
         }

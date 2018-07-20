@@ -1,6 +1,7 @@
 package com.loror.lororboot.bind;
 
 import android.view.View;
+import android.widget.ListView;
 
 import com.loror.lororUtil.view.ViewUtil;
 import com.loror.lororboot.annotation.Bind;
@@ -36,7 +37,6 @@ public abstract class BindAbleItem implements BindAble {
             holder.getField().setAccessible(true);
             try {
                 holder.getField().set(this, value);
-                BindUtils.showBindHolder(holder, this);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -50,9 +50,20 @@ public abstract class BindAbleItem implements BindAble {
             holder.getField().setAccessible(true);
             try {
                 holder.getField().set(this, value);
-                BindUtils.showBindHolder(holder, this);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void notifyListDataChangeById(int id) {
+        BindHolder bindHolder = BindUtils.findHolderById(bindHolders, id);
+        if (bindHolder != null) {
+            bindHolder.resetListTag();
+            if (bindHolder.getView() instanceof ListView) {
+                BinderAdapter adapter = (BinderAdapter) bindHolder.getView().getTag(bindHolder.getView().getId());
+                adapter.setShowEmpty(true);
             }
         }
     }

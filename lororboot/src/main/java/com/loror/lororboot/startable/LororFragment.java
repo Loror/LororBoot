@@ -91,17 +91,6 @@ public class LororFragment extends Fragment implements BindAble {
         return BindUtils.findHolderById(bindHolders, id);
     }
 
-    public void notifyListDataChangeById(@IdRes int id) {
-        BindHolder bindHolder = BindUtils.findHolderById(bindHolders, id);
-        if (bindHolder != null) {
-            bindHolder.notifyListChange();
-            if (bindHolder.getView() instanceof ListView) {
-                BinderAdapter adapter = (BinderAdapter) bindHolder.getView().getTag(bindHolder.getView().getId());
-                adapter.setShowEmpty(true);
-            }
-        }
-    }
-
     @Override
     public boolean onBindFind(BindHolder holder) {
         return false;
@@ -137,6 +126,18 @@ public class LororFragment extends Fragment implements BindAble {
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void notifyListDataChangeById(@IdRes int id) {
+        BindHolder bindHolder = BindUtils.findHolderById(bindHolders, id);
+        if (bindHolder != null) {
+            bindHolder.resetListTag();
+            if (bindHolder.getView() instanceof ListView) {
+                BinderAdapter adapter = (BinderAdapter) bindHolder.getView().getTag(bindHolder.getView().getId());
+                adapter.setShowEmpty(true);
+            }
+            BindUtils.showBindHolder(bindHolder, this);
         }
     }
 
