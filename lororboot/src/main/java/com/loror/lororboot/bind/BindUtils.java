@@ -105,9 +105,9 @@ public class BindUtils {
                         if (bindAble.onBindFind(bindHolder)) {
                             Object volume = getVolume(bindHolder, bindAble);
                             if (volume instanceof List) {
-                                bindHolder.tag = ((List) volume).size();
+                                bindHolder.compareTag = ((List) volume).size();
                             } else {
-                                bindHolder.tag = volume;
+                                bindHolder.compareTag = volume;
                             }
                         } else {
                             firstBinder(bindHolder, bindAble);
@@ -145,22 +145,22 @@ public class BindUtils {
                     String value = bindHolder.format == null ?
                             s.toString() : s.toString().replace(bindHolder.format.replace("%s", ""), "");
                     if (bindHolder.event != null) {
-                        bindAble.event(bindHolder, bindHolder.tag == null ? null : String.valueOf(bindHolder.tag), value);
+                        bindAble.event(bindHolder, bindHolder.compareTag == null ? null : String.valueOf(bindHolder.compareTag), value);
                     }
                     try {
                         Class<?> type = field.getType();
                         if (type == String.class) {
-                            field.set(bindAble, bindHolder.tag = value);
+                            field.set(bindAble, bindHolder.compareTag = value);
                         } else if (type == Integer.class) {
-                            field.set(bindAble, bindHolder.tag = Integer.parseInt(value));
+                            field.set(bindAble, bindHolder.compareTag = Integer.parseInt(value));
                         } else if (type == Long.class) {
-                            field.set(bindAble, bindHolder.tag = Long.parseLong(value));
+                            field.set(bindAble, bindHolder.compareTag = Long.parseLong(value));
                         } else if (type == Float.class) {
-                            field.set(bindAble, bindHolder.tag = Float.parseFloat(value));
+                            field.set(bindAble, bindHolder.compareTag = Float.parseFloat(value));
                         } else if (type == Double.class) {
-                            field.set(bindAble, bindHolder.tag = Double.parseDouble(value));
+                            field.set(bindAble, bindHolder.compareTag = Double.parseDouble(value));
                         } else if (type == CharSequence.class) {
-                            field.set(bindAble, bindHolder.tag = s);
+                            field.set(bindAble, bindHolder.compareTag = s);
                         } else {
                             throw new IllegalStateException("EditText为双向绑定，只支持属性为String，CharSequence，Integer，Long，Float，Double类型");
                         }
@@ -180,7 +180,7 @@ public class BindUtils {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     try {
-                        field.set(bindAble, bindHolder.tag = isChecked);
+                        field.set(bindAble, bindHolder.compareTag = isChecked);
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
@@ -204,7 +204,7 @@ public class BindUtils {
                     BinderAdapter adapter = new BinderAdapter(view.getContext(), list, bindAble);
                     ((AbsListView) view).setAdapter(adapter);
                     view.setTag(id, adapter);
-                    bindHolder.tag = list.size();
+                    bindHolder.compareTag = list.size();
                     if (view instanceof ListView && bindHolder.empty != null) {
                         adapter.setEmptyString(bindHolder.empty);
                     }
@@ -227,7 +227,7 @@ public class BindUtils {
                     RecyclerBindAbleAdapter adapter = new RecyclerBindAbleAdapter(view.getContext(), list, bindAble);
                     ((RecyclerView) view).setAdapter(adapter);
                     view.setTag(id, adapter);
-                    bindHolder.tag = list.size();
+                    bindHolder.compareTag = list.size();
                 } else {
                     throw new IllegalStateException("RecyclerView绑定的List<? extends BindAbleItem>不能为null");
                 }
@@ -262,7 +262,7 @@ public class BindUtils {
                         BindAbleBannerAdapter adapter = new BindAbleBannerAdapter(view.getContext(), list, bindHolder.imagePlace, bindHolder.imageWidth);
                         ((BindAbleBannerView) view).setAdapter(adapter);
                     }
-                    bindHolder.tag = list.size();
+                    bindHolder.compareTag = list.size();
                 } else {
                     throw new IllegalStateException("BindAbleBannerView绑定的List<?>不能为null");
                 }
@@ -279,9 +279,9 @@ public class BindUtils {
         try {
             Object value = bindHolder.field.get(bindAble);
             if (value instanceof List) {
-                bindHolder.tag = -1;
+                bindHolder.compareTag = -1;
             } else {
-                bindHolder.tag = null;
+                bindHolder.compareTag = null;
             }
             BindUtils.showBindHolder(bindHolder, bindAble);
             //首次未在showBindHolder中触发事件则主动触发事件
@@ -320,16 +320,16 @@ public class BindUtils {
     public static void showBindHolder(BindHolder bindHolder, BindAble bindAble) {
         Object volume = getVolume(bindHolder, bindAble);
         boolean isList = volume instanceof List;
-        if ((!isList && ((bindHolder.tag == null && volume != null) || (bindHolder.tag != null && !bindHolder.tag.equals(volume)))) ||
-                (isList && (bindHolder.tag == null || (int) bindHolder.tag != ((List) volume).size()))) {
+        if ((!isList && ((bindHolder.compareTag == null && volume != null) || (bindHolder.compareTag != null && !bindHolder.compareTag.equals(volume)))) ||
+                (isList && (bindHolder.compareTag == null || (int) bindHolder.compareTag != ((List) volume).size()))) {
             String vol = volume == null ? bindHolder.empty : String.valueOf(volume);
             vol = vol == null ? null :
                     (bindHolder.format == null ? vol : bindHolder.format.replace("%s", vol));
-            Object old = bindHolder.tag;
+            Object old = bindHolder.compareTag;
             if (isList) {
-                bindHolder.tag = ((List) volume).size();
+                bindHolder.compareTag = ((List) volume).size();
             } else {
-                bindHolder.tag = volume;
+                bindHolder.compareTag = volume;
             }
             if (!bindHolder.onlyEvent) {
                 if (bindHolder.view instanceof CheckBox) {

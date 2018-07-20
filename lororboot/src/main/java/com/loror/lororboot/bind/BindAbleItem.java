@@ -37,6 +37,7 @@ public abstract class BindAbleItem implements BindAble {
             holder.getField().setAccessible(true);
             try {
                 holder.getField().set(this, value);
+                BindUtils.showBindHolder(holder, this);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -60,7 +61,7 @@ public abstract class BindAbleItem implements BindAble {
     public void notifyListDataChangeById(int id) {
         BindHolder bindHolder = BindUtils.findHolderById(bindHolders, id);
         if (bindHolder != null) {
-            bindHolder.resetListTag();
+            bindHolder.resetListCompareTag();
             if (bindHolder.getView() instanceof ListView) {
                 BinderAdapter adapter = (BinderAdapter) bindHolder.getView().getTag(bindHolder.getView().getId());
                 adapter.setShowEmpty(true);
@@ -107,9 +108,9 @@ public abstract class BindAbleItem implements BindAble {
             if (onBindFind(bindHolder)) {
                 Object volume = BindUtils.getVolume(bindHolder, this);
                 if (volume instanceof List) {
-                    bindHolder.tag = ((List) volume).size();
+                    bindHolder.compareTag = ((List) volume).size();
                 } else {
-                    bindHolder.tag = volume;
+                    bindHolder.compareTag = volume;
                 }
             } else {
                 BindUtils.firstBinder(bindHolder, this);

@@ -18,7 +18,7 @@ public class BindHolder {
     protected int imagePlace;
     protected int imageWidth;
     protected boolean onlyEvent;
-    protected Object tag;
+    protected Object compareTag;
 
     public View getView() {
         return view;
@@ -40,9 +40,9 @@ public class BindHolder {
         return format;
     }
 
-    public void resetListTag() {
+    public void resetListCompareTag() {
         if (field.getType() == List.class || field.getType() == ArrayList.class) {
-            tag = -1;
+            compareTag = -1;
         }
     }
 }
