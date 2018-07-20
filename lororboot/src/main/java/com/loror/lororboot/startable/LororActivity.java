@@ -161,7 +161,7 @@ public class LororActivity extends AppCompatActivity implements BindAble {
     public void notifyListDataChangeById(@IdRes int id) {
         BindHolder bindHolder = BindUtils.findHolderById(bindHolders, id);
         if (bindHolder != null) {
-            bindHolder.resetListTag();
+            bindHolder.resetListCompareTag();
             if (bindHolder.getView() instanceof ListView) {
                 BinderAdapter adapter = (BinderAdapter) bindHolder.getView().getTag(bindHolder.getView().getId());
                 adapter.setShowEmpty(true);

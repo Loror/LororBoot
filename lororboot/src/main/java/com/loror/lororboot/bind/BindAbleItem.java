@@ -11,8 +11,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 public abstract class BindAbleItem implements BindAble {
-    private BindAble outBindAble;
-    private List<BindHolder> bindHolders;
+    private transient BindAble outBindAble;
+    private transient List<BindHolder> bindHolders;
+    private transient int position;
 
     public BindAble obtainOutBindAble() {
         return outBindAble;
@@ -37,7 +38,9 @@ public abstract class BindAbleItem implements BindAble {
             holder.getField().setAccessible(true);
             try {
                 holder.getField().set(this, value);
-                BindUtils.showBindHolder(holder, this);
+                if (holder.getTag() instanceof Integer && (Integer) holder.getTag() == position) {
+                    BindUtils.showBindHolder(holder, this);
+                }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -51,6 +54,9 @@ public abstract class BindAbleItem implements BindAble {
             holder.getField().setAccessible(true);
             try {
                 holder.getField().set(this, value);
+                if (holder.getTag() instanceof Integer && (Integer) holder.getTag() == position) {
+                    BindUtils.showBindHolder(holder, this);
+                }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -65,6 +71,9 @@ public abstract class BindAbleItem implements BindAble {
             if (bindHolder.getView() instanceof ListView) {
                 BinderAdapter adapter = (BinderAdapter) bindHolder.getView().getTag(bindHolder.getView().getId());
                 adapter.setShowEmpty(true);
+            }
+            if (bindHolder.getTag() instanceof Integer && (Integer) bindHolder.getTag() == position) {
+                BindUtils.showBindHolder(bindHolder, this);
             }
         }
     }
@@ -83,15 +92,17 @@ public abstract class BindAbleItem implements BindAble {
         outBindAble = mark.bindAble;
         ViewUtil.click(this, mark.convertView);
         mark.parent = null;
-        resetHolder(bindHolders);
+        resetHolder(bindHolders, mark.position);
         this.bindHolders = bindHolders;
+        this.position = mark.position;
     }
 
     /**
      * 刷新显示并触发事件，解决控件复用问题
      */
-    private void resetHolder(List<BindHolder> bindHolders) {
+    private void resetHolder(List<BindHolder> bindHolders, int position) {
         for (BindHolder bindHolder : bindHolders) {
+            bindHolder.setTag(position);
             if (bindHolder.visibility != BindHolder.NOTCHANGE) {
                 switch (bindHolder.visibility) {
                     case View.VISIBLE:

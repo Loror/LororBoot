@@ -19,6 +19,7 @@ public class BindHolder {
     protected int imageWidth;
     protected boolean onlyEvent;
     protected Object compareTag;
+    private Object tag;
 
     public View getView() {
         return view;
@@ -38,6 +39,14 @@ public class BindHolder {
 
     public String getFormat() {
         return format;
+    }
+
+    public void setTag(Object tag) {
+        this.tag = tag;
+    }
+
+    public Object getTag() {
+        return tag;
     }
 
     public void resetListCompareTag() {
