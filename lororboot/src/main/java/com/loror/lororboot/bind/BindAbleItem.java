@@ -116,6 +116,7 @@ public abstract class BindAbleItem implements BindAble {
                         break;
                 }
             }
+            BindUtils.specialBinder(bindHolder, bindHolder.view, this);
             if (onBindFind(bindHolder)) {
                 Object volume = BindUtils.getVolume(bindHolder, this);
                 if (volume instanceof List) {

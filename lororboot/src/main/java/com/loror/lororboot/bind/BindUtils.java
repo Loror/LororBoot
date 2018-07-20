@@ -58,7 +58,6 @@ public class BindUtils {
                         bindHolder.imageWidth = bind.imageWidth();
                         bindHolder.onlyEvent = bind.onlyEvent();
                         bindHolders.add(bindHolder);
-                        specialBinder(bindHolder, view, bindAble);
                     }
                 }
             }
@@ -121,7 +120,7 @@ public class BindUtils {
     /**
      * 处理特定类型view绑定
      */
-    private static void specialBinder(final BindHolder bindHolder, View view, final BindAble bindAble) {
+    protected static void specialBinder(final BindHolder bindHolder, View view, final BindAble bindAble) {
         final Field field = bindHolder.field;
         final int id = view.getId();
         if (view instanceof EditText) {
