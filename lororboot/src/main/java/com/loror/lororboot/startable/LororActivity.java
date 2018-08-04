@@ -15,6 +15,7 @@ import com.loror.lororboot.bind.BindAble;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.bind.BindUtils;
 import com.loror.lororboot.bind.BinderAdapter;
+import com.loror.lororboot.bind.DataChangeAble;
 import com.loror.lororboot.views.BindAbleBannerView;
 
 import java.lang.ref.WeakReference;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class LororActivity extends AppCompatActivity implements BindAble {
+public class LororActivity extends AppCompatActivity implements BindAble, DataChangeAble {
     protected Context context = this;
     private List<BindHolder> bindHolders = new LinkedList<>();
     private List<BindAble> registedBinders = new ArrayList<>();
