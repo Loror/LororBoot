@@ -24,7 +24,7 @@ public class MainActivity extends LororActivity {
     @Bind(id = R.id.editText)
     String doubleBindText = "绑定EditText内容";
     @Bind(id = R.id.imageView, imagePlace = R.mipmap.ic_launcher)
-    String image = "http://img.taopic.com/uploads/allimg/120727/201995-120HG1030762.jpg";
+    String image = "http://img.zcool.cn/community/0117e2571b8b246ac72538120dd8a4.jpg@1280w_1l_2o_100sh.jpg";
     @Bind(id = R.id.listView)
     List<ListItem> listItems = new ArrayList<>();
     @Bind(id = R.id.banner, imagePlace = R.mipmap.ic_launcher)
