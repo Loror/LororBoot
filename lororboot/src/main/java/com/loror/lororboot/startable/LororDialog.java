@@ -16,13 +16,14 @@ import com.loror.lororUtil.view.ViewUtil;
 import com.loror.lororboot.bind.BindAble;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.bind.BindUtils;
+import com.loror.lororboot.bind.DataChangeAble;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 import java.util.List;
 
-public class LororDialog extends AlertDialog implements BindAble {
+public class LororDialog extends AlertDialog implements BindAble, DataChangeAble {
 
     protected static final int RESULT_OK = -1;
     protected static final int RESULT_CANCEL = 0;

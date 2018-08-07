@@ -15,6 +15,7 @@ import com.loror.lororUtil.view.ViewUtil;
 import com.loror.lororboot.bind.BindAble;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.bind.BindUtils;
+import com.loror.lororboot.bind.DataChangeAble;
 import com.loror.lororboot.views.BindAbleBannerView;
 
 import java.lang.ref.WeakReference;
@@ -22,7 +23,7 @@ import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 import java.util.List;
 
-public class LororFragment extends Fragment implements BindAble {
+public class LororFragment extends Fragment implements BindAble, DataChangeAble {
 
     private List<BindHolder> bindHolders = new LinkedList<>();
     private WeakReference<List<BindHolder>> weakReferenceList = new WeakReference<>(bindHolders);
