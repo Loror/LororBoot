@@ -1,12 +1,9 @@
 package com.loror.lororboot.bind;
 
 import android.view.View;
-import android.widget.ListView;
 
 import com.loror.lororUtil.view.ViewUtil;
-import com.loror.lororboot.annotation.Bind;
 
-import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -68,10 +65,6 @@ public abstract class BindAbleItem implements BindAble, DataChangeAble {
         BindHolder bindHolder = BindUtils.findHolderById(bindHolders, id);
         if (bindHolder != null) {
             bindHolder.resetListCompareTag();
-            if (bindHolder.getView() instanceof ListView) {
-                BinderAdapter adapter = (BinderAdapter) bindHolder.getView().getTag(bindHolder.getView().getId());
-                adapter.setShowEmpty(true);
-            }
             if (bindHolder.getTag() instanceof Integer && (Integer) bindHolder.getTag() == position) {
                 BindUtils.showBindHolder(bindHolder, this);
             }
