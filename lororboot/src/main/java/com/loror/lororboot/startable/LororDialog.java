@@ -10,14 +10,12 @@ import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StyleRes;
 import android.view.Window;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.loror.lororUtil.view.ViewUtil;
 import com.loror.lororboot.bind.BindAble;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.bind.BindUtils;
-import com.loror.lororboot.bind.BinderAdapter;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
@@ -137,10 +135,6 @@ public class LororDialog extends AlertDialog implements BindAble {
         BindHolder bindHolder = BindUtils.findHolderById(bindHolders, id);
         if (bindHolder != null) {
             bindHolder.resetListCompareTag();
-            if (bindHolder.getView() instanceof ListView) {
-                BinderAdapter adapter = (BinderAdapter) bindHolder.getView().getTag(bindHolder.getView().getId());
-                adapter.setShowEmpty(true);
-            }
             BindUtils.showBindHolder(bindHolder, this);
         }
     }
@@ -186,7 +180,7 @@ public class LororDialog extends AlertDialog implements BindAble {
             if (obj instanceof LororDialog) {
                 ((LororDialog) obj).putIntent(intent);
             } else if (intent.getFlags() != Intent.FLAG_ACTIVITY_NO_USER_ACTION) {
-                Toast.makeText(context, "你开启的弹窗不是StartAbleDialog，无法传递intent，如不需传递intent可以设置flags为FLAG_ACTIVITY_NO_USER_ACTION以忽略此信息。", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "你开启的弹窗不是LororDialog，无法传递intent，如不需传递intent可以设置flags为FLAG_ACTIVITY_NO_USER_ACTION以忽略此信息。", Toast.LENGTH_SHORT).show();
             }
             obj.show();
         } catch (Exception e) {
@@ -213,7 +207,7 @@ public class LororDialog extends AlertDialog implements BindAble {
                 });
                 obj.show();
             } else {
-                Toast.makeText(context, "你开启的弹窗不是StartAbleDialog，无法以forResult方式开启。", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, "你开启的弹窗不是LororDialog，无法以forResult方式开启。", Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
             e.printStackTrace();

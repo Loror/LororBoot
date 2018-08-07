@@ -205,6 +205,7 @@ public class BindUtils {
                     view.setTag(id, adapter);
                     bindHolder.compareTag = list.size();
                     if (view instanceof ListView && bindHolder.empty != null) {
+                        adapter.setShowEmpty(true);
                         adapter.setEmptyString(bindHolder.empty);
                     }
                 } else {
