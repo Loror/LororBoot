@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class BindAbleItem implements BindAble {
+public abstract class BindAbleItem implements BindAble, DataChangeAble {
     private transient BindAble outBindAble;
     private transient List<BindHolder> bindHolders;
     private transient int position;

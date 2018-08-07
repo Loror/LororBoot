@@ -84,6 +84,8 @@ public class BindUtils {
                         view = ((LororFragment) bindAble).getView().findViewById(id);
                     } else if (bindAble instanceof LororDialog) {
                         view = ((LororDialog) bindAble).findViewById(id);
+                    } else if (bindAble instanceof FindViewAble) {
+                        view = ((FindViewAble) bindAble).findViewById(id);
                     }
                     if (view != null) {
                         if (bind.visibility() != BindHolder.NOTCHANGE) {
