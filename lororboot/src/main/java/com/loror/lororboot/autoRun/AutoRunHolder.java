@@ -9,6 +9,6 @@ public class AutoRunHolder {
     public static final int BEFOREMETHOD = 5;
     public static final int AFTERMETHOD = 6;
 
-    public static final int MAINTHRED = 0;
-    public static final int NEWTHRED = 1;
+    public static final int MAINTHREAD = 0;
+    public static final int NEWTHREAD = 1;
 }
