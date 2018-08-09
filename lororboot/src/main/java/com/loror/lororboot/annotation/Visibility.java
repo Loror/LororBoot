@@ -9,6 +9,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @IntDef({View.VISIBLE, View.INVISIBLE, View.GONE, BindHolder.NOTCHANGE})
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 public @interface Visibility {
 }
