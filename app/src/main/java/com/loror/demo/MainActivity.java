@@ -69,7 +69,7 @@ public class MainActivity extends LororActivity {
         Log.e("RESULT__", "initData" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
     }
 
-    @AutoRun(when = AutoRunHolder.BEFOREMETHOD, relationMethod = "initData", thread = AutoRunHolder.NEWTHREAD)
+    @AutoRun(when = AutoRunHolder.BEFOREMETHOD, relationMethod = "initData", thread = AutoRunHolder.MAINTHREAD)
     public void before1() {
         Log.e("RESULT__", "before1" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
     }
@@ -79,7 +79,7 @@ public class MainActivity extends LororActivity {
         Log.e("RESULT__", "before2" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
     }
 
-    @AutoRun(when = AutoRunHolder.AFTERMETHOD, relationMethod = "initData", thread = AutoRunHolder.MAINTHREAD)
+    @AutoRun(when = AutoRunHolder.AFTERMETHOD, relationMethod = "initData", thread = AutoRunHolder.NEWTHREAD)
     public void after1() {
         Log.e("RESULT__", "after1" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
     }
