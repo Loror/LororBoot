@@ -9,9 +9,8 @@ import java.util.List;
 public class AutoRunUtil {
     public static List<AutoRunHolder> findAutoRunHolders(AutoRunAble autoRunAble) {
         List<AutoRunHolder> penetrations = new ArrayList<>();//切入点
-        List<String> penetrationNames = new ArrayList<>();//切入点名字
         List<AutoRunHolder> relations = new ArrayList<>();//关系点
-        List<String> relationsNames = new ArrayList<>();//关系点名字
+        List<String> methodNames = new ArrayList<>();//方法名字
         Method[] methods = autoRunAble.getClass().getDeclaredMethods();
         for (int i = 0; i < methods.length; i++) {
             Method method = methods[i];
@@ -25,17 +24,17 @@ public class AutoRunUtil {
                 holder.method = method;
                 if (holder.when == AutoRunHolder.USERCALL || holder.when == AutoRunHolder.AFTERONCREATE) {
                     penetrations.add(holder);
-                    penetrationNames.add(holder.methodName);
-                } else {
+                    methodNames.add(holder.methodName);
+                } else if (holder.relationMethod != null) {
                     relations.add(holder);
-                    relationsNames.add(holder.methodName);
+                    methodNames.add(holder.methodName);
                 }
             }
         }
         List<AutoRunHolder> all = new ArrayList<>(penetrations);//有效关系点
         for (int i = 0; i < relations.size(); i++) {
             AutoRunHolder holder = relations.get(i);
-            if (penetrationNames.contains(holder.relationMethod) || relationsNames.contains(holder.relationMethod)) {
+            if (methodNames.contains(holder.relationMethod)) {
                 all.add(holder);
             }
         }//有效关系点归总
@@ -49,9 +48,9 @@ public class AutoRunUtil {
                         if (head.methodName.equals(holder.relationMethod)) {
                             remove.add(holder);
                             if (holder.getWhen() == AutoRunHolder.BEFOREMETHOD) {
-                                holder.insetPrevious(holder);
+                                head.insetPrevious(holder);
                             } else if (holder.getWhen() == AutoRunHolder.AFTERMETHOD) {
-                                holder.addNext(holder);
+                                head.addNext(holder);
                             }//建立切入点链表
                         }
                     } while ((head = head.next) != null);

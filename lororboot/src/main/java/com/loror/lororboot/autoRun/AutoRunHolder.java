@@ -23,7 +23,7 @@ public class AutoRunHolder {
     protected AutoRunHolder previous;
     protected AutoRunHolder next;
 
-    protected AutoRunHolder getLinkHead() {
+    public AutoRunHolder getLinkHead() {
         AutoRunHolder holder = this;
         while (holder.previous != null) {
             holder = holder.previous;
@@ -35,6 +35,7 @@ public class AutoRunHolder {
     protected void addPrevious(AutoRunHolder previous) {
         AutoRunHolder holder = this;
         while (holder.previous != null) {
+            holder.previous.next = holder;
             holder = holder.previous;
         }
         holder.previous = previous;
@@ -45,12 +46,14 @@ public class AutoRunHolder {
         AutoRunHolder previousTemp = this.previous;
         this.previous = previous;
         this.previous.previous = previousTemp;
+        previous.next = this;
     }
 
     //添加到链表尾
     protected void addNext(AutoRunHolder next) {
         AutoRunHolder holder = this;
         while (holder.next != null) {
+            holder.next.previous = holder;
             holder = holder.next;
         }
         holder.next = next;
@@ -61,6 +64,15 @@ public class AutoRunHolder {
         AutoRunHolder nextTemp = this.next;
         this.next = next;
         this.next.next = nextTemp;
+        next.previous = this;
+    }
+
+    public AutoRunHolder getPrevious() {
+        return previous;
+    }
+
+    public AutoRunHolder getNext() {
+        return next;
     }
 
     public int getWhen() {
