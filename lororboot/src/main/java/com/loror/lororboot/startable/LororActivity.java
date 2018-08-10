@@ -13,6 +13,7 @@ import com.loror.lororUtil.view.ViewUtil;
 import com.loror.lororboot.annotation.RunThread;
 import com.loror.lororboot.autoRun.AutoRunAble;
 import com.loror.lororboot.autoRun.AutoRunHolder;
+import com.loror.lororboot.autoRun.AutoRunUtil;
 import com.loror.lororboot.bind.BindAble;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.bind.BindUtils;
@@ -212,6 +213,11 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
 
     protected void onDialogResult(int requestCode, int resultCode, Intent data) {
 
+    }
+
+    @Override
+    public void collectAutoRun() {
+        AutoRunUtil.findAutoRunHolders(this);
     }
 
     @Override

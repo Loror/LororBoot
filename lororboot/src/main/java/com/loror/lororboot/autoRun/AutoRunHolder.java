@@ -1,5 +1,7 @@
 package com.loror.lororboot.autoRun;
 
+import java.lang.reflect.Method;
+
 public class AutoRunHolder {
     //切入点
     public static final int USERCALL = 0;
@@ -15,8 +17,10 @@ public class AutoRunHolder {
 
     protected int when;
     protected String name;
+    protected String methodName;
     protected String relationMethod;
     protected int thread;
+    protected Method method;
 
     public int getWhen() {
         return when;
@@ -26,11 +30,19 @@ public class AutoRunHolder {
         return name;
     }
 
+    public String getMethodName() {
+        return methodName;
+    }
+
     public String getRelationMethod() {
         return relationMethod;
     }
 
     public int getThread() {
         return thread;
+    }
+
+    public Method getMethod() {
+        return method;
     }
 }
