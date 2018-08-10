@@ -42,6 +42,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        collectAutoRun();
         createState = 1;
     }
 
