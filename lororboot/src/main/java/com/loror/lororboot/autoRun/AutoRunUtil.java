@@ -1,12 +1,16 @@
 package com.loror.lororboot.autoRun;
 
+import android.util.Log;
+
 import com.loror.lororboot.annotation.AutoRun;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AutoRunUtil {
+    //找到所有AutoRun
     public static List<AutoRunHolder> findAutoRunHolders(AutoRunAble autoRunAble) {
         List<AutoRunHolder> penetrations = new ArrayList<>();//切入点
         List<AutoRunHolder> relations = new ArrayList<>();//关系点
@@ -31,13 +35,14 @@ public class AutoRunUtil {
                 }
             }
         }
-        List<AutoRunHolder> all = new ArrayList<>(penetrations);//有效关系点
+        List<AutoRunHolder> all = new ArrayList<>();//有效关系点
         for (int i = 0; i < relations.size(); i++) {
             AutoRunHolder holder = relations.get(i);
             if (methodNames.contains(holder.relationMethod)) {
                 all.add(holder);
             }
         }//有效关系点归总
+        int lastSize = all.size();
         while (all.size() > 0) {
             List<AutoRunHolder> remove = new ArrayList<>();//已链接
             for (int i = 0; i < all.size(); i++) {
@@ -57,7 +62,40 @@ public class AutoRunUtil {
                 }
             }
             all.removeAll(remove);
+            if (all.size() != lastSize) {
+                lastSize = all.size();
+                Log.e("RESULT__", "还有" + all.size());
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < lastSize; i++) {
+                    builder.append(all.get(i).methodName).append(" - ");
+                }
+                Log.e("RESULT__", builder.toString());
+            }
         }
         return penetrations;
+    }
+
+    //运行AutoRun
+    public static void runAutoRunHolders(List<AutoRunHolder> penetrations, final AutoRunAble autoRunAble) {
+        for (int i = 0; i < penetrations.size(); i++) {
+            final AutoRunHolder[] head = new AutoRunHolder[]{penetrations.get(i).getLinkHead()};
+            autoRunAble.run(head[0].thread, new Runnable() {
+                @Override
+                public void run() {
+                    head[0].getMethod().setAccessible(true);
+                    try {
+                        head[0].getMethod().invoke(autoRunAble);
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+                    if (head[0].next != null) {
+                        head[0] = head[0].next;
+                        autoRunAble.run(head[0].thread, this);
+                    }
+                }
+            });
+        }
     }
 }

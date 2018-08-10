@@ -3,9 +3,11 @@ package com.loror.lororboot.startable;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.IdRes;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
@@ -34,9 +36,29 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     private WeakReference<List<BindAble>> weakReferenceBindAbleList = new WeakReference<>(registedBinders);
     private Runnable bindRunnable;
     private Handler handler;
+    private List<AutoRunHolder> autoRunHolders = new ArrayList<>();
+    private int createState;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        createState = 1;
+    }
 
     @Override
     protected void onResume() {
+        if (createState == 1) {
+            createState = 2;
+            int size = autoRunHolders.size();
+            if (size > 0) {
+                for (int i = 0; i < size; i++) {
+                    AutoRunHolder holder = autoRunHolders.get(i);
+                    if (holder.getWhen() == AutoRunHolder.AFTERONCREATE) {
+                        AutoRunUtil.runAutoRunHolders(autoRunHolders, this);
+                    }
+                }
+            }
+        }
         super.onResume();
         List<BindHolder> bindHolders = weakReferenceList.get();
         if (bindHolders != null) {
@@ -217,7 +239,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
 
     @Override
     public void collectAutoRun() {
-        AutoRunUtil.findAutoRunHolders(this);
+        autoRunHolders = AutoRunUtil.findAutoRunHolders(this);
     }
 
     @Override

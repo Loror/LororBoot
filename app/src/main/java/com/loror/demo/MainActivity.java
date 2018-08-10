@@ -1,12 +1,16 @@
 package com.loror.demo;
 
 import android.os.Bundle;
+import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.loror.lororUtil.view.Click;
 import com.loror.lororUtil.view.ItemClick;
+import com.loror.lororboot.annotation.AutoRun;
 import com.loror.lororboot.annotation.Bind;
+import com.loror.lororboot.autoRun.AutoRunHolder;
 import com.loror.lororboot.startable.LororActivity;
 
 import java.util.ArrayList;
@@ -58,6 +62,31 @@ public class MainActivity extends LororActivity {
     @ItemClick(id = R.id.banner)
     public void bannerClick(View view, int position) {
         Toast.makeText(this, "第" + position + "横幅点击", Toast.LENGTH_SHORT).show();
+    }
+
+    @AutoRun(when = AutoRunHolder.AFTERONCREATE, thread = AutoRunHolder.NEWTHREAD)
+    public void initData() {
+        Log.e("RESULT__", "initData" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
+    }
+
+    @AutoRun(when = AutoRunHolder.BEFOREMETHOD, relationMethod = "initData", thread = AutoRunHolder.NEWTHREAD)
+    public void before1() {
+        Log.e("RESULT__", "before1" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
+    }
+
+    @AutoRun(when = AutoRunHolder.BEFOREMETHOD, relationMethod = "before1", thread = AutoRunHolder.NEWTHREAD)
+    public void before2() {
+        Log.e("RESULT__", "before2" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
+    }
+
+    @AutoRun(when = AutoRunHolder.AFTERMETHOD, relationMethod = "initData", thread = AutoRunHolder.MAINTHREAD)
+    public void after1() {
+        Log.e("RESULT__", "after1" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
+    }
+
+    @AutoRun(when = AutoRunHolder.AFTERMETHOD, relationMethod = "after1", thread = AutoRunHolder.MAINTHREAD)
+    public void after2() {
+        Log.e("RESULT__", "after2" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
     }
 
 }
