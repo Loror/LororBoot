@@ -1,7 +1,5 @@
 package com.loror.lororboot.autoRun;
 
-import android.util.Log;
-
 import com.loror.lororboot.annotation.AutoRun;
 
 import java.lang.reflect.InvocationTargetException;
@@ -42,7 +40,6 @@ public class AutoRunUtil {
                 all.add(holder);
             }
         }//有效关系点归总
-        int lastSize = all.size();
         while (all.size() > 0) {
             List<AutoRunHolder> remove = new ArrayList<>();//已链接
             for (int i = 0; i < all.size(); i++) {
@@ -62,15 +59,6 @@ public class AutoRunUtil {
                 }
             }
             all.removeAll(remove);
-            if (all.size() != lastSize) {
-                lastSize = all.size();
-                Log.e("RESULT__", "还有" + all.size());
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < lastSize; i++) {
-                    builder.append(all.get(i).methodName).append(" - ");
-                }
-                Log.e("RESULT__", builder.toString());
-            }
         }
         return penetrations;
     }
