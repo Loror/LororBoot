@@ -8,8 +8,8 @@ import java.util.List;
 
 public class AutoRunUtil {
     public static void findAutoRunHolders(AutoRunAble autoRunAble) {
-        List<AutoRunHolder> penetrations = new ArrayList<>();
-        List<AutoRunHolder> relations = new ArrayList<>();
+        List<AutoRunHolder> penetrations = new ArrayList<>();//切入点
+        List<AutoRunHolder> relations = new ArrayList<>();//关系点
         Method[] methods = autoRunAble.getClass().getDeclaredMethods();
         for (int i = 0; i < methods.length; i++) {
             Method method = methods[i];
