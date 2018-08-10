@@ -42,7 +42,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        collectAutoRun();
+        autoRunHolders = AutoRunUtil.findAutoRunHolders(this);
         createState = 1;
     }
 
@@ -82,6 +82,12 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
                 }
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        autoRunHolders.clear();
+        super.onDestroy();
     }
 
     @Override
@@ -127,7 +133,8 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
                         if (bindHolders.size() > 0 || registedBinders.size() > 0) {
                             BindUtils.showBindHolders(bindHolders, activity);
                             if (registedBinders != null) {
-                                for (int i = 0; i < registedBinders.size(); i++) {
+                                int size = registedBinders.size();
+                                for (int i = 0; i < size; i++) {
                                     registedBinders.get(i).beginBind(this);
                                 }
                             }
@@ -239,8 +246,17 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     }
 
     @Override
-    public void collectAutoRun() {
-        autoRunHolders = AutoRunUtil.findAutoRunHolders(this);
+    public void runUserAutoRun(String methodName) {
+        int size = autoRunHolders.size();
+        if (size > 0) {
+            for (int i = 0; i < size; i++) {
+                AutoRunHolder holder = autoRunHolders.get(i);
+                if (holder.getWhen() == AutoRunHolder.USERCALL && holder.getMethodName().equals(methodName)) {
+                    AutoRunUtil.runAutoRunHolders(autoRunHolders, this);
+                    break;
+                }
+            }
+        }
     }
 
     @Override

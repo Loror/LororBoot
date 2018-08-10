@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StyleRes;
@@ -13,6 +15,10 @@ import android.view.Window;
 import android.widget.Toast;
 
 import com.loror.lororUtil.view.ViewUtil;
+import com.loror.lororboot.annotation.RunThread;
+import com.loror.lororboot.autoRun.AutoRunAble;
+import com.loror.lororboot.autoRun.AutoRunHolder;
+import com.loror.lororboot.autoRun.AutoRunUtil;
 import com.loror.lororboot.bind.BindAble;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.bind.BindUtils;
@@ -20,10 +26,11 @@ import com.loror.lororboot.bind.DataChangeAble;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class LororDialog extends AlertDialog implements StartDilogAble, BindAble, DataChangeAble {
+public class LororDialog extends AlertDialog implements StartDilogAble, BindAble, DataChangeAble, AutoRunAble {
 
     protected static final int RESULT_OK = -1;
     protected static final int RESULT_CANCEL = 0;
@@ -37,6 +44,9 @@ public class LororDialog extends AlertDialog implements StartDilogAble, BindAble
 
     private List<BindHolder> bindHolders = new LinkedList<>();
     private WeakReference<LororActivity> weakReference;
+    private Handler handler;
+    private List<AutoRunHolder> autoRunHolders = new ArrayList<>();
+    private int createState;
 
     public LororDialog(@NonNull Context context) {
         this(context, 0);
@@ -60,6 +70,25 @@ public class LororDialog extends AlertDialog implements StartDilogAble, BindAble
                 LororDialog.this.onDismiss();
             }
         });
+        autoRunHolders = AutoRunUtil.findAutoRunHolders(this);
+        createState = 1;
+    }
+
+    @Override
+    protected void onStart() {
+        if (createState == 1) {
+            createState = 2;
+            int size = autoRunHolders.size();
+            if (size > 0) {
+                for (int i = 0; i < size; i++) {
+                    AutoRunHolder holder = autoRunHolders.get(i);
+                    if (holder.getWhen() == AutoRunHolder.AFTERONCREATE) {
+                        AutoRunUtil.runAutoRunHolders(autoRunHolders, this);
+                    }
+                }
+            }
+        }
+        super.onStart();
     }
 
     @Override
@@ -218,5 +247,35 @@ public class LororDialog extends AlertDialog implements StartDilogAble, BindAble
 
     public interface ForResult {
         void result(int requestCode, int resultCode, Intent data);
+    }
+
+    @Override
+    public void runUserAutoRun(String methodName) {
+        int size = autoRunHolders.size();
+        if (size > 0) {
+            for (int i = 0; i < size; i++) {
+                AutoRunHolder holder = autoRunHolders.get(i);
+                if (holder.getWhen() == AutoRunHolder.USERCALL && holder.getMethodName().equals(methodName)) {
+                    AutoRunUtil.runAutoRunHolders(autoRunHolders, this);
+                    break;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void run(@RunThread int thread, Runnable runnable) {
+        if (thread == AutoRunHolder.MAINTHREAD) {
+            if (Looper.getMainLooper() == Looper.myLooper()) {
+                runnable.run();
+            } else {
+                if (handler == null) {
+                    handler = new Handler();
+                }
+                handler.post(runnable);
+            }
+        } else {
+            new Thread(runnable).start();
+        }
     }
 }

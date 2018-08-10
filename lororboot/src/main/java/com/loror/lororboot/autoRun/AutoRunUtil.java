@@ -42,9 +42,11 @@ public class AutoRunUtil {
         }//有效关系点归总
         while (all.size() > 0) {
             List<AutoRunHolder> remove = new ArrayList<>();//已链接
-            for (int i = 0; i < all.size(); i++) {
+            int size = all.size();
+            for (int i = 0; i < size; i++) {
                 AutoRunHolder holder = all.get(i);
-                for (int j = 0; j < penetrations.size(); j++) {
+                int penetrationsSize = penetrations.size();
+                for (int j = 0; j < penetrationsSize; j++) {
                     AutoRunHolder head = penetrations.get(j).getLinkHead();//链表头
                     do {
                         if (head.methodName.equals(holder.relationMethod)) {
@@ -65,7 +67,8 @@ public class AutoRunUtil {
 
     //运行AutoRun
     public static void runAutoRunHolders(List<AutoRunHolder> penetrations, final AutoRunAble autoRunAble) {
-        for (int i = 0; i < penetrations.size(); i++) {
+        int size = penetrations.size();
+        for (int i = 0; i < size; i++) {
             final AutoRunHolder[] head = new AutoRunHolder[]{penetrations.get(i).getLinkHead()};
             autoRunAble.run(head[0].thread, new Runnable() {
                 @Override
