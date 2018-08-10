@@ -4,11 +4,15 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.IdRes;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.loror.lororUtil.view.ViewUtil;
+import com.loror.lororboot.annotation.RunThread;
+import com.loror.lororboot.autoRun.AutoRunAble;
+import com.loror.lororboot.autoRun.AutoRunHolder;
 import com.loror.lororboot.bind.BindAble;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.bind.BindUtils;
@@ -21,7 +25,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class LororActivity extends AppCompatActivity implements StartDilogAble, BindAble, DataChangeAble {
+public class LororActivity extends AppCompatActivity implements StartDilogAble, BindAble, DataChangeAble, AutoRunAble {
     protected Context context = this;
     private List<BindHolder> bindHolders = new LinkedList<>();
     private List<BindAble> registedBinders = new ArrayList<>();
@@ -208,5 +212,21 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
 
     protected void onDialogResult(int requestCode, int resultCode, Intent data) {
 
+    }
+
+    @Override
+    public void run(@RunThread int thread, Runnable runnable) {
+        if (thread == AutoRunHolder.MAINTHREAD) {
+            if (Looper.getMainLooper() == Looper.myLooper()) {
+                runnable.run();
+            } else {
+                if (handler == null) {
+                    handler = new Handler();
+                }
+                handler.post(runnable);
+            }
+        } else {
+            new Thread(runnable).start();
+        }
     }
 }

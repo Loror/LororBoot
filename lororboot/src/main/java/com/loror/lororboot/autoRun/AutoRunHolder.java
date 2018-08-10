@@ -12,4 +12,25 @@ public class AutoRunHolder {
     //运行所在线程
     public static final int MAINTHREAD = 0;
     public static final int NEWTHREAD = 1;
+
+    protected int when;
+    protected String name;
+    protected String relationMethod;
+    protected int thread;
+
+    public int getWhen() {
+        return when;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getRelationMethod() {
+        return relationMethod;
+    }
+
+    public int getThread() {
+        return thread;
+    }
 }
