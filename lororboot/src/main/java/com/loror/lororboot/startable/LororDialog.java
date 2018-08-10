@@ -23,7 +23,7 @@ import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 import java.util.List;
 
-public class LororDialog extends AlertDialog implements BindAble, DataChangeAble {
+public class LororDialog extends AlertDialog implements StartDilogAble, BindAble, DataChangeAble {
 
     protected static final int RESULT_OK = -1;
     protected static final int RESULT_CANCEL = 0;
@@ -170,9 +170,7 @@ public class LororDialog extends AlertDialog implements BindAble, DataChangeAble
         return requestCode;
     }
 
-    /**
-     * 打开dialog
-     */
+    @Override
     public void startDialog(Intent intent) {
         try {
             Class classType = Class.forName(intent.getComponent().getClassName());
@@ -190,9 +188,7 @@ public class LororDialog extends AlertDialog implements BindAble, DataChangeAble
         }
     }
 
-    /**
-     * 打开dialog
-     */
+    @Override
     public void startDialogForResult(Intent intent, final int requestCode) {
         try {
             Class classType = Class.forName(intent.getComponent().getClassName());

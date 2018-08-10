@@ -6,7 +6,7 @@ import com.loror.lororboot.autoRun.AutoRunHolder;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-@IntDef({AutoRunHolder.ONCREATE, AutoRunHolder.ONRESUME, AutoRunHolder.ONPAUSE, AutoRunHolder.ONSTOP, AutoRunHolder.ONDESTORY, AutoRunHolder.BEFOREMETHOD, AutoRunHolder.AFTERMETHOD})
+@IntDef({AutoRunHolder.AFTERONCREATE, AutoRunHolder.USERCALL, AutoRunHolder.BEFOREMETHOD, AutoRunHolder.AFTERMETHOD})
 @Retention(RetentionPolicy.CLASS)
 public @interface RunTime {
 }

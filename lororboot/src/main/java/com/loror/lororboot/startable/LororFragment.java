@@ -23,7 +23,7 @@ import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 import java.util.List;
 
-public class LororFragment extends Fragment implements BindAble, DataChangeAble {
+public class LororFragment extends Fragment implements StartDilogAble, BindAble, DataChangeAble {
 
     private List<BindHolder> bindHolders = new LinkedList<>();
     private WeakReference<List<BindHolder>> weakReferenceList = new WeakReference<>(bindHolders);
@@ -136,9 +136,7 @@ public class LororFragment extends Fragment implements BindAble, DataChangeAble 
         }
     }
 
-    /**
-     * 打开dialog
-     */
+    @Override
     public void startDialog(Intent intent) {
         try {
             Class classType = Class.forName(intent.getComponent().getClassName());
@@ -156,9 +154,7 @@ public class LororFragment extends Fragment implements BindAble, DataChangeAble 
         }
     }
 
-    /**
-     * 打开dialog
-     */
+    @Override
     public void startDialogForResult(Intent intent, final int requestCode) {
         try {
             Class classType = Class.forName(intent.getComponent().getClassName());

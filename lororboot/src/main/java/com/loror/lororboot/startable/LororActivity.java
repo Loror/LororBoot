@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class LororActivity extends AppCompatActivity implements BindAble, DataChangeAble {
+public class LororActivity extends AppCompatActivity implements StartDilogAble, BindAble, DataChangeAble {
     protected Context context = this;
     private List<BindHolder> bindHolders = new LinkedList<>();
     private List<BindAble> registedBinders = new ArrayList<>();
@@ -164,9 +164,7 @@ public class LororActivity extends AppCompatActivity implements BindAble, DataCh
         }
     }
 
-    /**
-     * 打开dialog
-     */
+    @Override
     public void startDialog(Intent intent) {
         try {
             Class classType = Class.forName(intent.getComponent().getClassName());
@@ -184,9 +182,7 @@ public class LororActivity extends AppCompatActivity implements BindAble, DataCh
         }
     }
 
-    /**
-     * 打开dialog
-     */
+    @Override
     public void startDialogForResult(Intent intent, final int requestCode) {
         try {
             Class classType = Class.forName(intent.getComponent().getClassName());
