@@ -38,6 +38,7 @@ public class AutoRunHolder {
             holder.previous.next = holder;
             holder = holder.previous;
         }
+        previous.next = holder;
         holder.previous = previous;
     }
 
@@ -56,6 +57,7 @@ public class AutoRunHolder {
             holder.next.previous = holder;
             holder = holder.next;
         }
+        next.previous = holder;
         holder.next = next;
     }
 
