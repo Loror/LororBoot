@@ -12,8 +12,9 @@ public class AutoRunHolder {
     public static final int AFTERMETHOD = 3;
 
     //运行所在线程
-    public static final int MAINTHREAD = 0;
-    public static final int NEWTHREAD = 1;
+    public static final int CURENTTHREAD = 0;
+    public static final int MAINTHREAD = 1;
+    public static final int NEWTHREAD = 2;
 
     protected int when;
     protected String methodName;

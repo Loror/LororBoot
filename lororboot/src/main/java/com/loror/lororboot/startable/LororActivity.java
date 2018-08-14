@@ -270,8 +270,10 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
                 }
                 handler.post(runnable);
             }
-        } else {
+        } else if (thread == AutoRunHolder.NEWTHREAD) {
             new Thread(runnable).start();
+        } else {
+            runnable.run();
         }
     }
 }
