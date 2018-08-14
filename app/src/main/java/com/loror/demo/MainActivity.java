@@ -65,13 +65,15 @@ public class MainActivity extends LororActivity {
     }
 
     @AutoRun(when = AutoRunHolder.AFTERONCREATE, thread = AutoRunHolder.NEWTHREAD)
-    public void initData() {
+    public void initData(String result) {
+        Log.e("RESULT__", result + " ");
         Log.e("RESULT__", "initData" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
     }
 
     @AutoRun(when = AutoRunHolder.BEFOREMETHOD, relationMethod = "initData", thread = AutoRunHolder.MAINTHREAD)
-    public void before1() {
+    public String before1() {
         Log.e("RESULT__", "before1" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
+        return "传递参数，需和下一执行方法形参类型相同";
     }
 
     @AutoRun(when = AutoRunHolder.BEFOREMETHOD, relationMethod = "before1", thread = AutoRunHolder.NEWTHREAD)
