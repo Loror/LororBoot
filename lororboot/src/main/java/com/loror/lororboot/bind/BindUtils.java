@@ -18,7 +18,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.loror.lororUtil.image.ImageUtil;
+import com.loror.lororboot.annotation.AppendId;
 import com.loror.lororboot.annotation.Bind;
+import com.loror.lororboot.annotation.DisableItem;
 import com.loror.lororboot.startable.LororActivity;
 import com.loror.lororboot.startable.LororDialog;
 import com.loror.lororboot.startable.LororFragment;
@@ -30,36 +32,44 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BindUtils {
+
     /**
-     * 找到BIndAbleAdapter每一个item的BindHolder
+     * 找到BIndAble的BindHolder并初始化
      */
-    public static void findBindHoldersOfItem(List<BindHolder> bindHolders, final BindAble bindAble, View parent) {
-        bindHolders.clear();
-        Field[] fields = bindAble.getClass().getDeclaredFields();
-        if (fields != null) {
-            for (int i = 0; i < fields.length; ++i) {
-                final Field field = fields[i];
-                Bind bind = (Bind) field.getAnnotation(Bind.class);
-                if (bind != null) {
-                    field.setAccessible(true);
-                    View view = parent.findViewById(bind.id());
-                    if (view != null) {
-                        if (bind.visibility() != BindHolder.NOTCHANGE) {
-                            view.setVisibility(bind.visibility());
-                        }
-                        final BindHolder bindHolder = new BindHolder();
-                        bindHolder.view = view;
-                        bindHolder.field = field;
-                        bindHolder.format = bind.format().length() == 0 ? null : bind.format();
-                        bindHolder.event = bind.event().length() == 0 ? null : bind.event();
-                        bindHolder.empty = bind.empty().length() == 0 ? null : bind.empty();
-                        bindHolder.visibility = bind.visibility();
-                        bindHolder.imagePlace = bind.imagePlace();
-                        bindHolder.imageWidth = bind.imageWidth();
-                        bindHolder.onlyEvent = bind.onlyEvent();
-                        bindHolders.add(bindHolder);
-                    }
+    public static void findBindHoldersAndInit(List<BindHolder> bindHolders, final BindAble bindAble) {
+        findBindHolders(bindHolders, bindAble, null);
+        initHolders(bindHolders, bindAble, null);
+    }
+
+    /**
+     * 初始化BindHolder
+     */
+    public static void initHolders(List<BindHolder> bindHolders, final BindAble bindAble, Object tag) {
+        for (BindHolder bindHolder : bindHolders) {
+            bindHolder.setTag(tag);
+            if (bindHolder.visibility != BindHolder.NOTCHANGE) {
+                switch (bindHolder.visibility) {
+                    case View.VISIBLE:
+                        bindHolder.view.setVisibility(View.VISIBLE);
+                        break;
+                    case View.INVISIBLE:
+                        bindHolder.view.setVisibility(View.INVISIBLE);
+                        break;
+                    case View.GONE:
+                        bindHolder.view.setVisibility(View.GONE);
+                        break;
                 }
+            }
+            specialBinder(bindHolder, bindHolder.getView(), bindAble);
+            if (bindAble.onBindFind(bindHolder)) {
+                Object volume = getVolume(bindHolder, bindAble);
+                if (volume instanceof List) {
+                    bindHolder.compareTag = ((List) volume).size();
+                } else {
+                    bindHolder.compareTag = volume;
+                }
+            } else {
+                firstBinder(bindHolder, bindAble);
             }
         }
     }
@@ -67,7 +77,7 @@ public class BindUtils {
     /**
      * 找到BIndAble的BindHolder
      */
-    public static void findBindHolders(List<BindHolder> bindHolders, final BindAble bindAble) {
+    public static void findBindHolders(List<BindHolder> bindHolders, final BindAble bindAble, View parent) {
         bindHolders.clear();
         Field[] fields = bindAble.getClass().getDeclaredFields();
         if (fields != null) {
@@ -76,17 +86,8 @@ public class BindUtils {
                 Bind bind = (Bind) field.getAnnotation(Bind.class);
                 if (bind != null) {
                     field.setAccessible(true);
-                    View view = null;
                     int id = bind.id();
-                    if (bindAble instanceof LororActivity) {
-                        view = ((Activity) bindAble).findViewById(id);
-                    } else if (bindAble instanceof LororFragment) {
-                        view = ((LororFragment) bindAble).getView().findViewById(id);
-                    } else if (bindAble instanceof LororDialog) {
-                        view = ((LororDialog) bindAble).findViewById(id);
-                    } else if (bindAble instanceof FindViewAble) {
-                        view = ((FindViewAble) bindAble).findViewById(id);
-                    }
+                    View view = findViewById(id, bindAble, parent);
                     if (view != null) {
                         if (bind.visibility() != BindHolder.NOTCHANGE) {
                             view.setVisibility(bind.visibility());
@@ -101,22 +102,47 @@ public class BindUtils {
                         bindHolder.imagePlace = bind.imagePlace();
                         bindHolder.imageWidth = bind.imageWidth();
                         bindHolder.onlyEvent = bind.onlyEvent();
+                        bindHolder.disableItem = field.getAnnotation(DisableItem.class) != null;
                         bindHolders.add(bindHolder);
-                        specialBinder(bindHolder, view, bindAble);
-                        if (bindAble.onBindFind(bindHolder)) {
-                            Object volume = getVolume(bindHolder, bindAble);
-                            if (volume instanceof List) {
-                                bindHolder.compareTag = ((List) volume).size();
-                            } else {
-                                bindHolder.compareTag = volume;
+                        AppendId appendId = field.getAnnotation(AppendId.class);
+                        if (appendId != null) {
+                            int[] ids = appendId.id();
+                            boolean only = appendId.onlyEvent();
+                            int length = ids.length;
+                            for (int j = 0; j < length; j++) {
+                                view = findViewById(ids[j], bindAble, parent);
+                                if (view == null) {
+                                    continue;
+                                }
+                                BindHolder appendBindHolder = bindHolder.cloneOne();
+                                appendBindHolder.view = view;
+                                appendBindHolder.onlyEvent = only;
+                                bindHolders.add(bindHolder);
                             }
-                        } else {
-                            firstBinder(bindHolder, bindAble);
                         }
                     }
                 }
             }
         }
+    }
+
+    /**
+     * 查找
+     */
+    private static View findViewById(int id, BindAble bindAble, View parent) {
+        View view = null;
+        if (parent != null) {
+            view = parent.findViewById(id);
+        } else if (bindAble instanceof LororActivity) {
+            view = ((Activity) bindAble).findViewById(id);
+        } else if (bindAble instanceof LororFragment) {
+            view = ((LororFragment) bindAble).getView().findViewById(id);
+        } else if (bindAble instanceof LororDialog) {
+            view = ((LororDialog) bindAble).findViewById(id);
+        } else if (bindAble instanceof FindViewAble) {
+            view = ((FindViewAble) bindAble).findViewById(id);
+        }
+        return view;
     }
 
     /**
@@ -203,6 +229,9 @@ public class BindUtils {
                 }
                 if (list != null) {
                     BinderAdapter adapter = new BinderAdapter(view.getContext(), list, bindAble);
+                    if (bindHolder.disableItem) {
+                        adapter.setItemEnable(false);
+                    }
                     ((AbsListView) view).setAdapter(adapter);
                     view.setTag(id, adapter);
                     bindHolder.compareTag = list.size();

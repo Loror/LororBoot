@@ -17,6 +17,7 @@ public class BindHolder {
     protected int visibility = NOTCHANGE;
     protected int imagePlace;
     protected int imageWidth;
+    protected boolean disableItem;
     protected boolean onlyEvent;
     protected Object compareTag;
     private Object tag;
@@ -53,5 +54,20 @@ public class BindHolder {
         if (field.getType() == List.class || field.getType() == ArrayList.class) {
             compareTag = -1;
         }
+    }
+
+    protected BindHolder cloneOne(){
+        BindHolder clone = new BindHolder();
+        clone.view = view;
+        clone.field = field;
+        clone.format = format;
+        clone.event = event;
+        clone.empty = empty;
+        clone.visibility = visibility;
+        clone.imagePlace = imagePlace;
+        clone.imageWidth = imageWidth;
+        clone.onlyEvent = onlyEvent;
+        clone.disableItem = disableItem;
+        return clone;
     }
 }

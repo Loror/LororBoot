@@ -96,7 +96,7 @@ public class LororDialog extends AlertDialog implements StartDilogAble, BindAble
         super.onContentChanged();
         if (context instanceof LororActivity) {
             weakReference = new WeakReference<>((LororActivity) context);
-            BindUtils.findBindHolders(bindHolders, this);
+            BindUtils.findBindHoldersAndInit(bindHolders, this);
             ViewUtil.click(this);
             if (bindHolders.size() > 0) {
                 ((LororActivity) context).registerBinder(this);

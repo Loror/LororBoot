@@ -44,7 +44,7 @@ public class LororFragment extends Fragment implements StartDilogAble, BindAble,
         Activity activity = getActivity();
         if (activity instanceof LororActivity) {
             weakReference = new WeakReference<>((LororActivity) activity);
-            BindUtils.findBindHolders(bindHolders, this);
+            BindUtils.findBindHoldersAndInit(bindHolders, this);
             ViewUtil.click(this);
             if (bindHolders.size() > 0) {
                 ((LororActivity) activity).registerBinder(this);

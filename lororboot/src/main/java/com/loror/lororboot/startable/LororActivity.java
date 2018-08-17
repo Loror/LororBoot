@@ -93,7 +93,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     @Override
     public void onContentChanged() {
         super.onContentChanged();
-        BindUtils.findBindHolders(bindHolders, this);
+        BindUtils.findBindHoldersAndInit(bindHolders, this);
         ViewUtil.click(this);
         beginBind(this);
     }

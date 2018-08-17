@@ -1,7 +1,5 @@
 package com.loror.lororboot.bind;
 
-import android.view.View;
-
 import com.loror.lororUtil.view.ViewUtil;
 
 import java.util.LinkedList;
@@ -14,6 +12,10 @@ public abstract class BindAbleItem implements BindAble, DataChangeAble {
 
     public BindAble obtainOutBindAble() {
         return outBindAble;
+    }
+
+    public int obtainPosition() {
+        return position;
     }
 
     public abstract int getLayout();
@@ -77,7 +79,7 @@ public abstract class BindAbleItem implements BindAble, DataChangeAble {
         List<BindHolder> bindHolders;
         if (mark.convertView.getTag() == null) {
             bindHolders = new LinkedList<>();
-            BindUtils.findBindHoldersOfItem(bindHolders, this, mark.convertView);
+            BindUtils.findBindHolders(bindHolders, this, mark.convertView);
             mark.convertView.setTag(bindHolders);
         } else {
             bindHolders = (List<BindHolder>) mark.convertView.getTag();
@@ -85,42 +87,10 @@ public abstract class BindAbleItem implements BindAble, DataChangeAble {
         outBindAble = mark.bindAble;
         ViewUtil.click(this, mark.convertView);
         mark.parent = null;
-        resetHolder(bindHolders, mark.position);
         this.bindHolders = bindHolders;
         this.position = mark.position;
-    }
-
-    /**
-     * 刷新显示并触发事件，解决控件复用问题
-     */
-    private void resetHolder(List<BindHolder> bindHolders, int position) {
-        for (BindHolder bindHolder : bindHolders) {
-            bindHolder.setTag(position);
-            if (bindHolder.visibility != BindHolder.NOTCHANGE) {
-                switch (bindHolder.visibility) {
-                    case View.VISIBLE:
-                        bindHolder.view.setVisibility(View.VISIBLE);
-                        break;
-                    case View.INVISIBLE:
-                        bindHolder.view.setVisibility(View.INVISIBLE);
-                        break;
-                    case View.GONE:
-                        bindHolder.view.setVisibility(View.GONE);
-                        break;
-                }
-            }
-            BindUtils.specialBinder(bindHolder, bindHolder.view, this);
-            if (onBindFind(bindHolder)) {
-                Object volume = BindUtils.getVolume(bindHolder, this);
-                if (volume instanceof List) {
-                    bindHolder.compareTag = ((List) volume).size();
-                } else {
-                    bindHolder.compareTag = volume;
-                }
-            } else {
-                BindUtils.firstBinder(bindHolder, this);
-            }
-        }
+        //刷新显示并触发事件，解决控件复用问题
+        BindUtils.initHolders(bindHolders, this, mark.position);
     }
 
 }

@@ -19,6 +19,7 @@ public class BinderAdapter extends BaseAdapter {
     private boolean showEmpty;
     private String emptyString = "暂无数据";
     private BindAble bindAble;
+    private boolean itemEnable=true;
 
     public BinderAdapter(Context context, List list, BindAble bindAble) {
         this.context = context;
@@ -29,6 +30,15 @@ public class BinderAdapter extends BaseAdapter {
 
     public Context getContext() {
         return context;
+    }
+
+    public void setItemEnable(boolean itemEnable) {
+        this.itemEnable = itemEnable;
+    }
+
+    @Override
+    public boolean isEnabled(int position) {
+        return itemEnable;
     }
 
     public int count() {
