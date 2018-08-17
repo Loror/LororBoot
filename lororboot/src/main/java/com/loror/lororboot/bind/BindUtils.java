@@ -117,7 +117,7 @@ public class BindUtils {
                                 BindHolder appendBindHolder = bindHolder.cloneOne();
                                 appendBindHolder.view = view;
                                 appendBindHolder.onlyEvent = only;
-                                bindHolders.add(bindHolder);
+                                bindHolders.add(appendBindHolder);
                             }
                         }
                     }
