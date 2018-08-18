@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.loror.lororUtil.view.ViewUtil;
 import com.loror.lororboot.annotation.RunThread;
+import com.loror.lororboot.annotation.RunTime;
 import com.loror.lororboot.autoRun.AutoRunAble;
 import com.loror.lororboot.autoRun.AutoRunHolder;
 import com.loror.lororboot.autoRun.AutoRunUtil;
@@ -82,7 +83,7 @@ public class LororDialog extends AlertDialog implements StartDilogAble, BindAble
             if (size > 0) {
                 for (int i = 0; i < size; i++) {
                     AutoRunHolder holder = autoRunHolders.get(i);
-                    if (holder.getWhen() == AutoRunHolder.AFTERONCREATE) {
+                    if (holder.getWhen() == RunTime.AFTERONCREATE) {
                         AutoRunUtil.runAutoRunHolders(autoRunHolders, this);
                     }
                 }
@@ -255,7 +256,7 @@ public class LororDialog extends AlertDialog implements StartDilogAble, BindAble
         if (size > 0) {
             for (int i = 0; i < size; i++) {
                 AutoRunHolder holder = autoRunHolders.get(i);
-                if (holder.getWhen() == AutoRunHolder.USERCALL && holder.getMethodName().equals(methodName)) {
+                if (holder.getWhen() == RunTime.USERCALL && holder.getMethodName().equals(methodName)) {
                     AutoRunUtil.runAutoRunHolders(autoRunHolders, this);
                     break;
                 }
@@ -265,7 +266,7 @@ public class LororDialog extends AlertDialog implements StartDilogAble, BindAble
 
     @Override
     public void run(@RunThread int thread, Runnable runnable) {
-        if (thread == AutoRunHolder.MAINTHREAD) {
+        if (thread == RunThread.MAINTHREAD) {
             if (Looper.getMainLooper() == Looper.myLooper()) {
                 runnable.run();
             } else {
@@ -274,8 +275,10 @@ public class LororDialog extends AlertDialog implements StartDilogAble, BindAble
                 }
                 handler.post(runnable);
             }
-        } else {
+        } else if (thread == RunThread.NEWTHREAD) {
             new Thread(runnable).start();
+        } else {
+            runnable.run();
         }
     }
 }

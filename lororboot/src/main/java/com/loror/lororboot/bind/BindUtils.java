@@ -21,6 +21,7 @@ import com.loror.lororUtil.image.ImageUtil;
 import com.loror.lororboot.annotation.AppendId;
 import com.loror.lororboot.annotation.Bind;
 import com.loror.lororboot.annotation.DisableItem;
+import com.loror.lororboot.annotation.Visibility;
 import com.loror.lororboot.startable.LororActivity;
 import com.loror.lororboot.startable.LororDialog;
 import com.loror.lororboot.startable.LororFragment;
@@ -47,7 +48,7 @@ public class BindUtils {
     public static void initHolders(List<BindHolder> bindHolders, final BindAble bindAble, Object tag) {
         for (BindHolder bindHolder : bindHolders) {
             bindHolder.setTag(tag);
-            if (bindHolder.visibility != BindHolder.NOTCHANGE) {
+            if (bindHolder.visibility != Visibility.NOTCHANGE) {
                 switch (bindHolder.visibility) {
                     case View.VISIBLE:
                         bindHolder.view.setVisibility(View.VISIBLE);
@@ -89,7 +90,7 @@ public class BindUtils {
                     int id = bind.id();
                     View view = findViewById(id, bindAble, parent);
                     if (view != null) {
-                        if (bind.visibility() != BindHolder.NOTCHANGE) {
+                        if (bind.visibility() != Visibility.NOTCHANGE) {
                             view.setVisibility(bind.visibility());
                         }
                         final BindHolder bindHolder = new BindHolder();

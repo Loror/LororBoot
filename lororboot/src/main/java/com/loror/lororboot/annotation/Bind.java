@@ -1,9 +1,6 @@
 package com.loror.lororboot.annotation;
 
 import android.support.annotation.DrawableRes;
-
-import com.loror.lororboot.bind.BindHolder;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -25,7 +22,7 @@ public @interface Bind {
 
     int imageWidth() default 0;//指定ImageView缓存图宽度
 
-    @Visibility int visibility() default BindHolder.NOTCHANGE;//控件显示状态
+    @Visibility int visibility() default Visibility.NOTCHANGE;//控件显示状态
 
     boolean onlyEvent() default false;//是否不显示变量到控件只触发事件
 }

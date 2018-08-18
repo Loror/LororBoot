@@ -19,7 +19,7 @@ public class BinderAdapter extends BaseAdapter {
     private boolean showEmpty;
     private String emptyString = "暂无数据";
     private BindAble bindAble;
-    private boolean itemEnable=true;
+    private boolean itemEnable = true;
 
     public BinderAdapter(Context context, List list, BindAble bindAble) {
         this.context = context;

@@ -1,6 +1,7 @@
 package com.loror.lororboot.autoRun;
 
 import com.loror.lororboot.annotation.AutoRun;
+import com.loror.lororboot.annotation.RunTime;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -24,7 +25,7 @@ public class AutoRunUtil {
                 holder.relationMethod = run.relationMethod().length() == 0 ? null : run.relationMethod();
                 holder.thread = run.thread();
                 holder.method = method;
-                if (holder.when == AutoRunHolder.USERCALL || holder.when == AutoRunHolder.AFTERONCREATE) {
+                if (holder.when == RunTime.USERCALL || holder.when == RunTime.AFTERONCREATE) {
                     penetrations.add(holder);
                     methodNames.add(holder.methodName);
                 } else if (holder.relationMethod != null) {
@@ -51,9 +52,9 @@ public class AutoRunUtil {
                     do {
                         if (head.methodName.equals(holder.relationMethod)) {
                             remove.add(holder);
-                            if (holder.getWhen() == AutoRunHolder.BEFOREMETHOD) {
+                            if (holder.getWhen() == RunTime.BEFOREMETHOD) {
                                 head.insetPrevious(holder);
-                            } else if (holder.getWhen() == AutoRunHolder.AFTERMETHOD) {
+                            } else if (holder.getWhen() == RunTime.AFTERMETHOD) {
                                 head.addNext(holder);
                             }//建立切入点链表
                         }

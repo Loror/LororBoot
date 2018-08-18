@@ -10,6 +10,8 @@ import com.loror.lororUtil.view.Click;
 import com.loror.lororUtil.view.ItemClick;
 import com.loror.lororboot.annotation.AutoRun;
 import com.loror.lororboot.annotation.Bind;
+import com.loror.lororboot.annotation.RunThread;
+import com.loror.lororboot.annotation.RunTime;
 import com.loror.lororboot.autoRun.AutoRunHolder;
 import com.loror.lororboot.startable.LororActivity;
 
@@ -64,29 +66,29 @@ public class MainActivity extends LororActivity {
         Toast.makeText(this, "第" + position + "横幅点击", Toast.LENGTH_SHORT).show();
     }
 
-    @AutoRun(when = AutoRunHolder.AFTERONCREATE, thread = AutoRunHolder.NEWTHREAD)
+    @AutoRun(when = RunTime.AFTERONCREATE, thread = RunThread.NEWTHREAD)
     public void initData(String result) {
         Log.e("RESULT__", result + " ");
         Log.e("RESULT__", "initData" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
     }
 
-    @AutoRun(when = AutoRunHolder.BEFOREMETHOD, relationMethod = "initData", thread = AutoRunHolder.MAINTHREAD)
+    @AutoRun(when = RunTime.BEFOREMETHOD, relationMethod = "initData", thread = RunThread.MAINTHREAD)
     public String before1() {
         Log.e("RESULT__", "before1" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
         return "传递参数，需和下一执行方法形参类型相同";
     }
 
-    @AutoRun(when = AutoRunHolder.BEFOREMETHOD, relationMethod = "before1", thread = AutoRunHolder.NEWTHREAD)
+    @AutoRun(when = RunTime.BEFOREMETHOD, relationMethod = "before1", thread = RunThread.NEWTHREAD)
     public void before2() {
         Log.e("RESULT__", "before2" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
     }
 
-    @AutoRun(when = AutoRunHolder.AFTERMETHOD, relationMethod = "initData", thread = AutoRunHolder.NEWTHREAD)
+    @AutoRun(when = RunTime.AFTERMETHOD, relationMethod = "initData", thread = RunThread.NEWTHREAD)
     public void after1() {
         Log.e("RESULT__", "after1" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
     }
 
-    @AutoRun(when = AutoRunHolder.AFTERMETHOD, relationMethod = "after1", thread = AutoRunHolder.MAINTHREAD)
+    @AutoRun(when = RunTime.AFTERMETHOD, relationMethod = "after1", thread = RunThread.MAINTHREAD)
     public void after2() {
         Log.e("RESULT__", "after2" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
     }

@@ -2,19 +2,19 @@ package com.loror.lororboot.bind;
 
 import android.view.View;
 
+import com.loror.lororboot.annotation.Visibility;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BindHolder {
-    public static final int NOTCHANGE = -1;
 
     protected View view;
     protected String format;
     protected Field field;
     protected String event;
     protected String empty;
-    protected int visibility = NOTCHANGE;
+    protected int visibility = Visibility.NOTCHANGE;
     protected int imagePlace;
     protected int imageWidth;
     protected boolean disableItem;

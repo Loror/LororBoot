@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.loror.lororUtil.view.ViewUtil;
 import com.loror.lororboot.annotation.RunThread;
+import com.loror.lororboot.annotation.RunTime;
 import com.loror.lororboot.autoRun.AutoRunAble;
 import com.loror.lororboot.autoRun.AutoRunHolder;
 import com.loror.lororboot.autoRun.AutoRunUtil;
@@ -32,7 +33,6 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     protected Context context = this;
     private List<BindHolder> bindHolders = new LinkedList<>();
     private List<BindAble> registedBinders = new ArrayList<>();
-    private WeakReference<List<BindHolder>> weakReferenceList = new WeakReference<>(bindHolders);
     private WeakReference<List<BindAble>> weakReferenceBindAbleList = new WeakReference<>(registedBinders);
     private Runnable bindRunnable;
     private Handler handler;
@@ -54,15 +54,14 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
             if (size > 0) {
                 for (int i = 0; i < size; i++) {
                     AutoRunHolder holder = autoRunHolders.get(i);
-                    if (holder.getWhen() == AutoRunHolder.AFTERONCREATE) {
+                    if (holder.getWhen() == RunTime.AFTERONCREATE) {
                         AutoRunUtil.runAutoRunHolders(autoRunHolders, this);
                     }
                 }
             }
         }
         super.onResume();
-        List<BindHolder> bindHolders = weakReferenceList.get();
-        if (bindHolders != null) {
+        if (!isFinishing()) {
             for (BindHolder bindHolder : bindHolders) {
                 if (bindHolder.getView() instanceof BindAbleBannerView) {
                     ((BindAbleBannerView) bindHolder.getView()).startScrol();
@@ -74,12 +73,9 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     @Override
     protected void onPause() {
         super.onPause();
-        List<BindHolder> bindHolders = weakReferenceList.get();
-        if (bindHolders != null) {
-            for (BindHolder bindHolder : bindHolders) {
-                if (bindHolder.getView() instanceof BindAbleBannerView) {
-                    ((BindAbleBannerView) bindHolder.getView()).stopScrol();
-                }
+        for (BindHolder bindHolder : bindHolders) {
+            if (bindHolder.getView() instanceof BindAbleBannerView) {
+                ((BindAbleBannerView) bindHolder.getView()).stopScrol();
             }
         }
     }
@@ -127,9 +123,8 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
                 @Override
                 public void run() {
                     LororActivity activity = weakReference.get();
-                    List<BindHolder> bindHolders = weakReferenceList.get();
                     List<BindAble> registedBinders = weakReferenceBindAbleList.get();
-                    if (bindHolders != null && activity != null && !activity.isFinishing()) {
+                    if (activity != null && !activity.isFinishing()) {
                         if (bindHolders.size() > 0 || registedBinders.size() > 0) {
                             BindUtils.showBindHolders(bindHolders, activity);
                             if (registedBinders != null) {
@@ -145,9 +140,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
                             handler = null;
                         }
                     } else {
-                        if (bindHolders != null) {
-                            bindHolders.clear();
-                        }
+                        bindHolders.clear();
                         if (registedBinders != null) {
                             registedBinders.clear();
                         }
@@ -251,7 +244,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
         if (size > 0) {
             for (int i = 0; i < size; i++) {
                 AutoRunHolder holder = autoRunHolders.get(i);
-                if (holder.getWhen() == AutoRunHolder.USERCALL && holder.getMethodName().equals(methodName)) {
+                if (holder.getWhen() == RunTime.USERCALL && holder.getMethodName().equals(methodName)) {
                     AutoRunUtil.runAutoRunHolders(autoRunHolders, this);
                     break;
                 }
@@ -261,7 +254,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
 
     @Override
     public void run(@RunThread int thread, Runnable runnable) {
-        if (thread == AutoRunHolder.MAINTHREAD) {
+        if (thread == RunThread.MAINTHREAD) {
             if (Looper.getMainLooper() == Looper.myLooper()) {
                 runnable.run();
             } else {
@@ -270,7 +263,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
                 }
                 handler.post(runnable);
             }
-        } else if (thread == AutoRunHolder.NEWTHREAD) {
+        } else if (thread == RunThread.NEWTHREAD) {
             new Thread(runnable).start();
         } else {
             runnable.run();
