@@ -68,7 +68,16 @@ public class BindAbleBannerAdapter extends PagerAdapter {
      * 布局切换
      */
     protected void onViewSwitched(ViewGroup contanier, View view, int position) {
-        if (view instanceof ImageView) {
+        Object item = list.get(position);
+        if (item instanceof BindAbleItem) {
+            BindAbleItem bindAbleItem = (BindAbleItem) item;
+            BinderAdapter.Mark mark = new BinderAdapter.Mark();
+            mark.bindAble = this.bindAble;
+            mark.position = position;
+            mark.convertView = view;
+            mark.parent = contanier;
+            bindAbleItem.beginBind(mark);
+        } else {
             ImageUtil imageUtil = ImageUtil.with(context).from(String.valueOf(list.get(position))).to((ImageView) view);
             int width = widthLimit;
             if (width == 0) {
@@ -78,20 +87,7 @@ public class BindAbleBannerAdapter extends PagerAdapter {
             if (imagePlace != 0) {
                 imageUtil.setDefaultImage(imagePlace);
             }
-
             imageUtil.loadImage();
-        } else {
-            Object item = list.get(position);
-            if (!(item instanceof BindAbleItem)) {
-                throw new IllegalStateException("Banner只支持绑定List<? extends BindAbleItem>类型");
-            }
-            BindAbleItem bindAbleItem = (BindAbleItem) item;
-            BinderAdapter.Mark mark = new BinderAdapter.Mark();
-            mark.bindAble = this.bindAble;
-            mark.position = position;
-            mark.convertView = view;
-            mark.parent = contanier;
-            bindAbleItem.beginBind(mark);
         }
     }
 
