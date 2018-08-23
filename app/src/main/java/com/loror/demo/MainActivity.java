@@ -46,8 +46,8 @@ public class MainActivity extends LororActivity {
             listItems.add(item);
         }
         notifyListDataChangeById(R.id.listView);
-        listBanners.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1528450620939&di=535a27dfdf37d32e9a3aab71a1b6da4c&imgtype=0&src=http%3A%2F%2Fimg.taopic.com%2Fuploads%2Fallimg%2F121019%2F234917-121019231h258.jpg");
-        listBanners.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1528450648908&di=a1293186949b6145edb76256bb20ac54&imgtype=0&src=http%3A%2F%2Fimg07.tooopen.com%2Fimages%2F20170316%2Ftooopen_sy_201956178977.jpg");
+        listBanners.add("http://img05.tooopen.com/images/20150820/tooopen_sy_139205349641.jpg");
+        listBanners.add("http://i0.hdslb.com/bfs/archive/83a12dcbe6401c27e16a3333b1eba91191ac3c8e.jpg");
         notifyListDataChangeById(R.id.banner);
     }
 

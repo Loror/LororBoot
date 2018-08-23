@@ -13,5 +13,5 @@ public @interface AutoRun {
 
     String relationMethod() default "";//指定BEFOREMETHOD或AFTERMETHOD关联的方法
 
-    @RunThread int thread() default RunThread.CURENTTHREAD;//运行线程
+    @RunThread int thread() default RunThread.LASTTHREAD;//运行线程
 }

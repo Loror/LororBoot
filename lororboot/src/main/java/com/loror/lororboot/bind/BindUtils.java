@@ -291,7 +291,7 @@ public class BindUtils {
                         ((BindAbleBannerView) view).setPointView(pointView);
                     }
                     if (list.size() > 0) {
-                        BindAbleBannerAdapter adapter = new BindAbleBannerAdapter(view.getContext(), list, bindHolder.imagePlace, bindHolder.imageWidth);
+                        BindAbleBannerAdapter adapter = new BindAbleBannerAdapter(view.getContext(), list, bindHolder.imagePlace, bindHolder.imageWidth, bindAble);
                         ((BindAbleBannerView) view).setAdapter(adapter);
                     }
                     bindHolder.compareTag = list.size();
@@ -415,7 +415,7 @@ public class BindUtils {
                     }
                     List list = (List) volume;
                     if (list.size() > 0) {
-                        BindAbleBannerAdapter adapter = new BindAbleBannerAdapter(bindHolder.view.getContext(), list, bindHolder.imagePlace, bindHolder.imageWidth);
+                        BindAbleBannerAdapter adapter = new BindAbleBannerAdapter(bindHolder.view.getContext(), list, bindHolder.imagePlace, bindHolder.imageWidth, bindAble);
                         ((BindAbleBannerView) bindHolder.view).setAdapter(adapter);
                     }
                 }
