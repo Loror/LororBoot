@@ -80,7 +80,7 @@ public class BindAbleBannerAdapter extends PagerAdapter {
         } else {
             Object item = list.get(position);
             if (!(item instanceof BindAbleItem)) {
-                throw new IllegalStateException("AbsListView只支持绑定List<? extends BindAbleItem>类型");
+                throw new IllegalStateException("Banner只支持绑定List<? extends BindAbleItem>类型");
             }
             BindAbleItem bindAbleItem = (BindAbleItem) item;
             BinderAdapter.Mark mark = new BinderAdapter.Mark();
