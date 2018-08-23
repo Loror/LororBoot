@@ -64,6 +64,9 @@ public class BindAbleBannerAdapter extends PagerAdapter {
         return v;
     }
 
+    /**
+     * 布局切换
+     */
     protected void onViewSwitched(ViewGroup contanier, View view, int position) {
         if (view instanceof ImageView) {
             ImageUtil imageUtil = ImageUtil.with(context).from(String.valueOf(list.get(position))).to((ImageView) view);
@@ -111,7 +114,10 @@ public class BindAbleBannerAdapter extends PagerAdapter {
         return item;
     }
 
-    private View getItemView(ViewGroup container, int position) {
+    /**
+     * 生成布局
+     */
+    protected View getItemView(ViewGroup container, int position) {
         Object item = list.get(position);
         if (item instanceof BindAbleItem) {
             return LayoutInflater.from(context).inflate(((BindAbleItem) item).getLayout(), container, false);
