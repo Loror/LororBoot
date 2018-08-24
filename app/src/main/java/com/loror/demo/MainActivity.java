@@ -66,31 +66,40 @@ public class MainActivity extends LororActivity {
         Toast.makeText(this, "第" + position + "横幅点击", Toast.LENGTH_SHORT).show();
     }
 
-    @AutoRun(when = RunTime.AFTERONCREATE, thread = RunThread.NEWTHREAD)
+    //oncreate后自动执行
+    @AutoRun(when = RunTime.AFTERONCREATE, thread = RunThread.LASTTHREAD)
     public void initData(String result) {
-        Log.e("RESULT__", result + " ");
-        Log.e("RESULT__", "initData" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
+        Log.e("AUTO_RUN", result + " ");
+        Log.e("AUTO_RUN", "initData" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
     }
 
-    @AutoRun(when = RunTime.BEFOREMETHOD, relationMethod = "initData", thread = RunThread.MAINTHREAD)
-    public String before1() {
-        Log.e("RESULT__", "before1" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
+    @AutoRun(when = RunTime.BEFOREMETHOD, relationMethod = "initData", thread = RunThread.NEWTHREAD)
+    public String beforeCreate() {
+        Log.e("AUTO_RUN", "beforeCreate" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
         return "传递参数，需和下一执行方法形参类型相同";
     }
 
-    @AutoRun(when = RunTime.BEFOREMETHOD, relationMethod = "before1", thread = RunThread.NEWTHREAD)
-    public void before2() {
-        Log.e("RESULT__", "before2" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
+    @AutoRun(when = RunTime.AFTERMETHOD, relationMethod = "initData", thread = RunThread.MAINTHREAD)
+    public void afterCreate() {
+        Log.e("AUTO_RUN", "afterCreate" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
     }
 
-    @AutoRun(when = RunTime.AFTERMETHOD, relationMethod = "initData", thread = RunThread.NEWTHREAD)
-    public void after1() {
-        Log.e("RESULT__", "after1" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
+    //ondestroy前自动执行
+    @AutoRun(when = RunTime.BEFOREONDESTROY, thread = RunThread.MAINTHREAD)
+    public void destroyData(String result) {
+        Log.e("AUTO_RUN", result + " ");
+        Log.e("AUTO_RUN", "destroyData" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
     }
 
-    @AutoRun(when = RunTime.AFTERMETHOD, relationMethod = "after1", thread = RunThread.MAINTHREAD)
-    public void after2() {
-        Log.e("RESULT__", "after2" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
+    @AutoRun(when = RunTime.BEFOREMETHOD, relationMethod = "destroyData", thread = RunThread.NEWTHREAD)
+    public String beforeDestroy() {
+        Log.e("AUTO_RUN", "beforeDestroy" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
+        return "传递参数，需和下一执行方法形参类型相同";
+    }
+
+    @AutoRun(when = RunTime.AFTERMETHOD, relationMethod = "destroyData", thread = RunThread.LASTTHREAD)
+    public void afterDestroy() {
+        Log.e("AUTO_RUN", "afterDestroy" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
     }
 
 }

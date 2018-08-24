@@ -69,6 +69,9 @@ public class LororDialog extends AlertDialog implements StartDilogAble, BindAble
                     result.result(requestCode, resultCode, data);
                 }
                 LororDialog.this.onDismiss();
+                if (intent != null) {
+                    LororDialog.this.onDestroy();
+                }
             }
         });
         autoRunHolders = AutoRunUtil.findAutoRunHolders(this);
@@ -89,7 +92,34 @@ public class LororDialog extends AlertDialog implements StartDilogAble, BindAble
                 }
             }
         }
+        LororActivity activity = weakReference == null ? null : weakReference.get();
+        if (activity != null) {
+            if (bindHolders.size() > 0) {
+                activity.registerBinder(this);
+            }
+        }
         super.onStart();
+    }
+
+    protected void onDestroy() {
+        int size = autoRunHolders.size();
+        if (size > 0) {
+            for (int i = 0; i < size; i++) {
+                AutoRunHolder holder = autoRunHolders.get(i);
+                if (holder.getWhen() == RunTime.BEFOREONDESTROY) {
+                    AutoRunUtil.runAutoRunHolders(autoRunHolders, this);
+                }
+            }
+        }
+        bindHolders.clear();
+        autoRunHolders.clear();
+    }
+
+    protected void onDismiss() {
+        LororActivity activity = weakReference == null ? null : weakReference.get();
+        if (activity != null) {
+            activity.unRegisterBinder(this);
+        }
     }
 
     @Override
@@ -102,13 +132,6 @@ public class LororDialog extends AlertDialog implements StartDilogAble, BindAble
             if (bindHolders.size() > 0) {
                 ((LororActivity) context).registerBinder(this);
             }
-        }
-    }
-
-    protected void onDismiss() {
-        LororActivity activity = weakReference == null ? null : weakReference.get();
-        if (activity != null) {
-            activity.unRegisterBinder(this);
         }
     }
 

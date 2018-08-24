@@ -75,6 +75,7 @@ public class LororFragment extends Fragment implements StartDilogAble, BindAble,
             }
         }
         super.onResume();
+        //banner恢复滚动
         LororActivity activity = weakReference == null ? null : weakReference.get();
         if (activity != null) {
             for (BindHolder bindHolder : bindHolders) {
@@ -86,8 +87,19 @@ public class LororFragment extends Fragment implements StartDilogAble, BindAble,
     }
 
     @Override
+    public void onStart() {
+        LororActivity activity = weakReference == null ? null : weakReference.get();
+        if (activity != null) {
+            if (bindHolders.size() > 0) {
+                activity.registerBinder(this);
+            }
+        }
+        super.onStart();
+    }
+
+    @Override
     public void onPause() {
-        super.onPause();
+        //banner停止滚动
         LororActivity activity = weakReference == null ? null : weakReference.get();
         if (activity != null) {
             for (BindHolder bindHolder : bindHolders) {
@@ -96,14 +108,30 @@ public class LororFragment extends Fragment implements StartDilogAble, BindAble,
                 }
             }
         }
+        super.onPause();
     }
 
     @Override
-    public void onDestroy() {
+    public void onStop() {
         LororActivity activity = weakReference == null ? null : weakReference.get();
         if (activity != null) {
             activity.unRegisterBinder(this);
         }
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        int size = autoRunHolders.size();
+        if (size > 0) {
+            for (int i = 0; i < size; i++) {
+                AutoRunHolder holder = autoRunHolders.get(i);
+                if (holder.getWhen() == RunTime.BEFOREONDESTROY) {
+                    AutoRunUtil.runAutoRunHolders(autoRunHolders, this);
+                }
+            }
+        }
+        bindHolders.clear();
         autoRunHolders.clear();
         super.onDestroy();
     }

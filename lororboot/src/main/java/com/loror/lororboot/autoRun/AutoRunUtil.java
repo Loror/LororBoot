@@ -25,7 +25,7 @@ public class AutoRunUtil {
                 holder.relationMethod = run.relationMethod().length() == 0 ? null : run.relationMethod();
                 holder.thread = run.thread();
                 holder.method = method;
-                if (holder.when == RunTime.USERCALL || holder.when == RunTime.AFTERONCREATE) {
+                if (holder.when == RunTime.USERCALL || holder.when == RunTime.AFTERONCREATE || holder.when == RunTime.BEFOREONDESTROY) {
                     penetrations.add(holder);
                     methodNames.add(holder.methodName);
                 } else if (holder.relationMethod != null) {

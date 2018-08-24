@@ -61,6 +61,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
             }
         }
         super.onResume();
+        //banner恢复滚动
         if (!isFinishing()) {
             for (BindHolder bindHolder : bindHolders) {
                 if (bindHolder.getView() instanceof BindAbleBannerView) {
@@ -72,16 +73,27 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
 
     @Override
     protected void onPause() {
-        super.onPause();
+        //banner停止滚动
         for (BindHolder bindHolder : bindHolders) {
             if (bindHolder.getView() instanceof BindAbleBannerView) {
                 ((BindAbleBannerView) bindHolder.getView()).stopScrol();
             }
         }
+        super.onPause();
     }
 
     @Override
     protected void onDestroy() {
+        int size = autoRunHolders.size();
+        if (size > 0) {
+            for (int i = 0; i < size; i++) {
+                AutoRunHolder holder = autoRunHolders.get(i);
+                if (holder.getWhen() == RunTime.BEFOREONDESTROY) {
+                    AutoRunUtil.runAutoRunHolders(autoRunHolders, this);
+                }
+            }
+        }
+        bindHolders.clear();
         autoRunHolders.clear();
         super.onDestroy();
     }
