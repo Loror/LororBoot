@@ -66,6 +66,37 @@ public class AutoRunUtil {
         return penetrations;
     }
 
+    /**
+     * 执行指定切入点名字AutoRun(仅USERCALL)
+     */
+    public static void runAutoRunHolderByPenetration(String penetrationName, List<AutoRunHolder> autoRunHolders, AutoRunAble autoRunAble) {
+        int size = autoRunHolders.size();
+        if (size > 0) {
+            for (int i = 0; i < size; i++) {
+                AutoRunHolder holder = autoRunHolders.get(i);
+                if (holder.getWhen() == RunTime.USERCALL && holder.getMethodName().equals(penetrationName)) {
+                    AutoRunUtil.runAutoRunHolders(holder, autoRunAble);
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * 执行指定切入点AutoRun(USERCALL,AFTERONCREATE,BEFOREONDESTROY)
+     */
+    public static void runAutoRunHolderByPenetration(@RunTime int when, List<AutoRunHolder> autoRunHolders, AutoRunAble autoRunAble) {
+        int size = autoRunHolders.size();
+        if (size > 0) {
+            for (int i = 0; i < size; i++) {
+                AutoRunHolder holder = autoRunHolders.get(i);
+                if (holder.getWhen() == when) {
+                    AutoRunUtil.runAutoRunHolders(holder, autoRunAble);
+                }
+            }
+        }
+    }
+
     //运行AutoRun
     public static void runAutoRunHolders(AutoRunHolder penetration, final AutoRunAble autoRunAble) {
         final Object[] result = new Object[1];

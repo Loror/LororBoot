@@ -20,10 +20,10 @@ import com.loror.lororboot.annotation.RunTime;
 import com.loror.lororboot.autoRun.AutoRunAble;
 import com.loror.lororboot.autoRun.AutoRunHolder;
 import com.loror.lororboot.autoRun.AutoRunUtil;
-import com.loror.lororboot.bind.BindAble;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.bind.BindUtils;
 import com.loror.lororboot.bind.DataChangeAble;
+import com.loror.lororboot.dataChange.DataChangeUtils;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class LororDialog extends AlertDialog implements StartDilogAble, BindAble, DataChangeAble, AutoRunAble {
+public class LororDialog extends AlertDialog implements StartDilogAble, DataChangeAble, AutoRunAble {
 
     protected static final int RESULT_OK = -1;
     protected static final int RESULT_CANCEL = 0;
@@ -82,15 +82,7 @@ public class LororDialog extends AlertDialog implements StartDilogAble, BindAble
     protected void onStart() {
         if (createState == 1) {
             createState = 2;
-            int size = autoRunHolders.size();
-            if (size > 0) {
-                for (int i = 0; i < size; i++) {
-                    AutoRunHolder holder = autoRunHolders.get(i);
-                    if (holder.getWhen() == RunTime.AFTERONCREATE) {
-                        AutoRunUtil.runAutoRunHolders(holder, this);
-                    }
-                }
-            }
+            AutoRunUtil.runAutoRunHolderByPenetration(RunTime.AFTERONCREATE, autoRunHolders, this);
         }
         LororActivity activity = weakReference == null ? null : weakReference.get();
         if (activity != null) {
@@ -102,15 +94,7 @@ public class LororDialog extends AlertDialog implements StartDilogAble, BindAble
     }
 
     protected void onDestroy() {
-        int size = autoRunHolders.size();
-        if (size > 0) {
-            for (int i = 0; i < size; i++) {
-                AutoRunHolder holder = autoRunHolders.get(i);
-                if (holder.getWhen() == RunTime.BEFOREONDESTROY) {
-                    AutoRunUtil.runAutoRunHolders(holder, this);
-                }
-            }
-        }
+        AutoRunUtil.runAutoRunHolderByPenetration(RunTime.BEFOREONDESTROY, autoRunHolders, this);
         bindHolders.clear();
         autoRunHolders.clear();
     }
@@ -159,38 +143,16 @@ public class LororDialog extends AlertDialog implements StartDilogAble, BindAble
 
     @Override
     public void setData(int id, Object value) {
-        BindHolder holder = BindUtils.findHolderById(bindHolders, id);
-        if (holder != null) {
-            holder.getField().setAccessible(true);
-            try {
-                holder.getField().set(this, value);
-                BindUtils.showBindHolder(holder, this);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
+        DataChangeUtils.setData(id, value, null, bindHolders, this);
     }
 
     @Override
     public void setData(String fieldName, Object value) {
-        BindHolder holder = BindUtils.findHolderByName(bindHolders, fieldName);
-        if (holder != null) {
-            holder.getField().setAccessible(true);
-            try {
-                holder.getField().set(this, value);
-                BindUtils.showBindHolder(holder, this);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
+        DataChangeUtils.setData(fieldName, value, null, bindHolders, this);
     }
 
     public void notifyListDataChangeById(@IdRes int id) {
-        BindHolder bindHolder = BindUtils.findHolderById(bindHolders, id);
-        if (bindHolder != null) {
-            bindHolder.resetListCompareTag();
-            BindUtils.showBindHolder(bindHolder, this);
-        }
+        DataChangeUtils.notifyListDataChangeById(id, null, bindHolders, this);
     }
 
     public void putIntent(Intent intent) {
@@ -275,16 +237,7 @@ public class LororDialog extends AlertDialog implements StartDilogAble, BindAble
 
     @Override
     public void runUserAutoRun(String methodName) {
-        int size = autoRunHolders.size();
-        if (size > 0) {
-            for (int i = 0; i < size; i++) {
-                AutoRunHolder holder = autoRunHolders.get(i);
-                if (holder.getWhen() == RunTime.USERCALL && holder.getMethodName().equals(methodName)) {
-                    AutoRunUtil.runAutoRunHolders(holder, this);
-                    break;
-                }
-            }
-        }
+        AutoRunUtil.runAutoRunHolderByPenetration(methodName, autoRunHolders, this);
     }
 
     @Override

@@ -1,11 +1,12 @@
 package com.loror.lororboot.bind;
 
 import com.loror.lororUtil.view.ViewUtil;
+import com.loror.lororboot.dataChange.DataChangeUtils;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class BindAbleItem implements BindAble, DataChangeAble {
+public abstract class BindAbleItem implements DataChangeAble {
     private transient BindAble outBindAble;
     private transient List<BindHolder> bindHolders;
     private transient int position;
@@ -32,45 +33,17 @@ public abstract class BindAbleItem implements BindAble, DataChangeAble {
 
     @Override
     public void setData(int id, Object value) {
-        BindHolder holder = BindUtils.findHolderById(bindHolders, id);
-        if (holder != null) {
-            holder.getField().setAccessible(true);
-            try {
-                holder.getField().set(this, value);
-                if (holder.getTag() instanceof Integer && (Integer) holder.getTag() == position) {
-                    BindUtils.showBindHolder(holder, this);
-                }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
+        DataChangeUtils.setData(id, value, position, bindHolders, this);
     }
 
     @Override
     public void setData(String fieldName, Object value) {
-        BindHolder holder = BindUtils.findHolderByName(bindHolders, fieldName);
-        if (holder != null) {
-            holder.getField().setAccessible(true);
-            try {
-                holder.getField().set(this, value);
-                if (holder.getTag() instanceof Integer && (Integer) holder.getTag() == position) {
-                    BindUtils.showBindHolder(holder, this);
-                }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
+        DataChangeUtils.setData(fieldName, value, position, bindHolders, this);
     }
 
     @Override
     public void notifyListDataChangeById(int id) {
-        BindHolder bindHolder = BindUtils.findHolderById(bindHolders, id);
-        if (bindHolder != null) {
-            bindHolder.resetListCompareTag();
-            if (bindHolder.getTag() instanceof Integer && (Integer) bindHolder.getTag() == position) {
-                BindUtils.showBindHolder(bindHolder, this);
-            }
-        }
+        DataChangeUtils.notifyListDataChangeById(id, position, bindHolders, this);
     }
 
     @Override

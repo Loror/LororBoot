@@ -2,7 +2,7 @@ package com.loror.lororboot.bind;
 
 import android.support.annotation.IdRes;
 
-public interface DataChangeAble {
+public interface DataChangeAble extends BindAble {
     /**
      * 修改数据并刷新
      */
