@@ -69,7 +69,7 @@ public class LororFragment extends Fragment implements StartDilogAble, BindAble,
                 for (int i = 0; i < size; i++) {
                     AutoRunHolder holder = autoRunHolders.get(i);
                     if (holder.getWhen() == RunTime.AFTERONCREATE) {
-                        AutoRunUtil.runAutoRunHolders(autoRunHolders, this);
+                        AutoRunUtil.runAutoRunHolders(holder, this);
                     }
                 }
             }
@@ -127,7 +127,7 @@ public class LororFragment extends Fragment implements StartDilogAble, BindAble,
             for (int i = 0; i < size; i++) {
                 AutoRunHolder holder = autoRunHolders.get(i);
                 if (holder.getWhen() == RunTime.BEFOREONDESTROY) {
-                    AutoRunUtil.runAutoRunHolders(autoRunHolders, this);
+                    AutoRunUtil.runAutoRunHolders(holder, this);
                 }
             }
         }
@@ -247,7 +247,7 @@ public class LororFragment extends Fragment implements StartDilogAble, BindAble,
             for (int i = 0; i < size; i++) {
                 AutoRunHolder holder = autoRunHolders.get(i);
                 if (holder.getWhen() == RunTime.USERCALL && holder.getMethodName().equals(methodName)) {
-                    AutoRunUtil.runAutoRunHolders(autoRunHolders, this);
+                    AutoRunUtil.runAutoRunHolders(holder, this);
                     break;
                 }
             }

@@ -67,39 +67,36 @@ public class AutoRunUtil {
     }
 
     //运行AutoRun
-    public static void runAutoRunHolders(List<AutoRunHolder> penetrations, final AutoRunAble autoRunAble) {
-        int size = penetrations.size();
-        for (int i = 0; i < size; i++) {
-            final Object[] result = new Object[1];
-            final AutoRunHolder[] head = new AutoRunHolder[]{penetrations.get(i).getLinkHead()};
-            autoRunAble.run(head[0].thread, new Runnable() {
-                @Override
-                public void run() {
-                    head[0].getMethod().setAccessible(true);
-                    try {
-                        Class<?>[] parmas = head[0].method.getParameterTypes();
-                        if (parmas == null || parmas.length == 0) {
-                            result[0] = head[0].method.invoke(autoRunAble);
-                        } else if (parmas.length == 1) {
-                            try {
-                                result[0] = head[0].method.invoke(autoRunAble, result[0]);
-                            } catch (IllegalArgumentException e) {
-                                throw new IllegalArgumentException(head[0].methodName + "方法所需参数与其绑定的前一个方法" + (head[0].previous != null ? head[0].previous.methodName : "") + "返回参数不匹配");
-                            }
-                        } else {
-                            throw new IllegalArgumentException("不允许方法包含两个及以上参数");
+    public static void runAutoRunHolders(AutoRunHolder penetration, final AutoRunAble autoRunAble) {
+        final Object[] result = new Object[1];
+        final AutoRunHolder[] head = new AutoRunHolder[]{penetration.getLinkHead()};
+        autoRunAble.run(head[0].thread, new Runnable() {
+            @Override
+            public void run() {
+                head[0].getMethod().setAccessible(true);
+                try {
+                    Class<?>[] parmas = head[0].method.getParameterTypes();
+                    if (parmas == null || parmas.length == 0) {
+                        result[0] = head[0].method.invoke(autoRunAble);
+                    } else if (parmas.length == 1) {
+                        try {
+                            result[0] = head[0].method.invoke(autoRunAble, result[0]);
+                        } catch (IllegalArgumentException e) {
+                            throw new IllegalArgumentException(head[0].methodName + "方法所需参数与其绑定的前一个方法" + (head[0].previous != null ? head[0].previous.methodName : "") + "返回参数不匹配");
                         }
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
+                    } else {
+                        throw new IllegalArgumentException("不允许方法包含两个及以上参数");
                     }
-                    if (head[0].next != null) {
-                        head[0] = head[0].next;
-                        autoRunAble.run(head[0].thread, this);
-                    }
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
                 }
-            });
-        }
+                if (head[0].next != null) {
+                    head[0] = head[0].next;
+                    autoRunAble.run(head[0].thread, this);
+                }
+            }
+        });
     }
 }
