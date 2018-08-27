@@ -48,21 +48,9 @@ public class BindUtils {
     public static void initHolders(List<BindHolder> bindHolders, final BindAble bindAble, Object tag) {
         for (BindHolder bindHolder : bindHolders) {
             bindHolder.setTag(tag);
-            if (bindHolder.visibility != Visibility.NOTCHANGE) {
-                switch (bindHolder.visibility) {
-                    case View.VISIBLE:
-                        bindHolder.view.setVisibility(View.VISIBLE);
-                        break;
-                    case View.INVISIBLE:
-                        bindHolder.view.setVisibility(View.INVISIBLE);
-                        break;
-                    case View.GONE:
-                        bindHolder.view.setVisibility(View.GONE);
-                        break;
-                }
-            }
+            boolean interrupt = bindAble.onBindFind(bindHolder);
             specialBinder(bindHolder, bindHolder.getView(), bindAble);
-            if (bindAble.onBindFind(bindHolder)) {
+            if (interrupt) {
                 Object volume = getVolume(bindHolder, bindAble);
                 if (volume instanceof List) {
                     bindHolder.compareTag = ((List) volume).size();
@@ -70,6 +58,19 @@ public class BindUtils {
                     bindHolder.compareTag = volume;
                 }
             } else {
+                if (bindHolder.visibility != Visibility.NOTCHANGE) {
+                    switch (bindHolder.visibility) {
+                        case View.VISIBLE:
+                            bindHolder.view.setVisibility(View.VISIBLE);
+                            break;
+                        case View.INVISIBLE:
+                            bindHolder.view.setVisibility(View.INVISIBLE);
+                            break;
+                        case View.GONE:
+                            bindHolder.view.setVisibility(View.GONE);
+                            break;
+                    }
+                }
                 firstBinder(bindHolder, bindAble);
             }
         }
