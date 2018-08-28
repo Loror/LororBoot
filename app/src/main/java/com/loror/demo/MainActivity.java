@@ -12,7 +12,7 @@ import com.loror.lororboot.annotation.AutoRun;
 import com.loror.lororboot.annotation.Bind;
 import com.loror.lororboot.annotation.RunThread;
 import com.loror.lororboot.annotation.RunTime;
-import com.loror.lororboot.autoRun.AutoRunHolder;
+import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.startable.LororActivity;
 
 import java.util.ArrayList;
@@ -51,6 +51,17 @@ public class MainActivity extends LororActivity {
         notifyListDataChangeById(R.id.banner);
     }
 
+    @Override
+    public boolean onBindFind(BindHolder holder) {
+        //Bind注解被找到时调用，可通过holder.getView().getId()比较id来确认是哪一个Bind，若返回true会拦截后续自动显示事件
+        return super.onBindFind(holder);
+    }
+
+    @Override
+    public void event(BindHolder holder, String oldValue, String newValue) {
+        //Bind注解若注册了event属性，在变量改变时会自动调用该方法,可比较holder.getEvent()值来处理相应事件
+    }
+
     @Click(id = R.id.button)
     public void buttonClick(View view) {
         Toast.makeText(this, doubleBindText, Toast.LENGTH_SHORT).show();
@@ -66,7 +77,7 @@ public class MainActivity extends LororActivity {
         Toast.makeText(this, "第" + position + "横幅点击", Toast.LENGTH_SHORT).show();
     }
 
-    //oncreate后自动执行
+    //RunTime.AFTERONCREATE,oncreate后自动执行;RunTime.BEFOREONDESTROY,ondestroy前自动执行;RunTime.USERCALL,用户主动通过切入点方法名调用
     @AutoRun(when = RunTime.AFTERONCREATE, thread = RunThread.LASTTHREAD)
     public void initData(String result) {
         Log.e("AUTO_RUN", result + " ");
@@ -82,24 +93,6 @@ public class MainActivity extends LororActivity {
     @AutoRun(when = RunTime.AFTERMETHOD, relationMethod = "initData", thread = RunThread.MAINTHREAD)
     public void afterCreate() {
         Log.e("AUTO_RUN", "afterCreate" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
-    }
-
-    //ondestroy前自动执行
-    @AutoRun(when = RunTime.BEFOREONDESTROY, thread = RunThread.MAINTHREAD)
-    public void destroyData(String result) {
-        Log.e("AUTO_RUN", result + " ");
-        Log.e("AUTO_RUN", "destroyData" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
-    }
-
-    @AutoRun(when = RunTime.BEFOREMETHOD, relationMethod = "destroyData", thread = RunThread.NEWTHREAD)
-    public String beforeDestroy() {
-        Log.e("AUTO_RUN", "beforeDestroy" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
-        return "传递参数，需和下一执行方法形参类型相同";
-    }
-
-    @AutoRun(when = RunTime.AFTERMETHOD, relationMethod = "destroyData", thread = RunThread.LASTTHREAD)
-    public void afterDestroy() {
-        Log.e("AUTO_RUN", "afterDestroy" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
     }
 
 }
