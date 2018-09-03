@@ -191,7 +191,7 @@ public class BindUtils {
                         } else if (type == CharSequence.class) {
                             field.set(bindAble, bindHolder.compareTag = s);
                         } else {
-                            throw new IllegalStateException("EditText为双向绑定，只支持属性为String，CharSequence，Integer，Long，Float，Double类型");
+                            throw new IllegalStateException("EditText为双向绑定，只支持属性为String，CharSequence，Integer，Long，Float，Double类型(" + bindAble.getClass().getName() + "->" + field.getName() + ")");
                         }
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
@@ -203,7 +203,7 @@ public class BindUtils {
         } else if (view instanceof CheckBox) {
             Class<?> type = field.getType();
             if (type != boolean.class && type != Boolean.class) {
-                throw new IllegalStateException("CheckBox为双向绑定，只支持绑定Boolean类型");
+                throw new IllegalStateException("CheckBox为双向绑定，只支持绑定Boolean类型(" + bindAble.getClass().getName() + "->" + field.getName() + ")");
             }
             ((CheckBox) view).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -218,7 +218,7 @@ public class BindUtils {
         } else if (view instanceof ProgressBar) {
             Class<?> type = field.getType();
             if (type != Integer.class && type != Long.class && type != int.class && type != long.class) {
-                throw new IllegalStateException("ProgressBar只支持绑定Integer,Long类型");
+                throw new IllegalStateException("ProgressBar只支持绑定Integer,Long类型(" + bindAble.getClass().getName() + "->" + field.getName() + ")");
             }
         } else if (view instanceof AbsListView) {
             Class<?> type = field.getType();
@@ -242,10 +242,10 @@ public class BindUtils {
                         adapter.setEmptyString(bindHolder.empty);
                     }
                 } else {
-                    throw new IllegalStateException("AbsListView绑定的List<? extends BindAbleItem>不能为null");
+                    throw new IllegalStateException("AbsListView绑定的List<? extends BindAbleItem>不能为null(" + bindAble.getClass().getName() + "->" + field.getName() + ")");
                 }
             } else {
-                throw new IllegalStateException("AbsListView只支持绑定List<? extends BindAbleItem>类型");
+                throw new IllegalStateException("AbsListView只支持绑定List<? extends BindAbleItem>类型(" + bindAble.getClass().getName() + "->" + field.getName() + ")");
             }
         } else if (view instanceof RecyclerView) {
             Class<?> type = field.getType();
@@ -262,10 +262,10 @@ public class BindUtils {
                     view.setTag(id, adapter);
                     bindHolder.compareTag = list.size();
                 } else {
-                    throw new IllegalStateException("RecyclerView绑定的List<? extends BindAbleItem>不能为null");
+                    throw new IllegalStateException("RecyclerView绑定的List<? extends BindAbleItem>不能为null(" + bindAble.getClass().getName() + "->" + field.getName() + ")");
                 }
             } else {
-                throw new IllegalStateException("RecyclerView只支持绑定List<? extends BindAbleItem>类型");
+                throw new IllegalStateException("RecyclerView只支持绑定List<? extends BindAbleItem>类型(" + bindAble.getClass().getName() + "->" + field.getName() + ")");
             }
         } else if (view instanceof BindAbleBannerView) {
             Class<?> type = field.getType();
@@ -297,10 +297,10 @@ public class BindUtils {
                     }
                     bindHolder.compareTag = list.size();
                 } else {
-                    throw new IllegalStateException("BindAbleBannerView绑定的List<?>不能为null");
+                    throw new IllegalStateException("BindAbleBannerView绑定的List<?>不能为null(" + bindAble.getClass().getName() + "->" + field.getName() + ")");
                 }
             } else {
-                throw new IllegalStateException("BindAbleBannerViewPager只支持绑定List<?>类型");
+                throw new IllegalStateException("BindAbleBannerViewPager只支持绑定List<?>类型(" + bindAble.getClass().getName() + "->" + field.getName() + ")");
             }
         }
     }
@@ -412,7 +412,7 @@ public class BindUtils {
                     adapter.notifyDataSetChanged();
                 } else if (bindHolder.view instanceof BindAbleBannerView) {
                     if (volume == null) {
-                        throw new IllegalStateException("BindAbleBannerView绑定的List<?>不能为null");
+                        throw new IllegalStateException("BindAbleBannerView绑定的List<?>不能为null(" + bindAble.getClass().getName() + "->" + bindHolder.field.getName() + ")");
                     }
                     List list = (List) volume;
                     if (list.size() > 0) {
