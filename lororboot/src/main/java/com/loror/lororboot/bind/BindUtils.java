@@ -16,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import com.loror.lororUtil.image.ImageUtil;
 import com.loror.lororboot.annotation.AppendId;
 import com.loror.lororboot.annotation.Bind;
@@ -27,7 +26,6 @@ import com.loror.lororboot.startable.LororDialog;
 import com.loror.lororboot.startable.LororFragment;
 import com.loror.lororboot.views.BindAbleBannerView;
 import com.loror.lororboot.views.BindAblePointView;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
