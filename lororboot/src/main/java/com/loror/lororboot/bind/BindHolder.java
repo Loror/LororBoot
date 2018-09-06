@@ -42,6 +42,14 @@ public class BindHolder {
         return format;
     }
 
+    public void setEmpty(String empty) {
+        this.empty = empty;
+    }
+
+    public String getEmpty() {
+        return empty;
+    }
+
     public void setTag(Object tag) {
         this.tag = tag;
     }
