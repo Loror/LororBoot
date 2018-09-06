@@ -83,7 +83,7 @@ public abstract class HolderbaseAdapter<T extends HolderbaseAdapter.BaseViewHold
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    onEmptyClick(v);
                 }
             });
         } else {
@@ -101,6 +101,9 @@ public abstract class HolderbaseAdapter<T extends HolderbaseAdapter.BaseViewHold
             bindView(holder, position);
         }
         return convertView;
+    }
+
+    protected void onEmptyClick(View v) {
     }
 
     public Class<?> getIdClass() {
