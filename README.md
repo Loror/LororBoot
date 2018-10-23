@@ -17,6 +17,15 @@ allprojects {
 }
 ```
 
+如有v4包冲突建议引入时排除v4包
+```
+compile('com.github.Loror:LororBoot:v1.2.0rc2') {
+        exclude group: 'com.android.support'
+        exclude module: 'appcompat-v7'
+        exclude module: 'support-v4'
+    }
+```
+
 可参考demo使用，使用时需继承LororActivity，LororFragment，LororDialog，BindAbleItem使用，以上均实现于BindAble接口，也可自己实现BindAble接口复写绑定、事件处理。
 
 ## annotation包
