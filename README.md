@@ -17,7 +17,7 @@ allprojects {
 }
 ```
 
-如有v4包冲突建议引入时排除v4包
+如有v4包等冲突建议引入时排除v4包
 ```
 compile('com.github.Loror:LororBoot:v1.2.0rc2') {
         exclude group: 'com.android.support'
