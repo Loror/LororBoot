@@ -16,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.loror.lororUtil.flyweight.ObjectPool;
 import com.loror.lororUtil.image.ImageUtil;
 import com.loror.lororboot.annotation.AppendId;
 import com.loror.lororboot.annotation.Bind;
@@ -26,6 +28,7 @@ import com.loror.lororboot.startable.LororDialog;
 import com.loror.lororboot.startable.LororFragment;
 import com.loror.lororboot.views.BindAbleBannerView;
 import com.loror.lororboot.views.BindAblePointView;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -369,11 +372,20 @@ public class BindUtils {
                     if (bindHolder.field.getType() == CharSequence.class) {
                         ((TextView) bindHolder.view).setText((CharSequence) volume);
                     } else {
-                        ((TextView) bindHolder.view).setText(vol);
+                        if (vol == null) {
+                            //为空时format占位，无format显示空
+                            if (bindHolder.format == null) {
+                                ((TextView) bindHolder.view).setText("");
+                            } else {
+                                ((TextView) bindHolder.view).setText(bindHolder.format.replace("%s", ""));
+                            }
+                        } else {
+                            ((TextView) bindHolder.view).setText(vol);
+                        }
                     }
                 } else if (bindHolder.view instanceof ImageView) {
+                    ImageView imageView = (ImageView) bindHolder.view;
                     if (vol != null) {
-                        ImageView imageView = (ImageView) bindHolder.view;
                         int width = bindHolder.imageWidth;
                         if (width == 0) {
                             imageView.getWidth();
@@ -391,6 +403,13 @@ public class BindUtils {
                             imageUtil.setDefaultImage(bindHolder.imagePlace);
                         }
                         imageUtil.loadImage();
+                    } else {
+                        //为空时占位
+                        if (bindHolder.imagePlace != 0) {
+                            imageView.setImageResource(bindHolder.imagePlace);
+                        } else {
+                            imageView.setImageBitmap(ObjectPool.getInstance().getDefaultImage());
+                        }
                     }
                 } else if (bindHolder.view instanceof ProgressBar) {
                     if (volume == null) {
