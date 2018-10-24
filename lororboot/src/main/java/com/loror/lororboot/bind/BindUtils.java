@@ -156,7 +156,7 @@ public class BindUtils {
         final int id = view.getId();
         if (view instanceof EditText) {
             Object tag = view.getTag(id);
-            if (tag != null && tag instanceof TextWatcher) {
+            if (tag instanceof TextWatcher) {
                 ((EditText) view).removeTextChangedListener((TextWatcher) tag);
             }
             TextWatcher watcher = new TextWatcher() {
@@ -318,12 +318,6 @@ public class BindUtils {
                 bindHolder.compareTag = null;
             }
             BindUtils.showBindHolder(bindHolder, bindAble);
-            //首次未在showBindHolder中触发事件则主动触发事件
-            if (value == null) {
-                if (bindHolder.event != null) {
-                    bindAble.event(bindHolder, null, null);
-                }
-            }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -354,8 +348,10 @@ public class BindUtils {
     public static void showBindHolder(BindHolder bindHolder, BindAble bindAble) {
         Object volume = getVolume(bindHolder, bindAble);
         boolean isList = volume instanceof List;
-        if (bindHolder.isFirst || ((!isList && ((bindHolder.compareTag == null && volume != null) || (bindHolder.compareTag != null && !bindHolder.compareTag.equals(volume)))) ||
-                (isList && (bindHolder.compareTag == null || (int) bindHolder.compareTag != ((List) volume).size())))) {
+        boolean volumeChange = !isList && ((bindHolder.compareTag == null && volume != null) || (bindHolder.compareTag != null && !bindHolder.compareTag.equals(volume)));
+        boolean listChange = isList && (bindHolder.compareTag == null || (int) bindHolder.compareTag != ((List) volume).size());
+        //首次一定触发
+        if (bindHolder.isFirst || (volumeChange || listChange)) {
             bindHolder.isFirst = false;
             String vol = volume == null ? bindHolder.empty : String.valueOf(volume);
             vol = vol == null ? null :
