@@ -21,6 +21,7 @@ public class BindHolder {
     protected boolean onlyEvent;
     protected Object compareTag;
     private Object tag;
+    protected boolean isFirst = true;
 
     public View getView() {
         return view;

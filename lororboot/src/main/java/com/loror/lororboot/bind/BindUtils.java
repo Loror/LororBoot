@@ -354,8 +354,9 @@ public class BindUtils {
     public static void showBindHolder(BindHolder bindHolder, BindAble bindAble) {
         Object volume = getVolume(bindHolder, bindAble);
         boolean isList = volume instanceof List;
-        if ((!isList && ((bindHolder.compareTag == null && volume != null) || (bindHolder.compareTag != null && !bindHolder.compareTag.equals(volume)))) ||
-                (isList && (bindHolder.compareTag == null || (int) bindHolder.compareTag != ((List) volume).size()))) {
+        if (bindHolder.isFirst || ((!isList && ((bindHolder.compareTag == null && volume != null) || (bindHolder.compareTag != null && !bindHolder.compareTag.equals(volume)))) ||
+                (isList && (bindHolder.compareTag == null || (int) bindHolder.compareTag != ((List) volume).size())))) {
+            bindHolder.isFirst = false;
             String vol = volume == null ? bindHolder.empty : String.valueOf(volume);
             vol = vol == null ? null :
                     (bindHolder.format == null ? vol : bindHolder.format.replace("%s", vol));
