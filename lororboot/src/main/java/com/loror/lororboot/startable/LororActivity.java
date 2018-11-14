@@ -65,13 +65,6 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     }
 
     private void requestPermissions(RequestPermission permission) {
-        Method[] methods = getClass().getDeclaredMethods();
-        for (int i = 0; i < methods.length; i++) {
-            if (methods[i].getAnnotation(PermissionResult.class) != null) {
-                permissionResult = methods[i];
-                break;
-            }
-        }
         String[] requests = permission.value();
         for (int i = 0; i < requests.length; i++) {
             requestPermission(requests[i]);
@@ -208,6 +201,13 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     public void requestPermission(String permission) {
         if (permissionRequestMap == null) {
             permissionRequestMap = new SparseArray<>();
+            Method[] methods = getClass().getDeclaredMethods();
+            for (int i = 0; i < methods.length; i++) {
+                if (methods[i].getAnnotation(PermissionResult.class) != null) {
+                    permissionResult = methods[i];
+                    break;
+                }
+            }
         }
         int hasIt = 0;
         // 判断是否已经获得了该权限
