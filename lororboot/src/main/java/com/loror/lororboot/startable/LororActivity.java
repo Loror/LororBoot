@@ -3,15 +3,22 @@ package com.loror.lororboot.startable;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.SparseArray;
 import android.widget.Toast;
 
 import com.loror.lororUtil.view.ViewUtil;
+import com.loror.lororboot.annotation.PermissionResult;
+import com.loror.lororboot.annotation.RequestPermission;
 import com.loror.lororboot.annotation.RunThread;
 import com.loror.lororboot.annotation.RunTime;
 import com.loror.lororboot.autoRun.AutoRunAble;
@@ -26,6 +33,8 @@ import com.loror.lororboot.views.BindAbleBannerView;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,10 +48,30 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     private Handler handler;
     private List<AutoRunHolder> autoRunHolders = new ArrayList<>();
     private int createState;
+    private int requestCode;
+    private SparseArray<String> permissionRequestMap;
+    private Method permissionResult;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        String[] requests = null;
+        RequestPermission permission = getClass().getAnnotation(RequestPermission.class);
+        if (permission != null) {
+            requests = permission.value();
+        }
+        if (requests != null) {
+            for (int i = 0; i < requests.length; i++) {
+                requestPermission(requests[i]);
+            }
+            Method[] methods = getClass().getDeclaredMethods();
+            for (int i = 0; i < methods.length; i++) {
+                if (methods[i].getAnnotation(PermissionResult.class) != null) {
+                    permissionResult = methods[i];
+                    break;
+                }
+            }
+        }
         autoRunHolders = AutoRunUtil.findAutoRunHolders(this);
         createState = 1;
     }
@@ -165,6 +194,64 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
 
     public void notifyListDataChangeById(@IdRes int id) {
         DataChangeUtils.notifyListDataChangeById(id, null, bindHolders, this);
+    }
+
+    /**
+     * 动态申请权限
+     */
+    public void requestPermission(String permission) {
+        if (permissionRequestMap == null) {
+            permissionRequestMap = new SparseArray<>();
+        }
+        // 判断是否已经获得了该权限
+        if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+            // 权限申请曾经被用户拒绝
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
+                if (permissionResult != null) {
+                    try {
+                        permissionResult.invoke(this, permission, false);
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                // 进行权限请求
+                ActivityCompat.requestPermissions(this, new String[]{permission}, requestCode);
+                permissionRequestMap.put(requestCode, permission);
+                requestCode++;
+            }
+        }
+    }
+
+    /**
+     * 是否有权限
+     */
+    public boolean hasPermission(String permission) {
+        return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (permissionRequestMap != null) {
+            String permission = permissionRequestMap.get(requestCode);
+            boolean success = false;
+            // 如果请求被拒绝，那么通常grantResults数组为空
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                success = true;
+            }
+            if (permissionResult != null) {
+                try {
+                    permissionResult.invoke(this, permission, success);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @Override

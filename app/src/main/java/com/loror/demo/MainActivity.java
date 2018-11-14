@@ -1,5 +1,6 @@
 package com.loror.demo;
 
+import android.Manifest;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
@@ -10,6 +11,8 @@ import com.loror.lororUtil.view.Click;
 import com.loror.lororUtil.view.ItemClick;
 import com.loror.lororboot.annotation.AutoRun;
 import com.loror.lororboot.annotation.Bind;
+import com.loror.lororboot.annotation.PermissionResult;
+import com.loror.lororboot.annotation.RequestPermission;
 import com.loror.lororboot.annotation.RunThread;
 import com.loror.lororboot.annotation.RunTime;
 import com.loror.lororboot.bind.BindHolder;
@@ -18,6 +21,7 @@ import com.loror.lororboot.startable.LororActivity;
 import java.util.ArrayList;
 import java.util.List;
 
+@RequestPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
 public class MainActivity extends LororActivity {
 
     /**
@@ -65,6 +69,14 @@ public class MainActivity extends LororActivity {
     @Click(id = R.id.button)
     public void buttonClick(View view) {
         Toast.makeText(this, doubleBindText, Toast.LENGTH_SHORT).show();
+    }
+
+    @PermissionResult
+    public void permissionResult(String permission, boolean success) {
+        Log.e("PERMISSION", permission + " " + success);
+        if (!success) {
+            Toast.makeText(this, "获取权限失败", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @ItemClick(id = R.id.listView)
