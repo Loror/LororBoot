@@ -9,4 +9,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 public @interface RequestPermission {
     String[] value();//需要申请的权限
+
+    @RequestTime int when() default RequestTime.ONCREATE;//申请时间
 }

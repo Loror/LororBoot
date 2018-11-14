@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.loror.lororUtil.view.ViewUtil;
 import com.loror.lororboot.annotation.PermissionResult;
 import com.loror.lororboot.annotation.RequestPermission;
+import com.loror.lororboot.annotation.RequestTime;
 import com.loror.lororboot.annotation.RunThread;
 import com.loror.lororboot.annotation.RunTime;
 import com.loror.lororboot.autoRun.AutoRunAble;
@@ -56,25 +57,33 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         RequestPermission permission = getClass().getAnnotation(RequestPermission.class);
-        if (permission != null) {
-            Method[] methods = getClass().getDeclaredMethods();
-            for (int i = 0; i < methods.length; i++) {
-                if (methods[i].getAnnotation(PermissionResult.class) != null) {
-                    permissionResult = methods[i];
-                    break;
-                }
-            }
-            String[] requests = permission.value();
-            for (int i = 0; i < requests.length; i++) {
-                requestPermission(requests[i]);
-            }
+        if (permission != null && permission.when() == RequestTime.ONCREATE) {
+            requestPermissions(permission);
         }
         autoRunHolders = AutoRunUtil.findAutoRunHolders(this);
         createState = 1;
     }
 
+    private void requestPermissions(RequestPermission permission) {
+        Method[] methods = getClass().getDeclaredMethods();
+        for (int i = 0; i < methods.length; i++) {
+            if (methods[i].getAnnotation(PermissionResult.class) != null) {
+                permissionResult = methods[i];
+                break;
+            }
+        }
+        String[] requests = permission.value();
+        for (int i = 0; i < requests.length; i++) {
+            requestPermission(requests[i]);
+        }
+    }
+
     @Override
     protected void onResume() {
+        RequestPermission permission = getClass().getAnnotation(RequestPermission.class);
+        if (permission != null && permission.when() == RequestTime.ONRESUME) {
+            requestPermissions(permission);
+        }
         if (createState == 1) {
             createState = 2;
             AutoRunUtil.runAutoRunHolderByPenetration(RunTime.AFTERONCREATE, autoRunHolders, this);
