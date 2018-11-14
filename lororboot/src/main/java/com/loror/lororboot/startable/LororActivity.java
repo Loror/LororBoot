@@ -57,16 +57,16 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
         super.onCreate(savedInstanceState);
         RequestPermission permission = getClass().getAnnotation(RequestPermission.class);
         if (permission != null) {
-            String[] requests = permission.value();
-            for (int i = 0; i < requests.length; i++) {
-                requestPermission(requests[i]);
-            }
             Method[] methods = getClass().getDeclaredMethods();
             for (int i = 0; i < methods.length; i++) {
                 if (methods[i].getAnnotation(PermissionResult.class) != null) {
                     permissionResult = methods[i];
                     break;
                 }
+            }
+            String[] requests = permission.value();
+            for (int i = 0; i < requests.length; i++) {
+                requestPermission(requests[i]);
             }
         }
         autoRunHolders = AutoRunUtil.findAutoRunHolders(this);
@@ -200,24 +200,28 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
         if (permissionRequestMap == null) {
             permissionRequestMap = new SparseArray<>();
         }
+        int hasIt = 0;
         // 判断是否已经获得了该权限
         if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
             // 权限申请曾经被用户拒绝
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
-                if (permissionResult != null) {
-                    try {
-                        permissionResult.invoke(this, permission, false);
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
-                }
+                hasIt = 2;
             } else {
                 // 进行权限请求
                 ActivityCompat.requestPermissions(this, new String[]{permission}, requestCode);
                 permissionRequestMap.put(requestCode, permission);
                 requestCode++;
+            }
+        } else {
+            hasIt = 1;
+        }
+        if (hasIt > 0 && permissionResult != null) {
+            try {
+                permissionResult.invoke(this, permission, hasIt == 1);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
             }
         }
     }
