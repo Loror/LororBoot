@@ -247,6 +247,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (permissionRequestMap != null) {
             String permission = permissionRequestMap.get(requestCode);
+            permissionRequestMap.remove(requestCode);
             boolean success = false;
             // 如果请求被拒绝，那么通常grantResults数组为空
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
