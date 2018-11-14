@@ -55,12 +55,9 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String[] requests = null;
         RequestPermission permission = getClass().getAnnotation(RequestPermission.class);
         if (permission != null) {
-            requests = permission.value();
-        }
-        if (requests != null) {
+            String[] requests = permission.value();
             for (int i = 0; i < requests.length; i++) {
                 requestPermission(requests[i]);
             }
