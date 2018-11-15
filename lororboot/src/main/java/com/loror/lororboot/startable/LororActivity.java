@@ -210,28 +210,21 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
             }
         }
         int hasIt = 0;
-        // 判断是否已经获得了该权限
         if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
             // 权限申请曾经被用户拒绝
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
                 hasIt = 2;
             } else {
+                permissionRequestMap.put(requestCode, permission);
                 // 进行权限请求
                 ActivityCompat.requestPermissions(this, new String[]{permission}, requestCode);
-                permissionRequestMap.put(requestCode, permission);
                 requestCode++;
             }
         } else {
             hasIt = 1;
         }
         if (hasIt > 0 && permissionResult != null) {
-            try {
-                permissionResult.invoke(this, permission, hasIt == 1);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }
+            onPermissionsResult(permission, hasIt == 1);
         }
     }
 
@@ -240,6 +233,21 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
      */
     public boolean hasPermission(String permission) {
         return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    /**
+     * 请求权限回调
+     */
+    public void onPermissionsResult(String permission, boolean success) {
+        if (permissionResult != null) {
+            try {
+                permissionResult.invoke(this, permission, success);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -253,15 +261,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 success = true;
             }
-            if (permissionResult != null) {
-                try {
-                    permissionResult.invoke(this, permission, success);
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-            }
+            onPermissionsResult(permission, success);
         }
     }
 

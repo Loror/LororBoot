@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.loror.lororUtil.flyweight.ObjectPool;
 import com.loror.lororUtil.image.ImageUtil;
+import com.loror.lororboot.LororApplication;
 import com.loror.lororboot.annotation.AppendId;
 import com.loror.lororboot.annotation.Bind;
 import com.loror.lororboot.annotation.DisableItem;
@@ -395,7 +396,7 @@ public class BindUtils {
                         } else if (width > 1080) {
                             width = 1080;
                         }
-                        ImageUtil imageUtil = ImageUtil.with(imageView.getContext()).from(vol).to(imageView).setWidthLimit(width);
+                        ImageUtil imageUtil = ImageUtil.with(imageView.getContext()).from(vol).to(imageView).setWidthLimit(width).setNoSdCache(LororApplication.NOIMAGESDCARDCACHE);
                         if (bindHolder.imagePlace != 0) {
                             imageUtil.setDefaultImage(bindHolder.imagePlace);
                         }

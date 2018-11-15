@@ -5,6 +5,9 @@ import android.app.Application;
 import com.loror.lororUtil.view.ViewUtil;
 
 public abstract class LororApplication extends Application {
+
+    public static boolean NOIMAGESDCARDCACHE = false;
+
     @Override
     public void onCreate() {
         super.onCreate();
