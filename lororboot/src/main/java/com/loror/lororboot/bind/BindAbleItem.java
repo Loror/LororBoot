@@ -9,7 +9,7 @@ import java.util.List;
 public abstract class BindAbleItem implements DataChangeAble {
     private transient BindAble outBindAble;
     private transient List<BindHolder> bindHolders;
-    private transient int position;
+    private transient int position, size;
 
     public BindAble obtainOutBindAble() {
         return outBindAble;
@@ -17,6 +17,10 @@ public abstract class BindAbleItem implements DataChangeAble {
 
     public int obtainPosition() {
         return position;
+    }
+
+    public int obtainSize() {
+        return size;
     }
 
     public abstract int getLayout();
@@ -62,6 +66,7 @@ public abstract class BindAbleItem implements DataChangeAble {
         mark.parent = null;
         this.bindHolders = bindHolders;
         this.position = mark.position;
+        this.size = mark.size;
         //刷新显示并触发事件，解决控件复用问题
         BindUtils.initHolders(bindHolders, this, mark.position);
     }

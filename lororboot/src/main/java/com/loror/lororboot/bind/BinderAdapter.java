@@ -84,6 +84,7 @@ public class BinderAdapter extends BaseAdapter {
             Mark mark = new Mark();
             mark.bindAble = this.bindAble;
             mark.position = position;
+            mark.size = list.size();
             mark.convertView = convertView;
             mark.parent = parent;
             bindAbleItem.beginBind(mark);
@@ -109,6 +110,7 @@ public class BinderAdapter extends BaseAdapter {
 
     static class Mark {
         int position;
+        int size;
         BindAble bindAble;
         View convertView;
         ViewGroup parent;

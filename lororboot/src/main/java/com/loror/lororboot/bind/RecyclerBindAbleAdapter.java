@@ -42,6 +42,7 @@ public class RecyclerBindAbleAdapter extends RecyclerView.Adapter<RecyclerBindAb
         holder.bindAbleItem = bindAbleItem;
         BinderAdapter.Mark mark = new BinderAdapter.Mark();
         mark.bindAble = this.bindAble;
+        mark.size = list.size();
         mark.position = position;
         mark.convertView = holder.itemView;
         bindAbleItem.beginBind(mark);
