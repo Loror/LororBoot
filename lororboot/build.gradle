@@ -30,7 +30,7 @@ repositories {
 dependencies {
     api fileTree(include: ['*.jar'], dir: 'libs')
     api files('libs/commonView.jar')
-    api 'com.github.Loror:LororUtil:1.5.3'
+    api 'com.github.Loror:LororUtil:1.5.4'
     implementation 'com.android.support:appcompat-v7:23.4.0'
     implementation 'com.android.support:recyclerview-v7:23.4.0'
 }
