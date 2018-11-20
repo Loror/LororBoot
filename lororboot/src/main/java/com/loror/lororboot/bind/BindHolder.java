@@ -2,6 +2,7 @@ package com.loror.lororboot.bind;
 
 import android.view.View;
 
+import com.loror.lororUtil.image.BitmapConverter;
 import com.loror.lororboot.annotation.Visibility;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ public class BindHolder {
     protected int visibility = Visibility.NOTCHANGE;
     protected int imagePlace;
     protected int imageWidth;
+    protected BitmapConverter bitmapConverter;
     protected boolean disableItem;
     protected boolean onlyEvent;
     protected Object compareTag;
@@ -33,6 +35,14 @@ public class BindHolder {
 
     public String getEvent() {
         return event;
+    }
+
+    public void setBitmapConverter(BitmapConverter bitmapConverter) {
+        this.bitmapConverter = bitmapConverter;
+    }
+
+    public BitmapConverter getBitmapConverter() {
+        return bitmapConverter;
     }
 
     public void setFormat(String format) {

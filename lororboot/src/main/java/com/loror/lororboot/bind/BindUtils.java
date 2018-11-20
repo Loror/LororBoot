@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.loror.lororUtil.flyweight.ObjectPool;
+import com.loror.lororUtil.image.BitmapConverter;
 import com.loror.lororUtil.image.ImageUtil;
 import com.loror.lororboot.LororApplication;
 import com.loror.lororboot.annotation.AppendId;
@@ -107,6 +108,13 @@ public class BindUtils {
                         bindHolder.imageWidth = bind.imageWidth();
                         bindHolder.onlyEvent = bind.onlyEvent();
                         bindHolder.disableItem = field.getAnnotation(DisableItem.class) != null;
+                        if (bind.bitmapConverter() != BitmapConverter.class && view instanceof ImageView) {
+                            try {
+                                bindHolder.bitmapConverter = bind.bitmapConverter().newInstance();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
                         bindHolders.add(bindHolder);
                         AppendId appendId = field.getAnnotation(AppendId.class);
                         if (appendId != null) {
@@ -400,6 +408,7 @@ public class BindUtils {
                         if (bindHolder.imagePlace != 0) {
                             imageUtil.setDefaultImage(bindHolder.imagePlace);
                         }
+                        imageUtil.setBitmapConverter(bindHolder.bitmapConverter);
                         imageUtil.loadImage();
                     } else {
                         //为空时占位

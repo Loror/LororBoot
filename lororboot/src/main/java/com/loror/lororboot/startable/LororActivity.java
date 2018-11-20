@@ -29,6 +29,8 @@ import com.loror.lororboot.bind.BindAble;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.bind.BindUtils;
 import com.loror.lororboot.bind.DataChangeAble;
+import com.loror.lororboot.dataBus.DataBus;
+import com.loror.lororboot.dataBus.DataBusReceiver;
 import com.loror.lororboot.dataChange.DataChangeUtils;
 import com.loror.lororboot.views.BindAbleBannerView;
 
@@ -62,6 +64,9 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
         }
         autoRunHolders = AutoRunUtil.findAutoRunHolders(this);
         createState = 1;
+        if (this instanceof DataBusReceiver) {
+            DataBus.addReceiver((DataBusReceiver) this);
+        }
     }
 
     private void requestPermissions(RequestPermission permission) {
@@ -108,6 +113,9 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
         AutoRunUtil.runAutoRunHolderByPenetration(RunTime.BEFOREONDESTROY, autoRunHolders, this);
         bindHolders.clear();
         autoRunHolders.clear();
+        if (this instanceof DataBusReceiver) {
+            DataBus.removeReceiver((DataBusReceiver) this);
+        }
         super.onDestroy();
     }
 
@@ -117,6 +125,10 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
         BindUtils.findBindHoldersAndInit(bindHolders, this);
         ViewUtil.click(this);
         beginBind(this);
+    }
+
+    public void sendDataToBus(String name, Object data) {
+        DataBus.notifyReceivers(name, data);
     }
 
     public void registerBinder(BindAble bindAble) {

@@ -22,6 +22,8 @@ import com.loror.lororboot.autoRun.AutoRunUtil;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.bind.BindUtils;
 import com.loror.lororboot.bind.DataChangeAble;
+import com.loror.lororboot.dataBus.DataBus;
+import com.loror.lororboot.dataBus.DataBusReceiver;
 import com.loror.lororboot.dataChange.DataChangeUtils;
 import com.loror.lororboot.views.BindAbleBannerView;
 
@@ -58,6 +60,9 @@ public class LororFragment extends Fragment implements StartDilogAble, DataChang
         super.onCreate(savedInstanceState);
         autoRunHolders = AutoRunUtil.findAutoRunHolders(this);
         createState = 1;
+        if (this instanceof DataBusReceiver) {
+            DataBus.addReceiver((DataBusReceiver) this);
+        }
     }
 
     @Override
@@ -117,7 +122,14 @@ public class LororFragment extends Fragment implements StartDilogAble, DataChang
         AutoRunUtil.runAutoRunHolderByPenetration(RunTime.BEFOREONDESTROY, autoRunHolders, this);
         bindHolders.clear();
         autoRunHolders.clear();
+        if (this instanceof DataBusReceiver) {
+            DataBus.removeReceiver((DataBusReceiver) this);
+        }
         super.onDestroy();
+    }
+
+    public void sendDataToBus(String name, Object data) {
+        DataBus.notifyReceivers(name, data);
     }
 
     @Override

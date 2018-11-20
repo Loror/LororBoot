@@ -1,6 +1,9 @@
 package com.loror.lororboot.annotation;
 
 import android.support.annotation.DrawableRes;
+
+import com.loror.lororUtil.image.BitmapConverter;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -21,6 +24,8 @@ public @interface Bind {
     @DrawableRes int imagePlace() default 0;//ImageView加载占位图
 
     int imageWidth() default 0;//指定ImageView缓存图宽度
+
+    Class<? extends BitmapConverter> bitmapConverter() default BitmapConverter.class;//图片预处理
 
     @Visibility int visibility() default Visibility.NOTCHANGE;//控件显示状态
 

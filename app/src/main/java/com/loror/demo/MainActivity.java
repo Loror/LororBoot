@@ -1,6 +1,7 @@
 package com.loror.demo;
 
 import android.Manifest;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
@@ -16,13 +17,14 @@ import com.loror.lororboot.annotation.RequestPermission;
 import com.loror.lororboot.annotation.RunThread;
 import com.loror.lororboot.annotation.RunTime;
 import com.loror.lororboot.bind.BindHolder;
+import com.loror.lororboot.dataBus.DataBusReceiver;
 import com.loror.lororboot.startable.LororActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @RequestPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-public class MainActivity extends LororActivity {
+public class MainActivity extends LororActivity implements DataBusReceiver {
 
     /**
      * 修改变量值会自动重新显示内容
@@ -33,7 +35,7 @@ public class MainActivity extends LororActivity {
     String text = "绑定TextView显示";
     @Bind(id = R.id.editText)
     String doubleBindText = "绑定EditText内容";
-    @Bind(id = R.id.imageView, imagePlace = R.mipmap.ic_launcher)
+    @Bind(id = R.id.imageView, imagePlace = R.mipmap.ic_launcher, bitmapConverter = RoundBitmapConverter.class)
     String image = "http://img.zcool.cn/community/0117e2571b8b246ac72538120dd8a4.jpg@1280w_1l_2o_100sh.jpg";
     @Bind(id = R.id.listView)
     List<ListItem> listItems = new ArrayList<>();
@@ -69,6 +71,11 @@ public class MainActivity extends LororActivity {
     @Click(id = R.id.button)
     public void buttonClick(View view) {
         Toast.makeText(this, doubleBindText, Toast.LENGTH_SHORT).show();
+    }
+
+    @Click(id = R.id.second)
+    public void second(View view) {
+        startActivity(new Intent(this, SecondActivity.class));
     }
 
     @PermissionResult
@@ -107,4 +114,10 @@ public class MainActivity extends LororActivity {
         Log.e("AUTO_RUN", "afterCreate" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
     }
 
+    @Override
+    public void receiveData(String name, Object data) {
+        if ("toast".equals(name)) {
+            Toast.makeText(this, String.valueOf(data), Toast.LENGTH_SHORT).show();
+        }
+    }
 }

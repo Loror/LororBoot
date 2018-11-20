@@ -23,6 +23,8 @@ import com.loror.lororboot.autoRun.AutoRunUtil;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.bind.BindUtils;
 import com.loror.lororboot.bind.DataChangeAble;
+import com.loror.lororboot.dataBus.DataBus;
+import com.loror.lororboot.dataBus.DataBusReceiver;
 import com.loror.lororboot.dataChange.DataChangeUtils;
 
 import java.lang.ref.WeakReference;
@@ -90,7 +92,18 @@ public class LororDialog extends AlertDialog implements StartDilogAble, DataChan
                 activity.registerBinder(this);
             }
         }
+        if (this instanceof DataBusReceiver) {
+            DataBus.addReceiver((DataBusReceiver) this);
+        }
         super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        if (this instanceof DataBusReceiver) {
+            DataBus.removeReceiver((DataBusReceiver) this);
+        }
+        super.onStop();
     }
 
     protected void onDestroy() {
@@ -117,6 +130,10 @@ public class LororDialog extends AlertDialog implements StartDilogAble, DataChan
                 ((LororActivity) context).registerBinder(this);
             }
         }
+    }
+
+    public void sendDataToBus(String name, Object data) {
+        DataBus.notifyReceivers(name, data);
     }
 
     @Override
