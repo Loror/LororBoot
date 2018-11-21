@@ -56,28 +56,21 @@ public class Decorater {
     }
 
     /**
-     * 创建RemoteBroadcastReceiver
-     */
-    private BroadcastReceiver createReceiver() {
-        return new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String name = intent.getStringExtra("loror.RemoteDataBusReceiver.name");
-                if (name != null) {
-                    ((DataBusReceiver) autoRunAble).receiveData(name, intent);
-                }
-            }
-        };
-    }
-
-    /**
      * 注册data监听
      */
     private void registerDataBusReceiver() {
         if (autoRunAble instanceof DataBusReceiver) {
             if (autoRunAble instanceof RemoteDataBusReceiver) {
                 if (receiver == null) {
-                    receiver = createReceiver();
+                    receiver = new BroadcastReceiver() {
+                        @Override
+                        public void onReceive(Context context, Intent intent) {
+                            String name = intent.getStringExtra("loror.RemoteDataBusReceiver.name");
+                            if (name != null) {
+                                ((DataBusReceiver) autoRunAble).receiveData(name, intent);
+                            }
+                        }
+                    };
                     context.registerReceiver(receiver, new IntentFilter("loror.RemoteDataBusReceiver"));
                 }
             } else {
