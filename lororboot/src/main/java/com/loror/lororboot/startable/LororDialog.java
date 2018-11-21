@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StyleRes;
@@ -16,20 +15,15 @@ import android.widget.Toast;
 
 import com.loror.lororUtil.view.ViewUtil;
 import com.loror.lororboot.annotation.RunThread;
-import com.loror.lororboot.annotation.RunTime;
 import com.loror.lororboot.autoRun.AutoRunAble;
-import com.loror.lororboot.autoRun.AutoRunHolder;
-import com.loror.lororboot.autoRun.AutoRunUtil;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.bind.BindUtils;
 import com.loror.lororboot.bind.DataChangeAble;
 import com.loror.lororboot.dataBus.DataBus;
-import com.loror.lororboot.dataBus.DataBusReceiver;
 import com.loror.lororboot.dataChange.DataChangeUtils;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -47,9 +41,7 @@ public class LororDialog extends AlertDialog implements StartDilogAble, DataChan
 
     private List<BindHolder> bindHolders = new LinkedList<>();
     private WeakReference<LororActivity> weakReference;
-    private Handler handler;
-    private List<AutoRunHolder> autoRunHolders = new ArrayList<>();
-    private int createState;
+    private Decorater decorater;
 
     public LororDialog(@NonNull Context context) {
         this(context, 0);
@@ -76,40 +68,31 @@ public class LororDialog extends AlertDialog implements StartDilogAble, DataChan
                 }
             }
         });
-        autoRunHolders = AutoRunUtil.findAutoRunHolders(this);
-        createState = 1;
+        decorater = new Decorater(context, this);
+        decorater.onCreate();
     }
 
     @Override
     protected void onStart() {
-        if (createState == 1) {
-            createState = 2;
-            AutoRunUtil.runAutoRunHolderByPenetration(RunTime.AFTERONCREATE, autoRunHolders, this);
-        }
+        decorater.onStart();
         LororActivity activity = weakReference == null ? null : weakReference.get();
         if (activity != null) {
             if (bindHolders.size() > 0) {
                 activity.registerBinder(this);
             }
         }
-        if (this instanceof DataBusReceiver) {
-            DataBus.addReceiver((DataBusReceiver) this);
-        }
         super.onStart();
     }
 
     @Override
     protected void onStop() {
-        if (this instanceof DataBusReceiver) {
-            DataBus.removeReceiver((DataBusReceiver) this);
-        }
+        decorater.onStop();
         super.onStop();
     }
 
     protected void onDestroy() {
-        AutoRunUtil.runAutoRunHolderByPenetration(RunTime.BEFOREONDESTROY, autoRunHolders, this);
         bindHolders.clear();
-        autoRunHolders.clear();
+        decorater.onDestroy();
     }
 
     protected void onDismiss() {
@@ -132,8 +115,8 @@ public class LororDialog extends AlertDialog implements StartDilogAble, DataChan
         }
     }
 
-    public void sendDataToBus(String name, Object data) {
-        DataBus.notifyReceivers(name, data);
+    public void sendDataToBus(String name, Intent data) {
+        DataBus.notifyReceivers(name, data, context);
     }
 
     @Override
@@ -254,24 +237,11 @@ public class LororDialog extends AlertDialog implements StartDilogAble, DataChan
 
     @Override
     public void runUserAutoRun(String methodName) {
-        AutoRunUtil.runAutoRunHolderByPenetration(methodName, autoRunHolders, this);
+        decorater.runUserAutoRun(methodName);
     }
 
     @Override
     public void run(@RunThread int thread, Runnable runnable) {
-        if (thread == RunThread.MAINTHREAD) {
-            if (Looper.getMainLooper() == Looper.myLooper()) {
-                runnable.run();
-            } else {
-                if (handler == null) {
-                    handler = new Handler();
-                }
-                handler.post(runnable);
-            }
-        } else if (thread == RunThread.NEWTHREAD) {
-            new Thread(runnable).start();
-        } else {
-            runnable.run();
-        }
+        decorater.run(thread, runnable, new Handler());
     }
 }

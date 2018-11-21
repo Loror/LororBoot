@@ -1,5 +1,6 @@
 package com.loror.demo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -16,6 +17,8 @@ public class SecondActivity extends LororActivity {
 
     @Click(id = R.id.send)
     public void send(View v) {
-        sendDataToBus("toast", "打印消息");
+        Intent data = new Intent();
+        data.putExtra("msg", "打印消息");
+        sendDataToBus("toast", data);
     }
 }

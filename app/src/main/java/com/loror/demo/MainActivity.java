@@ -18,13 +18,14 @@ import com.loror.lororboot.annotation.RunThread;
 import com.loror.lororboot.annotation.RunTime;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.dataBus.DataBusReceiver;
+import com.loror.lororboot.dataBus.RemoteDataBusReceiver;
 import com.loror.lororboot.startable.LororActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @RequestPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-public class MainActivity extends LororActivity implements DataBusReceiver {
+public class MainActivity extends LororActivity implements RemoteDataBusReceiver {
 
     /**
      * 修改变量值会自动重新显示内容
@@ -115,9 +116,9 @@ public class MainActivity extends LororActivity implements DataBusReceiver {
     }
 
     @Override
-    public void receiveData(String name, Object data) {
+    public void receiveData(String name, Intent data) {
         if ("toast".equals(name)) {
-            Toast.makeText(this, String.valueOf(data), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, data.getStringExtra("msg"), Toast.LENGTH_SHORT).show();
         }
     }
 }

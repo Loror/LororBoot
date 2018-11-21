@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,16 +20,12 @@ import com.loror.lororboot.annotation.PermissionResult;
 import com.loror.lororboot.annotation.RequestPermission;
 import com.loror.lororboot.annotation.RequestTime;
 import com.loror.lororboot.annotation.RunThread;
-import com.loror.lororboot.annotation.RunTime;
 import com.loror.lororboot.autoRun.AutoRunAble;
-import com.loror.lororboot.autoRun.AutoRunHolder;
-import com.loror.lororboot.autoRun.AutoRunUtil;
 import com.loror.lororboot.bind.BindAble;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.bind.BindUtils;
 import com.loror.lororboot.bind.DataChangeAble;
 import com.loror.lororboot.dataBus.DataBus;
-import com.loror.lororboot.dataBus.DataBusReceiver;
 import com.loror.lororboot.dataChange.DataChangeUtils;
 import com.loror.lororboot.views.BindAbleBannerView;
 
@@ -49,11 +44,10 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     private WeakReference<List<BindAble>> weakReferenceBindAbleList = new WeakReference<>(registedBinders);
     private Runnable bindRunnable;
     private Handler handler;
-    private List<AutoRunHolder> autoRunHolders = new ArrayList<>();
-    private int createState;
     private int requestCode;
     private SparseArray<String> permissionRequestMap;
     private Method permissionResult;
+    private Decorater decorater;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,11 +56,8 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
         if (permission != null && permission.when() == RequestTime.ONCREATE) {
             requestPermissions(permission);
         }
-        autoRunHolders = AutoRunUtil.findAutoRunHolders(this);
-        createState = 1;
-        if (this instanceof DataBusReceiver) {
-            DataBus.addReceiver((DataBusReceiver) this);
-        }
+        decorater = new Decorater(this, this);
+        decorater.onCreate();
     }
 
     private void requestPermissions(RequestPermission permission) {
@@ -82,10 +73,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
         if (permission != null && permission.when() == RequestTime.ONRESUME) {
             requestPermissions(permission);
         }
-        if (createState == 1) {
-            createState = 2;
-            AutoRunUtil.runAutoRunHolderByPenetration(RunTime.AFTERONCREATE, autoRunHolders, this);
-        }
+        decorater.onResume();
         super.onResume();
         //banner恢复滚动
         if (!isFinishing()) {
@@ -110,12 +98,8 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
 
     @Override
     protected void onDestroy() {
-        AutoRunUtil.runAutoRunHolderByPenetration(RunTime.BEFOREONDESTROY, autoRunHolders, this);
         bindHolders.clear();
-        autoRunHolders.clear();
-        if (this instanceof DataBusReceiver) {
-            DataBus.removeReceiver((DataBusReceiver) this);
-        }
+        decorater.onDestroy();
         super.onDestroy();
     }
 
@@ -127,8 +111,8 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
         beginBind(this);
     }
 
-    public void sendDataToBus(String name, Object data) {
-        DataBus.notifyReceivers(name, data);
+    public void sendDataToBus(String name, Intent data) {
+        DataBus.notifyReceivers(name, data, this);
     }
 
     public void registerBinder(BindAble bindAble) {
@@ -325,24 +309,11 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
 
     @Override
     public void runUserAutoRun(String methodName) {
-        AutoRunUtil.runAutoRunHolderByPenetration(methodName, autoRunHolders, this);
+        decorater.runUserAutoRun(methodName);
     }
 
     @Override
     public void run(@RunThread int thread, Runnable runnable) {
-        if (thread == RunThread.MAINTHREAD) {
-            if (Looper.getMainLooper() == Looper.myLooper()) {
-                runnable.run();
-            } else {
-                if (handler == null) {
-                    handler = new Handler();
-                }
-                handler.post(runnable);
-            }
-        } else if (thread == RunThread.NEWTHREAD) {
-            new Thread(runnable).start();
-        } else {
-            runnable.run();
-        }
+        decorater.run(thread, runnable, handler);
     }
 }

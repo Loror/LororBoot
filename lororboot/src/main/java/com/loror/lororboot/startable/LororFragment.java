@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,22 +13,16 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.loror.lororUtil.view.ViewUtil;
-import com.loror.lororboot.annotation.RunThread;
-import com.loror.lororboot.annotation.RunTime;
 import com.loror.lororboot.autoRun.AutoRunAble;
-import com.loror.lororboot.autoRun.AutoRunHolder;
-import com.loror.lororboot.autoRun.AutoRunUtil;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.bind.BindUtils;
 import com.loror.lororboot.bind.DataChangeAble;
 import com.loror.lororboot.dataBus.DataBus;
-import com.loror.lororboot.dataBus.DataBusReceiver;
 import com.loror.lororboot.dataChange.DataChangeUtils;
 import com.loror.lororboot.views.BindAbleBannerView;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,9 +30,7 @@ public class LororFragment extends Fragment implements StartDilogAble, DataChang
 
     private List<BindHolder> bindHolders = new LinkedList<>();
     private WeakReference<LororActivity> weakReference;
-    private Handler handler;
-    private List<AutoRunHolder> autoRunHolders = new ArrayList<>();
-    private int createState;
+    private Decorater decorater;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -58,19 +49,13 @@ public class LororFragment extends Fragment implements StartDilogAble, DataChang
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        autoRunHolders = AutoRunUtil.findAutoRunHolders(this);
-        createState = 1;
-        if (this instanceof DataBusReceiver) {
-            DataBus.addReceiver((DataBusReceiver) this);
-        }
+        decorater = new Decorater(getActivity(), this);
+        decorater.onCreate();
     }
 
     @Override
     public void onResume() {
-        if (createState == 1) {
-            createState = 2;
-            AutoRunUtil.runAutoRunHolderByPenetration(RunTime.AFTERONCREATE, autoRunHolders, this);
-        }
+        decorater.onResume();
         super.onResume();
         //banner恢复滚动
         LororActivity activity = weakReference == null ? null : weakReference.get();
@@ -119,17 +104,13 @@ public class LororFragment extends Fragment implements StartDilogAble, DataChang
 
     @Override
     public void onDestroy() {
-        AutoRunUtil.runAutoRunHolderByPenetration(RunTime.BEFOREONDESTROY, autoRunHolders, this);
         bindHolders.clear();
-        autoRunHolders.clear();
-        if (this instanceof DataBusReceiver) {
-            DataBus.removeReceiver((DataBusReceiver) this);
-        }
+        decorater.onDestroy();
         super.onDestroy();
     }
 
-    public void sendDataToBus(String name, Object data) {
-        DataBus.notifyReceivers(name, data);
+    public void sendDataToBus(String name, Intent data) {
+        DataBus.notifyReceivers(name, data, getActivity());
     }
 
     @Override
@@ -216,24 +197,11 @@ public class LororFragment extends Fragment implements StartDilogAble, DataChang
 
     @Override
     public void runUserAutoRun(String methodName) {
-        AutoRunUtil.runAutoRunHolderByPenetration(methodName, autoRunHolders, this);
+        decorater.runUserAutoRun(methodName);
     }
 
     @Override
     public void run(int thread, Runnable runnable) {
-        if (thread == RunThread.MAINTHREAD) {
-            if (Looper.getMainLooper() == Looper.myLooper()) {
-                runnable.run();
-            } else {
-                if (handler == null) {
-                    handler = new Handler();
-                }
-                handler.post(runnable);
-            }
-        } else if (thread == RunThread.NEWTHREAD) {
-            new Thread(runnable).start();
-        } else {
-            runnable.run();
-        }
+        decorater.run(thread, runnable, new Handler());
     }
 }
