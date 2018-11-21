@@ -24,6 +24,7 @@ import com.loror.lororboot.startable.LororActivity;
 import java.util.ArrayList;
 import java.util.List;
 
+//继承DataBusReceiver只能接收到同一进程发送的数据，继承RemoteDataBusReceiver可接收到同一进程和其他进程发送的消息，可根据需要选择
 @RequestPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
 public class MainActivity extends LororActivity implements RemoteDataBusReceiver {
 
