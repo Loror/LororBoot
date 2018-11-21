@@ -79,7 +79,6 @@ public class Decorater {
                 if (receiver == null) {
                     receiver = createReceiver();
                     context.registerReceiver(receiver, new IntentFilter("loror.RemoteDataBusReceiver"));
-                    DataBus.addRemoteReceiverCount();
                 }
             } else {
                 DataBus.addReceiver((DataBusReceiver) autoRunAble);
@@ -96,7 +95,6 @@ public class Decorater {
                 if (receiver != null) {
                     context.unregisterReceiver(receiver);
                     receiver = null;
-                    DataBus.reduceRemoteReceiverCount();
                 }
             } else {
                 DataBus.removeReceiver((DataBusReceiver) autoRunAble);
