@@ -33,6 +33,10 @@ public class DataBus {
             receivers.get(i).receiveData(name, data);
         }
         try {
+            if (data == null) {
+                data = new Intent();
+                data.putExtra("loror.RemoteDataBusReceiver.tag", "empty");
+            }
             data.setAction("loror.RemoteDataBusReceiver");
             data.putExtra("loror.RemoteDataBusReceiver.name", name);
             context.sendBroadcast(data);

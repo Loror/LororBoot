@@ -67,7 +67,7 @@ public class Decorater {
                         public void onReceive(Context context, Intent intent) {
                             String name = intent.getStringExtra("loror.RemoteDataBusReceiver.name");
                             if (name != null) {
-                                ((DataBusReceiver) autoRunAble).receiveData(name, intent);
+                                ((DataBusReceiver) autoRunAble).receiveData(name, intent.getStringExtra("loror.RemoteDataBusReceiver.tag") != null ? null : intent);
                             }
                         }
                     };
