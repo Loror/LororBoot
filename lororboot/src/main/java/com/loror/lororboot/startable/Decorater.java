@@ -34,11 +34,11 @@ public class Decorater {
         autoRunHolders.addAll(AutoRunUtil.findAutoRunHolders(autoRunAble));
     }
 
-    protected void runUserAutoRun(String methodName) {
+    public void runUserAutoRun(String methodName) {
         AutoRunUtil.runAutoRunHolderByPenetration(methodName, autoRunHolders, autoRunAble);
     }
 
-    protected void run(@RunThread int thread, Runnable runnable, Handler handler) {
+    public void run(@RunThread int thread, Runnable runnable, Handler handler) {
         if (thread == RunThread.MAINTHREAD) {
             if (Looper.getMainLooper() == Looper.myLooper()) {
                 runnable.run();
@@ -98,19 +98,19 @@ public class Decorater {
     /**
      * 生命周期
      */
-    protected void onCreate() {
+    public void onCreate() {
         createState = 1;
         registerDataBusReceiver();
     }
 
-    protected void onResume() {
+    public void onResume() {
         if (createState == 1) {
             createState = 2;
             AutoRunUtil.runAutoRunHolderByPenetration(RunTime.AFTERONCREATE, autoRunHolders, autoRunAble);
         }
     }
 
-    protected void onStart() {
+    public void onStart() {
         if (createState == 1) {
             createState = 2;
             AutoRunUtil.runAutoRunHolderByPenetration(RunTime.AFTERONCREATE, autoRunHolders, autoRunAble);
@@ -118,11 +118,11 @@ public class Decorater {
         registerDataBusReceiver();
     }
 
-    protected void onStop() {
+    public void onStop() {
         unregisterDataBusReceiver();
     }
 
-    protected void onDestroy() {
+    public void onDestroy() {
         AutoRunUtil.runAutoRunHolderByPenetration(RunTime.BEFOREONDESTROY, autoRunHolders, autoRunAble);
         autoRunHolders.clear();
         unregisterDataBusReceiver();
