@@ -2,7 +2,6 @@ package com.loror.lororboot.startable;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Looper;
@@ -62,15 +61,7 @@ public class Decorater {
         if (autoRunAble instanceof DataBusReceiver) {
             if (autoRunAble instanceof RemoteDataBusReceiver) {
                 if (receiver == null) {
-                    receiver = new BroadcastReceiver() {
-                        @Override
-                        public void onReceive(Context context, Intent intent) {
-                            String name = intent.getStringExtra("loror.RemoteDataBusReceiver.name");
-                            if (name != null) {
-                                ((DataBusReceiver) autoRunAble).receiveData(name, intent.getStringExtra("loror.RemoteDataBusReceiver.tag") != null ? null : intent);
-                            }
-                        }
-                    };
+                    receiver = DataBus.createBroadcastReceiver((DataBusReceiver) autoRunAble);
                     context.registerReceiver(receiver, new IntentFilter("loror.RemoteDataBusReceiver"));
                 }
             } else {
