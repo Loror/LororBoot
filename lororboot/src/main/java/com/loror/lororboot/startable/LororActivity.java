@@ -307,9 +307,8 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
 
     }
 
-    @Override
-    public void runUserAutoRun(String methodName) {
-        decorater.runUserAutoRun(methodName);
+    public void runAutoRunByPenetration(String methodName) {
+        decorater.runAutoRunByPenetration(methodName);
     }
 
     @Override

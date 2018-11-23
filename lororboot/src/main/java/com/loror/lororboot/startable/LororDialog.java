@@ -235,9 +235,8 @@ public class LororDialog extends AlertDialog implements StartDilogAble, DataChan
         void result(int requestCode, int resultCode, Intent data);
     }
 
-    @Override
-    public void runUserAutoRun(String methodName) {
-        decorater.runUserAutoRun(methodName);
+    public void runAutoRunByPenetration(String methodName) {
+        decorater.runAutoRunByPenetration(methodName);
     }
 
     @Override

@@ -33,7 +33,7 @@ public class Decorater {
         autoRunHolders.addAll(AutoRunUtil.findAutoRunHolders(autoRunAble));
     }
 
-    public void runUserAutoRun(String methodName) {
+    public void runAutoRunByPenetration(String methodName) {
         AutoRunUtil.runAutoRunHolderByPenetration(methodName, autoRunHolders, autoRunAble);
     }
 
