@@ -3,7 +3,6 @@ package com.loror.lororboot.startable;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -56,18 +55,6 @@ public class LororDialog extends AlertDialog implements StartDilogAble, DataChan
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
-        setOnDismissListener(new OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                if (result != null) {
-                    result.result(requestCode, resultCode, data);
-                }
-                LororDialog.this.onDismiss();
-                if (intent != null) {
-                    LororDialog.this.onDestroy();
-                }
-            }
-        });
         decorater = new Decorater(context, this);
         decorater.onCreate();
     }
@@ -96,10 +83,7 @@ public class LororDialog extends AlertDialog implements StartDilogAble, DataChan
     }
 
     protected void onDismiss() {
-        LororActivity activity = weakReference == null ? null : weakReference.get();
-        if (activity != null) {
-            activity.unRegisterBinder(this);
-        }
+
     }
 
     @Override
@@ -113,6 +97,22 @@ public class LororDialog extends AlertDialog implements StartDilogAble, DataChan
                 ((LororActivity) context).registerBinder(this);
             }
         }
+    }
+
+    @Override
+    public final void dismiss() {
+        LororActivity activity = weakReference == null ? null : weakReference.get();
+        if (activity != null) {
+            activity.unRegisterBinder(this);
+        }
+        if (result != null) {
+            result.result(requestCode, resultCode, data);
+        }
+        LororDialog.this.onDismiss();
+        if (intent != null) {
+            LororDialog.this.onDestroy();
+        }
+        super.dismiss();
     }
 
     public void sendDataToBus(String name, Intent data) {
