@@ -3,11 +3,13 @@ package com.loror.lororboot.startable;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 import android.view.Window;
 import android.widget.Toast;
@@ -26,7 +28,7 @@ import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 import java.util.List;
 
-public class LororDialog extends AlertDialog implements StartDilogAble, DataChangeAble, AutoRunAble {
+public class LororDialog extends AlertDialog implements DialogInterface.OnDismissListener, StartDilogAble, DataChangeAble, AutoRunAble {
 
     protected static final int RESULT_OK = -1;
     protected static final int RESULT_CANCEL = 0;
@@ -41,6 +43,7 @@ public class LororDialog extends AlertDialog implements StartDilogAble, DataChan
     private List<BindHolder> bindHolders = new LinkedList<>();
     private WeakReference<LororActivity> weakReference;
     private Decorater decorater;
+    private OnDismissListener listener;
 
     public LororDialog(@NonNull Context context) {
         this(context, 0);
@@ -57,6 +60,12 @@ public class LororDialog extends AlertDialog implements StartDilogAble, DataChan
         super.onCreate(savedInstanceState);
         decorater = new Decorater(context, this);
         decorater.onCreate();
+        super.setOnDismissListener(this);
+    }
+
+    @Override
+    public void setOnDismissListener(@Nullable OnDismissListener listener) {
+        this.listener = listener;
     }
 
     @Override
@@ -100,7 +109,7 @@ public class LororDialog extends AlertDialog implements StartDilogAble, DataChan
     }
 
     @Override
-    public final void dismiss() {
+    public final void onDismiss(DialogInterface dialog) {
         LororActivity activity = weakReference == null ? null : weakReference.get();
         if (activity != null) {
             activity.unRegisterBinder(this);
@@ -108,11 +117,13 @@ public class LororDialog extends AlertDialog implements StartDilogAble, DataChan
         if (result != null) {
             result.result(requestCode, resultCode, data);
         }
-        LororDialog.this.onDismiss();
-        if (intent != null) {
-            LororDialog.this.onDestroy();
+        if (listener != null) {
+            listener.onDismiss(dialog);
         }
-        super.dismiss();
+        onDismiss();
+        if (intent != null) {
+            onDestroy();
+        }
     }
 
     public void sendDataToBus(String name, Intent data) {
