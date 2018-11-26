@@ -168,7 +168,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
                     }
                 }
             };
-            bindRunnable.run();
+            handler.post(bindRunnable);
         }
     }
 
