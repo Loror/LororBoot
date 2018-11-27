@@ -10,6 +10,7 @@ import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.SparseArray;
@@ -105,6 +106,14 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
 
     @Override
     public void finish() {
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        if (fragments != null) {
+            for (Fragment fragment : fragments) {
+                if (fragment instanceof LororFragment) {
+                    ((LororFragment) fragment).release();
+                }
+            }
+        }
         super.finish();
         decorater.release();
     }

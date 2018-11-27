@@ -109,12 +109,10 @@ public class LororFragment extends Fragment implements StartDilogAble, DataChang
         super.onDestroy();
     }
 
-    @Override
-    protected void finalize() throws Throwable {
+    public void release() {
         if (decorater != null) {
             decorater.release();
         }
-        super.finalize();
     }
 
     public void sendDataToBus(String name, Intent data) {
