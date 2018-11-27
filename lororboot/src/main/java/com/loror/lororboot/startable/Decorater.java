@@ -118,4 +118,9 @@ public class Decorater {
         autoRunHolders.clear();
         unregisterDataBusReceiver();
     }
+
+    public void release() {
+        autoRunHolders.clear();
+        unregisterDataBusReceiver();
+    }
 }
