@@ -110,7 +110,9 @@ public class LororFragment extends Fragment implements StartDilogAble, DataChang
     }
 
     public void release() {
-        decorater.release();
+        if (decorater != null) {
+            decorater.release();
+        }
     }
 
     public void sendDataToBus(String name, Intent data) {
