@@ -104,7 +104,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
         super.onDestroy();
     }
 
-    //用于适配部分oppo手机finish不调用onDestroy生命周期的问题
+    //用于适配部分oppo手机finish后不调用onDestroy生命周期的问题
     @Override
     public void finish() {
         List<Fragment> fragments = getSupportFragmentManager().getFragments();
