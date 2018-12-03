@@ -64,7 +64,6 @@ public abstract class BindAbleItem implements DataChangeAble {
         this.size = mark.size;
         //刷新显示并触发事件，解决控件复用问题
         BindUtils.initHolders(bindHolders, this, position);
-        setState(null);
     }
 
     @Override
