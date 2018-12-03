@@ -40,11 +40,12 @@ import java.util.List;
 
 public class LororActivity extends AppCompatActivity implements StartDilogAble, DataChangeAble, AutoRunAble {
     protected Context context = this;
+    private boolean bindAbleAutoRefresh = true;
     private List<BindHolder> bindHolders = new LinkedList<>();
     private List<BindAble> registedBinders = new ArrayList<>();
     private WeakReference<List<BindAble>> weakReferenceBindAbleList = new WeakReference<>(registedBinders);
     private Runnable bindRunnable;
-    private Handler handler;
+    private Handler handler = new Handler();
     private int requestCode;
     private SparseArray<String> permissionRequestMap;
     private Method permissionResult;
@@ -122,8 +123,6 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     @Override
     public void onContentChanged() {
         super.onContentChanged();
-        BindUtils.findBindHoldersAndInit(bindHolders, this);
-        ViewUtil.click(this);
         beginBind(this);
     }
 
@@ -134,7 +133,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     public void registerBinder(BindAble bindAble) {
         if (!registedBinders.contains(bindAble)) {
             registedBinders.add(bindAble);
-            beginBind(this);
+            beginBind(null);
         }
     }
 
@@ -151,40 +150,58 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
         return false;
     }
 
+    public void setBindAbleAutoRefresh(boolean bindAbleAutoRefresh) {
+        this.bindAbleAutoRefresh = bindAbleAutoRefresh;
+    }
+
     @Override
     public final void beginBind(Object tag) {
-        if (handler == null) {
-            handler = new Handler();
+        if (tag != null) {
+            BindUtils.findBindHoldersAndInit(bindHolders, this);
+            ViewUtil.click(this);
+        }
+        if (bindAbleAutoRefresh && bindRunnable == null) {
             final WeakReference<LororActivity> weakReference = new WeakReference<>(this);
             bindRunnable = new Runnable() {
                 @Override
                 public void run() {
-                    LororActivity activity = weakReference.get();
-                    List<BindAble> registedBinders = weakReferenceBindAbleList.get();
-                    if (activity != null && !activity.isFinishing()) {
-                        if (bindHolders.size() > 0 || registedBinders.size() > 0) {
-                            BindUtils.showBindHolders(bindHolders, activity);
-                            if (registedBinders != null) {
-                                int size = registedBinders.size();
-                                for (int i = 0; i < size; i++) {
-                                    registedBinders.get(i).beginBind(this);
-                                }
-                            }
-                            handler.removeCallbacks(bindRunnable);
-                            handler.postDelayed(bindRunnable, 50);
-                        } else {
-                            handler.removeCallbacks(bindRunnable);
-                            handler = null;
-                        }
-                    } else {
-                        bindHolders.clear();
-                        if (registedBinders != null) {
-                            registedBinders.clear();
-                        }
+                    if (weakReference.get() != null) {
+                        setState(null);
                     }
                 }
             };
             handler.post(bindRunnable);
+        }
+    }
+
+    @Override
+    public void setState(Runnable runnable) {
+        if (runnable != null) {
+            runnable.run();
+        }
+        List<BindAble> registedBinders = weakReferenceBindAbleList.get();
+        if (!isFinishing()) {
+            if (bindHolders.size() > 0 || (registedBinders != null && registedBinders.size() > 0)) {
+                BindUtils.showBindHolders(bindHolders, this);
+                int size = registedBinders.size();
+                for (int i = 0; i < size; i++) {
+                    registedBinders.get(i).setState(null);
+                }
+                if (bindRunnable != null) {
+                    handler.removeCallbacks(bindRunnable);
+                    handler.postDelayed(bindRunnable, 50);
+                }
+            } else {
+                if (bindRunnable != null) {
+                    handler.removeCallbacks(bindRunnable);
+                    handler = null;
+                }
+            }
+        } else {
+            bindHolders.clear();
+            if (registedBinders != null) {
+                registedBinders.clear();
+            }
         }
     }
 

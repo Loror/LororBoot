@@ -71,12 +71,7 @@ public class LororDialog extends AlertDialog implements DialogInterface.OnDismis
     @Override
     protected void onStart() {
         decorater.onStart();
-        LororActivity activity = weakReference == null ? null : weakReference.get();
-        if (activity != null) {
-            if (bindHolders.size() > 0) {
-                activity.registerBinder(this);
-            }
-        }
+        beginBind(null);
         super.onStart();
     }
 
@@ -98,14 +93,7 @@ public class LororDialog extends AlertDialog implements DialogInterface.OnDismis
     @Override
     public void onContentChanged() {
         super.onContentChanged();
-        if (context instanceof LororActivity) {
-            weakReference = new WeakReference<>((LororActivity) context);
-            BindUtils.findBindHoldersAndInit(bindHolders, this);
-            ViewUtil.click(this);
-            if (bindHolders.size() > 0) {
-                ((LororActivity) context).registerBinder(this);
-            }
-        }
+        beginBind(this);
     }
 
     @Override
@@ -132,6 +120,26 @@ public class LororDialog extends AlertDialog implements DialogInterface.OnDismis
 
     @Override
     public void beginBind(Object tag) {
+        if (tag != null) {
+            BindUtils.findBindHoldersAndInit(bindHolders, this);
+            ViewUtil.click(this);
+            if (context instanceof LororActivity) {
+                weakReference = new WeakReference<>((LororActivity) context);
+            }
+        }
+        LororActivity activity = weakReference == null ? null : weakReference.get();
+        if (activity != null) {
+            if (bindHolders.size() > 0) {
+                activity.registerBinder(this);
+            }
+        }
+    }
+
+    @Override
+    public void setState(Runnable runnable) {
+        if (runnable != null) {
+            runnable.run();
+        }
         LororActivity activity = weakReference == null ? null : weakReference.get();
         if (activity != null) {
             BindUtils.showBindHolders(bindHolders, this);

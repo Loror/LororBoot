@@ -7,9 +7,14 @@ public interface BindAble {
     boolean onBindFind(BindHolder holder);
 
     /**
-     * 更新显示
+     * 查找Bind
      */
     void beginBind(Object tag);
+
+    /**
+     * 更新显示
+     */
+    void setState(Runnable runnable);
 
     /**
      * 事件触发

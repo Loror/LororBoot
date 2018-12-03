@@ -404,7 +404,7 @@ public class BindUtils {
                         } else if (width > 1080) {
                             width = 1080;
                         }
-                        ImageUtil imageUtil = ImageUtil.with(imageView.getContext()).from(vol).to(imageView).setWidthLimit(width).setNoSdCache(LororApplication.NOIMAGESDCARDCACHE);
+                        ImageUtil imageUtil = ImageUtil.with(imageView.getContext()).from(vol).to(imageView).setWidthLimit(width).setNoSdCache(LororApplication.NoImageSdCardCache);
                         if (bindHolder.imagePlace != 0) {
                             imageUtil.setDefaultImage(bindHolder.imagePlace);
                         }

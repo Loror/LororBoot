@@ -35,15 +35,7 @@ public class LororFragment extends Fragment implements StartDilogAble, DataChang
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Activity activity = getActivity();
-        if (activity instanceof LororActivity) {
-            weakReference = new WeakReference<>((LororActivity) activity);
-            BindUtils.findBindHoldersAndInit(bindHolders, this);
-            ViewUtil.click(this);
-            if (bindHolders.size() > 0) {
-                ((LororActivity) activity).registerBinder(this);
-            }
-        }
+        beginBind(this);
     }
 
     @Override
@@ -70,12 +62,7 @@ public class LororFragment extends Fragment implements StartDilogAble, DataChang
 
     @Override
     public void onStart() {
-        LororActivity activity = weakReference == null ? null : weakReference.get();
-        if (activity != null) {
-            if (bindHolders.size() > 0) {
-                activity.registerBinder(this);
-            }
-        }
+        beginBind(null);
         super.onStart();
     }
 
@@ -121,6 +108,27 @@ public class LororFragment extends Fragment implements StartDilogAble, DataChang
 
     @Override
     public final void beginBind(Object tag) {
+        if (tag != null) {
+            BindUtils.findBindHoldersAndInit(bindHolders, this);
+            ViewUtil.click(this);
+            Activity activity = getActivity();
+            if (activity instanceof LororActivity) {
+                weakReference = new WeakReference<>((LororActivity) activity);
+            }
+        }
+        LororActivity activity = weakReference == null ? null : weakReference.get();
+        if (activity != null) {
+            if (bindHolders.size() > 0) {
+                activity.registerBinder(this);
+            }
+        }
+    }
+
+    @Override
+    public void setState(Runnable runnable) {
+        if (runnable != null) {
+            runnable.run();
+        }
         LororActivity activity = weakReference == null ? null : weakReference.get();
         if (activity != null) {
             BindUtils.showBindHolders(bindHolders, this);
