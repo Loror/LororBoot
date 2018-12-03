@@ -38,7 +38,7 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
     @Bind(id = R.id.editText)
     String doubleBindText = "绑定EditText内容";
     @Bind(id = R.id.imageView, imagePlace = R.mipmap.ic_launcher, bitmapConverter = RoundBitmapConverter.class)
-    String image = "http://img.zcool.cn/community/0117e2571b8b246ac72538120dd8a4.jpg@1280w_1l_2o_100sh.jpg";
+    String image;
     @Bind(id = R.id.listView)
     List<ListItem> listItems = new ArrayList<>();
     @Bind(id = R.id.banner, imagePlace = R.mipmap.ic_launcher)
@@ -48,6 +48,11 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+    }
+
+    private void initView() {
+        image = "http://img.zcool.cn/community/0117e2571b8b246ac72538120dd8a4.jpg@1280w_1l_2o_100sh.jpg";
         for (int i = 0; i < 10; i++) {
             ListItem item = new ListItem();
             item.text = "第" + i + "行";
@@ -85,6 +90,8 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
         Log.e("PERMISSION", permission + " " + success);
         if (!success) {
             Toast.makeText(this, "获取权限失败", Toast.LENGTH_SHORT).show();
+        } else {
+            initView();
         }
     }
 
