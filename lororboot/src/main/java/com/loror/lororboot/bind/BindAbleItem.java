@@ -41,11 +41,6 @@ public abstract class BindAbleItem implements DataChangeAble {
     }
 
     @Override
-    public void setData(String fieldName, Object value) {
-        DataChangeUtils.setData(fieldName, value, position, bindHolders, this);
-    }
-
-    @Override
     public void notifyListDataChangeById(int id) {
         DataChangeUtils.notifyListDataChangeById(id, position, bindHolders, this);
     }

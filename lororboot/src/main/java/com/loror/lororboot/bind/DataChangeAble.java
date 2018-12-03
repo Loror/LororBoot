@@ -9,11 +9,6 @@ public interface DataChangeAble extends BindAble {
     void setData(@IdRes int id, Object value);
 
     /**
-     * 修改数据并刷新
-     */
-    void setData(String fieldName, Object value);
-
-    /**
      * 刷新List
      */
     void notifyListDataChangeById(@IdRes int id);

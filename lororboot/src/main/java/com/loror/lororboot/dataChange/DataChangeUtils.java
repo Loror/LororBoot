@@ -29,24 +29,6 @@ public class DataChangeUtils {
     }
 
     /**
-     * 设置bind数据
-     */
-    public static void setData(String fieldName, Object value, Object tag, List<BindHolder> bindHolders, DataChangeAble changeAble) {
-        BindHolder holder = BindUtils.findHolderByName(bindHolders, fieldName);
-        if (holder != null) {
-            holder.getField().setAccessible(true);
-            try {
-                holder.getField().set(changeAble, value);
-                if (tag == null || tag.equals(holder.getTag())) {
-                    BindUtils.showBindHolder(holder, changeAble);
-                }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
      * 通知list刷新
      */
     public static void notifyListDataChangeById(@IdRes int id, Object tag, List<BindHolder> bindHolders, DataChangeAble changeAble) {

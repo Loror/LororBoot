@@ -146,11 +146,6 @@ public class LororFragment extends Fragment implements StartDilogAble, DataChang
         DataChangeUtils.setData(id, value, null, bindHolders, this);
     }
 
-    @Override
-    public void setData(String fieldName, Object value) {
-        DataChangeUtils.setData(fieldName, value, null, bindHolders, this);
-    }
-
     public void notifyListDataChangeById(@IdRes int id) {
         DataChangeUtils.notifyListDataChangeById(id, null, bindHolders, this);
     }

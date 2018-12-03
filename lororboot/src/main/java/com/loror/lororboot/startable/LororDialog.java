@@ -157,11 +157,6 @@ public class LororDialog extends AlertDialog implements DialogInterface.OnDismis
         DataChangeUtils.setData(id, value, null, bindHolders, this);
     }
 
-    @Override
-    public void setData(String fieldName, Object value) {
-        DataChangeUtils.setData(fieldName, value, null, bindHolders, this);
-    }
-
     public void notifyListDataChangeById(@IdRes int id) {
         DataChangeUtils.notifyListDataChangeById(id, null, bindHolders, this);
     }
