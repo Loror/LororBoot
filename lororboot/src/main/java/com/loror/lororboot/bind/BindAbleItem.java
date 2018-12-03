@@ -62,6 +62,8 @@ public abstract class BindAbleItem implements DataChangeAble {
         this.bindHolders = bindHolders;
         this.position = mark.position;
         this.size = mark.size;
+        //刷新显示并触发事件，解决控件复用问题
+        BindUtils.initHolders(bindHolders, this, position);
         setState(null);
     }
 
@@ -70,7 +72,6 @@ public abstract class BindAbleItem implements DataChangeAble {
         if (runnable != null) {
             runnable.run();
         }
-        //刷新显示并触发事件，解决控件复用问题
-        BindUtils.initHolders(bindHolders, this, position);
+        BindUtils.showBindHolders(bindHolders, this);
     }
 }
