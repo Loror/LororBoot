@@ -188,6 +188,7 @@ public class BindUtils {
                     }
                     try {
                         Class<?> type = field.getType();
+                        String old = bindHolder.compareTag == null ? null : String.valueOf(bindHolder.compareTag);
                         if (type == String.class) {
                             field.set(bindAble, bindHolder.compareTag = value);
                         } else if (type == Integer.class) {
@@ -203,6 +204,7 @@ public class BindUtils {
                         } else {
                             throw new IllegalStateException("EditText为双向绑定，只支持属性为String，CharSequence，Integer，Long，Float，Double类型(" + bindAble.getClass().getName() + "->" + field.getName() + ")");
                         }
+                        bindAble.event(bindHolder, old, bindHolder.compareTag == null ? null : String.valueOf(bindHolder.compareTag));
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
@@ -223,6 +225,7 @@ public class BindUtils {
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
+                    bindAble.event(bindHolder, String.valueOf(!isChecked), String.valueOf(isChecked));
                 }
             });
         } else if (view instanceof ProgressBar) {
