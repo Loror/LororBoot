@@ -45,7 +45,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     private List<BindAble> registedBinders = new ArrayList<>();
     private WeakReference<List<BindAble>> weakReferenceBindAbleList = new WeakReference<>(registedBinders);
     private Runnable bindRunnable;
-    private Handler handler = new Handler();
+    private static Handler handler = new Handler();
     private int requestCode;
     private SparseArray<String> permissionRequestMap;
     private Method permissionResult;
