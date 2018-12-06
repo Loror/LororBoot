@@ -56,6 +56,7 @@ public abstract class BindAbleItem implements DataChangeAble {
         DataChangeUtils.notifyListDataChangeById(id, position, bindHolders, this);
     }
 
+    @Deprecated
     protected final void refreshMark(BinderAdapter.Mark mark){
         this.position = mark.position;
         this.size = mark.size;
