@@ -32,6 +32,30 @@ public class BinderAdapter extends BaseAdapter {
         return context;
     }
 
+    @Override
+    public int getViewTypeCount() {
+        int count = super.getViewTypeCount();
+        if (list.size() > 0) {
+            Object item = list.get(0);
+            if (item instanceof BindAbleItem && ((BindAbleItem) item).viewTypeCount() > 1) {
+                count = ((BindAbleItem) item).viewTypeCount();
+            }
+        }
+        return count;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        int type = super.getItemViewType(position);
+        if (list.size() > 0) {
+            Object item = list.get(position);
+            if (item instanceof BindAbleItem && ((BindAbleItem) item).viewTypeCount() > 1) {
+                type = ((BindAbleItem) item).viewType();
+            }
+        }
+        return type;
+    }
+
     public void setItemEnable(boolean itemEnable) {
         this.itemEnable = itemEnable;
     }

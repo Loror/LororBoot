@@ -21,6 +21,18 @@ public class RecyclerBindAbleAdapter extends RecyclerView.Adapter<RecyclerBindAb
         inflater = LayoutInflater.from(context);
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        int type = super.getItemViewType(position);
+        if (list.size() > 0) {
+            Object item = list.get(position);
+            if (item instanceof BindAbleItem && ((BindAbleItem) item).viewTypeCount() > 1) {
+                type = ((BindAbleItem) item).viewType();
+            }
+        }
+        return type;
+    }
+
     public Context getContext() {
         return context;
     }

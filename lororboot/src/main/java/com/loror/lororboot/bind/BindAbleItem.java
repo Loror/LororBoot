@@ -1,5 +1,7 @@
 package com.loror.lororboot.bind;
 
+import android.support.annotation.LayoutRes;
+
 import com.loror.lororUtil.view.ViewUtil;
 import com.loror.lororboot.dataChange.DataChangeUtils;
 
@@ -23,6 +25,15 @@ public abstract class BindAbleItem implements DataChangeAble {
         return size;
     }
 
+    public int viewTypeCount() {
+        return 1;
+    }
+
+    public int viewType() {
+        return 0;
+    }
+
+    @LayoutRes
     public abstract int getLayout();
 
     @Override
