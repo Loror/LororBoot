@@ -9,7 +9,17 @@ public class ListItem extends BindAbleItem {
     public String text;
 
     @Override
+    public int viewType() {
+        return obtainPosition() % 2 == 0 ? 0 : 1;
+    }
+
+    @Override
+    public int viewTypeCount() {
+        return 2;
+    }
+
+    @Override
     public int getLayout() {
-        return R.layout.item_list_view;
+        return obtainPosition() % 2 == 0 ? R.layout.item_list_view : R.layout.item_list_view_2;
     }
 }

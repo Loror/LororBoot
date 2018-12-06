@@ -20,7 +20,7 @@ public class DataChangeUtils {
             try {
                 holder.getField().set(changeAble, value);
                 if (tag == null || tag.equals(holder.getTag())) {
-                    BindUtils.showBindHolder(holder, changeAble);
+                    changeAble.changeState(null);
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -36,7 +36,7 @@ public class DataChangeUtils {
         if (bindHolder != null) {
             bindHolder.resetListCompareTag();
             if (tag == null || tag.equals(bindHolder.getTag())) {
-                BindUtils.showBindHolder(bindHolder, changeAble);
+                changeAble.changeState(null);
             }
         }
     }

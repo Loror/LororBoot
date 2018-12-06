@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 //继承DataBusReceiver只能接收到同一进程发送的数据，继承RemoteDataBusReceiver可接收到同一进程和其他进程发送的消息，可根据需要选择
-@RequestPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+@RequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 public class MainActivity extends LororActivity implements RemoteDataBusReceiver {
 
     /**
@@ -48,17 +48,16 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-    }
-
-    private void initView() {
-        image = "http://img.zcool.cn/community/0117e2571b8b246ac72538120dd8a4.jpg@1280w_1l_2o_100sh.jpg";
         for (int i = 0; i < 10; i++) {
             ListItem item = new ListItem();
             item.text = "第" + i + "行";
             listItems.add(item);
         }
         notifyListDataChangeById(R.id.listView);//若list的size发生变化，不调用该方法也会自动刷新，如仅修改了list中对象属性而size未改变应主动调用该方法通知刷新
+    }
+
+    private void initView() {
+        image = "http://img.zcool.cn/community/0117e2571b8b246ac72538120dd8a4.jpg@1280w_1l_2o_100sh.jpg";
         listBanners.add(new Banner("http://img05.tooopen.com/images/20150820/tooopen_sy_139205349641.jpg"));
         listBanners.add(new Banner("http://i0.hdslb.com/bfs/archive/83a12dcbe6401c27e16a3333b1eba91191ac3c8e.jpg"));
         notifyListDataChangeById(R.id.banner);

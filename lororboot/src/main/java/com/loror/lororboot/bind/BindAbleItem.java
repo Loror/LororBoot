@@ -56,6 +56,12 @@ public abstract class BindAbleItem implements DataChangeAble {
         DataChangeUtils.notifyListDataChangeById(id, position, bindHolders, this);
     }
 
+    protected final void refreshMark(BinderAdapter.Mark mark){
+        this.position = mark.position;
+        this.size = mark.size;
+        this.outBindAble = mark.bindAble;
+    }
+
     @Override
     public final void updateBind(Object tag) {
         BinderAdapter.Mark mark = (BinderAdapter.Mark) tag;
@@ -67,12 +73,8 @@ public abstract class BindAbleItem implements DataChangeAble {
         } else {
             bindHolders = (List<BindHolder>) mark.convertView.getTag();
         }
-        outBindAble = mark.bindAble;
         ViewUtil.click(this, mark.convertView);
-        mark.parent = null;
         this.bindHolders = bindHolders;
-        this.position = mark.position;
-        this.size = mark.size;
         //刷新显示并触发事件，解决控件复用问题
         BindUtils.initHolders(bindHolders, this, position);
     }

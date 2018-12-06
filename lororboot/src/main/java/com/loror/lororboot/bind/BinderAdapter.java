@@ -102,15 +102,15 @@ public class BinderAdapter extends BaseAdapter {
                 throw new IllegalStateException("AbsListView只支持绑定List<? extends BindAbleItem>类型");
             }
             BindAbleItem bindAbleItem = (BindAbleItem) item;
-            if (convertView == null || convertView instanceof EmptyLayout) {
-                convertView = inflater.inflate(bindAbleItem.getLayout(), null, false);
-            }
             Mark mark = new Mark();
             mark.bindAble = this.bindAble;
             mark.position = position;
             mark.size = list.size();
+            bindAbleItem.refreshMark(mark);
+            if (convertView == null || convertView instanceof EmptyLayout) {
+                convertView = inflater.inflate(bindAbleItem.getLayout(), null, false);
+            }
             mark.convertView = convertView;
-            mark.parent = parent;
             bindAbleItem.updateBind(mark);
         }
         return convertView;
@@ -137,6 +137,5 @@ public class BinderAdapter extends BaseAdapter {
         int size;
         BindAble bindAble;
         View convertView;
-        ViewGroup parent;
     }
 }
