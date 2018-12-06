@@ -3,6 +3,7 @@ package com.loror.lororboot.bind;
 import android.support.annotation.LayoutRes;
 
 import com.loror.lororUtil.view.ViewUtil;
+import com.loror.lororboot.annotation.FrameCall;
 import com.loror.lororboot.dataChange.DataChangeUtils;
 
 import java.util.LinkedList;
@@ -56,7 +57,7 @@ public abstract class BindAbleItem implements DataChangeAble {
         DataChangeUtils.notifyListDataChangeById(id, position, bindHolders, this);
     }
 
-    @Deprecated
+    @FrameCall
     protected final void refreshMark(BinderAdapter.Mark mark){
         this.position = mark.position;
         this.size = mark.size;
