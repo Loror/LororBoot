@@ -35,7 +35,7 @@ public class LororFragment extends Fragment implements StartDilogAble, DataChang
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        beginBind(this);
+        updateBind(this);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class LororFragment extends Fragment implements StartDilogAble, DataChang
 
     @Override
     public void onStart() {
-        beginBind(null);
+        updateBind(null);
         super.onStart();
     }
 
@@ -107,7 +107,7 @@ public class LororFragment extends Fragment implements StartDilogAble, DataChang
     }
 
     @Override
-    public final void beginBind(Object tag) {
+    public final void updateBind(Object tag) {
         if (tag != null) {
             BindUtils.findBindHoldersAndInit(bindHolders, this);
             ViewUtil.click(this);
@@ -125,7 +125,7 @@ public class LororFragment extends Fragment implements StartDilogAble, DataChang
     }
 
     @Override
-    public void setState(Runnable runnable) {
+    public void changeState(Runnable runnable) {
         if (runnable != null) {
             runnable.run();
         }

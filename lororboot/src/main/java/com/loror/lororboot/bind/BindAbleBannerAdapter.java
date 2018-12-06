@@ -76,7 +76,7 @@ public class BindAbleBannerAdapter extends PagerAdapter {
             mark.position = position;
             mark.convertView = view;
             mark.parent = contanier;
-            bindAbleItem.beginBind(mark);
+            bindAbleItem.updateBind(mark);
         } else {
             ImageUtil imageUtil = ImageUtil.with(context).from(String.valueOf(list.get(position))).to((ImageView) view);
             int width = widthLimit;

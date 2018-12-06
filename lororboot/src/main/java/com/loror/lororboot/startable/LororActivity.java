@@ -123,7 +123,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     @Override
     public void onContentChanged() {
         super.onContentChanged();
-        beginBind(this);
+        updateBind(this);
     }
 
     public void sendDataToBus(String name, Intent data) {
@@ -133,7 +133,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     public void registerBinder(BindAble bindAble) {
         if (!registedBinders.contains(bindAble)) {
             registedBinders.add(bindAble);
-            beginBind(null);
+            updateBind(null);
         }
     }
 
@@ -155,7 +155,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     }
 
     @Override
-    public final void beginBind(Object tag) {
+    public final void updateBind(Object tag) {
         if (tag != null) {
             BindUtils.findBindHoldersAndInit(bindHolders, this);
             ViewUtil.click(this);
@@ -166,7 +166,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
                 @Override
                 public void run() {
                     if (weakReference.get() != null) {
-                        setState(null);
+                        changeState(null);
                     }
                 }
             };
@@ -175,7 +175,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     }
 
     @Override
-    public void setState(Runnable runnable) {
+    public void changeState(Runnable runnable) {
         if (runnable != null) {
             runnable.run();
         }
@@ -185,7 +185,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
                 BindUtils.showBindHolders(bindHolders, this);
                 int size = registedBinders.size();
                 for (int i = 0; i < size; i++) {
-                    registedBinders.get(i).setState(null);
+                    registedBinders.get(i).changeState(null);
                 }
                 if (bindRunnable != null && bindAbleAutoRefresh) {
                     handler.removeCallbacks(bindRunnable);

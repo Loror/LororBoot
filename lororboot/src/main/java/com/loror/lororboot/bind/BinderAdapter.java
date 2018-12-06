@@ -87,7 +87,7 @@ public class BinderAdapter extends BaseAdapter {
             mark.size = list.size();
             mark.convertView = convertView;
             mark.parent = parent;
-            bindAbleItem.beginBind(mark);
+            bindAbleItem.updateBind(mark);
         }
         return convertView;
     }

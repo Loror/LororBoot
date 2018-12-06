@@ -45,7 +45,7 @@ public class RecyclerBindAbleAdapter extends RecyclerView.Adapter<RecyclerBindAb
         mark.size = list.size();
         mark.position = position;
         mark.convertView = holder.itemView;
-        bindAbleItem.beginBind(mark);
+        bindAbleItem.updateBind(mark);
     }
 
     @Override

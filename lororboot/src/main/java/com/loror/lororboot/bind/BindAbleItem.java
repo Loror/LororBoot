@@ -46,7 +46,7 @@ public abstract class BindAbleItem implements DataChangeAble {
     }
 
     @Override
-    public final void beginBind(Object tag) {
+    public final void updateBind(Object tag) {
         BinderAdapter.Mark mark = (BinderAdapter.Mark) tag;
         List<BindHolder> bindHolders;
         if (mark.convertView.getTag() == null) {
@@ -67,7 +67,7 @@ public abstract class BindAbleItem implements DataChangeAble {
     }
 
     @Override
-    public void setState(Runnable runnable) {
+    public void changeState(Runnable runnable) {
         if (runnable != null) {
             runnable.run();
         }

@@ -9,12 +9,12 @@ public interface BindAble {
     /**
      * 查找Bind
      */
-    void beginBind(Object tag);
+    void updateBind(Object tag);
 
     /**
      * 更新显示
      */
-    void setState(Runnable runnable);
+    void changeState(Runnable runnable);
 
     /**
      * 事件触发

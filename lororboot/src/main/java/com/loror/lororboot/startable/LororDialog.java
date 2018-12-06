@@ -71,7 +71,7 @@ public class LororDialog extends AlertDialog implements DialogInterface.OnDismis
     @Override
     protected void onStart() {
         decorater.onStart();
-        beginBind(null);
+        updateBind(null);
         super.onStart();
     }
 
@@ -93,7 +93,7 @@ public class LororDialog extends AlertDialog implements DialogInterface.OnDismis
     @Override
     public void onContentChanged() {
         super.onContentChanged();
-        beginBind(this);
+        updateBind(this);
     }
 
     @Override
@@ -119,7 +119,7 @@ public class LororDialog extends AlertDialog implements DialogInterface.OnDismis
     }
 
     @Override
-    public void beginBind(Object tag) {
+    public void updateBind(Object tag) {
         if (tag != null) {
             BindUtils.findBindHoldersAndInit(bindHolders, this);
             ViewUtil.click(this);
@@ -136,7 +136,7 @@ public class LororDialog extends AlertDialog implements DialogInterface.OnDismis
     }
 
     @Override
-    public void setState(Runnable runnable) {
+    public void changeState(Runnable runnable) {
         if (runnable != null) {
             runnable.run();
         }
