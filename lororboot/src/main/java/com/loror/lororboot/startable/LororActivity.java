@@ -39,6 +39,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class LororActivity extends AppCompatActivity implements StartDilogAble, DataChangeAble, AutoRunAble {
+
     protected Context context = this;
     private WeakReference<LororActivity> weakReference;
     private boolean bindAbleAutoRefresh = true;
@@ -158,6 +159,10 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
                 public void run() {
                     LororActivity activity = weakReference == null ? null : weakReference.get();
                     if (activity != null) {
+                        if (bindHolders.size() == 0 && registedBinders.size() == 0) {
+                            bindRunnable = null;
+                            return;
+                        } // 无需开启刷新
                         if (!isFinishing()) {
                             changeState(null);
                             changChildBinderState();
