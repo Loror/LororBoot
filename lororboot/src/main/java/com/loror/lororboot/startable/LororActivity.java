@@ -40,10 +40,10 @@ import java.util.List;
 
 public class LororActivity extends AppCompatActivity implements StartDilogAble, DataChangeAble, AutoRunAble {
     protected Context context = this;
+    private WeakReference<LororActivity> weakReference;
     private boolean bindAbleAutoRefresh = true;
     private List<BindHolder> bindHolders = new LinkedList<>();
     private List<BindAble> registedBinders = new ArrayList<>();
-    private WeakReference<List<BindAble>> weakReferenceBindAbleList = new WeakReference<>(registedBinders);
     private Runnable bindRunnable;
     private static Handler handler = new Handler();
     private int requestCode;
@@ -62,11 +62,11 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
         decorater.onCreate();
     }
 
-    private void requestPermissions(RequestPermission permission) {
-        String[] requests = permission.value();
-        for (int i = 0; i < requests.length; i++) {
-            requestPermission(requests[i]);
-        }
+    @Override
+    public void onContentChanged() {
+        super.onContentChanged();
+        updateBind(this);
+        startBinder();
     }
 
     @Override
@@ -120,12 +120,6 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
         decorater.release();
     }
 
-    @Override
-    public void onContentChanged() {
-        super.onContentChanged();
-        updateBind(this);
-    }
-
     public void sendDataToBus(String name, Intent data) {
         DataBus.notifyReceivers(name, data, this);
     }
@@ -133,7 +127,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     public void registerBinder(BindAble bindAble) {
         if (!registedBinders.contains(bindAble)) {
             registedBinders.add(bindAble);
-            updateBind(null);
+            startBinder();
         }
     }
 
@@ -152,21 +146,32 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
 
     public void setBindAbleAutoRefresh(boolean bindAbleAutoRefresh) {
         this.bindAbleAutoRefresh = bindAbleAutoRefresh;
+        if (bindAbleAutoRefresh) {
+            startBinder();
+        }
     }
 
-    @Override
-    public final void updateBind(Object tag) {
-        if (tag != null) {
-            BindUtils.findBindHoldersAndInit(bindHolders, this);
-            ViewUtil.click(this);
-        }
+    protected void startBinder() {
         if (bindAbleAutoRefresh && bindRunnable == null) {
-            final WeakReference<LororActivity> weakReference = new WeakReference<>(this);
             bindRunnable = new Runnable() {
                 @Override
                 public void run() {
-                    if (weakReference.get() != null) {
-                        changeState(null);
+                    if (!bindAbleAutoRefresh) {
+                        bindRunnable = null;
+                        return;
+                    }
+                    LororActivity activity = weakReference == null ? null : weakReference.get();
+                    if (activity != null) {
+                        if (!isFinishing()) {
+                            changeState(null);
+                            changChildBinderState();
+                            handler.postDelayed(bindRunnable, 50);
+                        } else {
+                            handler.removeCallbacks(bindRunnable);
+                            bindRunnable = null;
+                            bindHolders.clear();
+                            registedBinders.clear();
+                        }
                     }
                 }
             };
@@ -174,35 +179,26 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
         }
     }
 
+    protected void changChildBinderState() {
+        int size = registedBinders.size();
+        for (int i = 0; i < size; i++) {
+            registedBinders.get(i).changeState(null);
+        }
+    }
+
+    @Override
+    public final void updateBind(Object tag) {
+        weakReference = new WeakReference<>(this);
+        BindUtils.findBindHoldersAndInit(bindHolders, this);
+        ViewUtil.click(this);
+    }
+
     @Override
     public void changeState(Runnable runnable) {
         if (runnable != null) {
             runnable.run();
         }
-        List<BindAble> registedBinders = weakReferenceBindAbleList.get();
-        if (!isFinishing()) {
-            if (bindHolders.size() > 0 || (registedBinders != null && registedBinders.size() > 0)) {
-                BindUtils.showBindHolders(bindHolders, this);
-                int size = registedBinders.size();
-                for (int i = 0; i < size; i++) {
-                    registedBinders.get(i).changeState(null);
-                }
-                if (bindRunnable != null && bindAbleAutoRefresh) {
-                    handler.removeCallbacks(bindRunnable);
-                    handler.postDelayed(bindRunnable, 50);
-                }
-            } else {
-                if (bindRunnable != null && bindAbleAutoRefresh) {
-                    handler.removeCallbacks(bindRunnable);
-                    handler = null;
-                }
-            }
-        } else {
-            bindHolders.clear();
-            if (registedBinders != null) {
-                registedBinders.clear();
-            }
-        }
+        BindUtils.showBindHolders(bindHolders, this);
     }
 
     @Override
@@ -217,6 +213,13 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
 
     public void notifyListDataChangeById(@IdRes int id) {
         DataChangeUtils.notifyListDataChangeById(id, null, bindHolders, this);
+    }
+
+    private void requestPermissions(RequestPermission permission) {
+        String[] requests = permission.value();
+        for (int i = 0; i < requests.length; i++) {
+            requestPermission(requests[i]);
+        }
     }
 
     /**

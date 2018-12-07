@@ -55,6 +55,11 @@ public class LororDialog extends AlertDialog implements DialogInterface.OnDismis
     }
 
     @Override
+    public void setOnDismissListener(@Nullable OnDismissListener listener) {
+        this.listener = listener;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
@@ -64,14 +69,16 @@ public class LororDialog extends AlertDialog implements DialogInterface.OnDismis
     }
 
     @Override
-    public void setOnDismissListener(@Nullable OnDismissListener listener) {
-        this.listener = listener;
+    public void onContentChanged() {
+        super.onContentChanged();
+        updateBind(this);
+        registerToParent();
     }
 
     @Override
     protected void onStart() {
         decorater.onStart();
-        updateBind(null);
+        registerToParent();
         super.onStart();
     }
 
@@ -81,27 +88,18 @@ public class LororDialog extends AlertDialog implements DialogInterface.OnDismis
         super.onStop();
     }
 
+    protected void onDismiss() {
+
+    }
+
     protected void onDestroy() {
         bindHolders.clear();
         decorater.onDestroy();
     }
 
-    protected void onDismiss() {
-
-    }
-
-    @Override
-    public void onContentChanged() {
-        super.onContentChanged();
-        updateBind(this);
-    }
-
     @Override
     public final void onDismiss(DialogInterface dialog) {
-        LororActivity activity = weakReference == null ? null : weakReference.get();
-        if (activity != null) {
-            activity.unRegisterBinder(this);
-        }
+        unregisterFromParent();
         if (result != null) {
             result.result(requestCode, resultCode, data);
         }
@@ -114,25 +112,33 @@ public class LororDialog extends AlertDialog implements DialogInterface.OnDismis
         }
     }
 
-    public void sendDataToBus(String name, Intent data) {
-        DataBus.notifyReceivers(name, data, context);
-    }
-
-    @Override
-    public void updateBind(Object tag) {
-        if (tag != null) {
-            BindUtils.findBindHoldersAndInit(bindHolders, this);
-            ViewUtil.click(this);
-            if (context instanceof LororActivity) {
-                weakReference = new WeakReference<>((LororActivity) context);
-            }
-        }
+    private void registerToParent() {
         LororActivity activity = weakReference == null ? null : weakReference.get();
         if (activity != null) {
             if (bindHolders.size() > 0) {
                 activity.registerBinder(this);
             }
         }
+    }
+
+    private void unregisterFromParent() {
+        LororActivity activity = weakReference == null ? null : weakReference.get();
+        if (activity != null) {
+            activity.unRegisterBinder(this);
+        }
+    }
+
+    public void sendDataToBus(String name, Intent data) {
+        DataBus.notifyReceivers(name, data, context);
+    }
+
+    @Override
+    public void updateBind(Object tag) {
+        if (context instanceof LororActivity) {
+            weakReference = new WeakReference<>((LororActivity) context);
+        }
+        BindUtils.findBindHoldersAndInit(bindHolders, this);
+        ViewUtil.click(this);
     }
 
     @Override

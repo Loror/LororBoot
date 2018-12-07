@@ -36,6 +36,7 @@ public class LororFragment extends Fragment implements StartDilogAble, DataChang
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         updateBind(this);
+        registerToParent();
     }
 
     @Override
@@ -62,7 +63,7 @@ public class LororFragment extends Fragment implements StartDilogAble, DataChang
 
     @Override
     public void onStart() {
-        updateBind(null);
+        registerToParent();
         super.onStart();
     }
 
@@ -82,10 +83,7 @@ public class LororFragment extends Fragment implements StartDilogAble, DataChang
 
     @Override
     public void onStop() {
-        LororActivity activity = weakReference == null ? null : weakReference.get();
-        if (activity != null) {
-            activity.unRegisterBinder(this);
-        }
+        unregisterFromParent();
         super.onStop();
     }
 
@@ -102,26 +100,34 @@ public class LororFragment extends Fragment implements StartDilogAble, DataChang
         }
     }
 
-    public void sendDataToBus(String name, Intent data) {
-        DataBus.notifyReceivers(name, data, getActivity());
-    }
-
-    @Override
-    public final void updateBind(Object tag) {
-        if (tag != null) {
-            BindUtils.findBindHoldersAndInit(bindHolders, this);
-            ViewUtil.click(this);
-            Activity activity = getActivity();
-            if (activity instanceof LororActivity) {
-                weakReference = new WeakReference<>((LororActivity) activity);
-            }
-        }
+    private void registerToParent() {
         LororActivity activity = weakReference == null ? null : weakReference.get();
         if (activity != null) {
             if (bindHolders.size() > 0) {
                 activity.registerBinder(this);
             }
         }
+    }
+
+    private void unregisterFromParent() {
+        LororActivity activity = weakReference == null ? null : weakReference.get();
+        if (activity != null) {
+            activity.unRegisterBinder(this);
+        }
+    }
+
+    public void sendDataToBus(String name, Intent data) {
+        DataBus.notifyReceivers(name, data, getActivity());
+    }
+
+    @Override
+    public final void updateBind(Object tag) {
+        Activity activity = getActivity();
+        if (activity instanceof LororActivity) {
+            weakReference = new WeakReference<>((LororActivity) activity);
+        }
+        BindUtils.findBindHoldersAndInit(bindHolders, this);
+        ViewUtil.click(this);
     }
 
     @Override
