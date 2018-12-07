@@ -74,7 +74,14 @@ public class BindUtils {
                             break;
                     }
                 }
-                firstBinder(bindHolder, bindAble);
+                try {
+                    Object value = bindHolder.field.get(bindAble);
+                    if (value instanceof List) {
+                        bindHolder.compareTag = -1;
+                    }
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -315,23 +322,6 @@ public class BindUtils {
             } else {
                 throw new IllegalStateException("BindAbleBannerViewPager只支持绑定List<?>类型(" + bindAble.getClass().getName() + "->" + field.getName() + ")");
             }
-        }
-    }
-
-    /**
-     * 首次找到时绑定显示并初次触发事件
-     */
-    public static void firstBinder(BindHolder bindHolder, BindAble bindAble) {
-        try {
-            Object value = bindHolder.field.get(bindAble);
-            if (value instanceof List) {
-                bindHolder.compareTag = -1;
-            } else {
-                bindHolder.compareTag = null;
-            }
-            BindUtils.showBindHolder(bindHolder, bindAble);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
         }
     }
 

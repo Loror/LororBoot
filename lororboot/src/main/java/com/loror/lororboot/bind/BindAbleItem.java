@@ -75,10 +75,11 @@ public abstract class BindAbleItem implements DataChangeAble {
         } else {
             bindHolders = (List<BindHolder>) mark.convertView.getTag();
         }
-        ViewUtil.click(this, mark.convertView);
-        this.bindHolders = bindHolders;
         //刷新显示并触发事件，解决控件复用问题
         BindUtils.initHolders(bindHolders, this, position);
+        ViewUtil.click(this, mark.convertView);
+        this.bindHolders = bindHolders;
+        changeState(null);
     }
 
     @Override
