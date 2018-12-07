@@ -74,13 +74,9 @@ public class BindUtils {
                             break;
                     }
                 }
-                try {
-                    Object value = bindHolder.field.get(bindAble);
-                    if (value instanceof List) {
-                        bindHolder.compareTag = -1;
-                    }
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                Object volume = getVolume(bindHolder, bindAble);
+                if (volume instanceof List) {
+                    bindHolder.compareTag = -1;
                 }
             }
         }
@@ -211,7 +207,6 @@ public class BindUtils {
                         } else {
                             throw new IllegalStateException("EditText为双向绑定，只支持属性为String，CharSequence，Integer，Long，Float，Double类型(" + bindAble.getClass().getName() + "->" + field.getName() + ")");
                         }
-                        bindAble.event(bindHolder, old, bindHolder.compareTag == null ? null : String.valueOf(bindHolder.compareTag));
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
@@ -227,12 +222,14 @@ public class BindUtils {
             ((CheckBox) view).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (bindHolder.event != null) {
+                        bindAble.event(bindHolder, String.valueOf(!isChecked), String.valueOf(isChecked));
+                    }
                     try {
                         field.set(bindAble, bindHolder.compareTag = isChecked);
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
-                    bindAble.event(bindHolder, String.valueOf(!isChecked), String.valueOf(isChecked));
                 }
             });
         } else if (view instanceof ProgressBar) {
