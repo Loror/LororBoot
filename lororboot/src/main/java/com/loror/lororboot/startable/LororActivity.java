@@ -156,16 +156,17 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
             bindRunnable = new Runnable() {
                 @Override
                 public void run() {
-                    if (!bindAbleAutoRefresh) {
-                        bindRunnable = null;
-                        return;
-                    }
+
                     LororActivity activity = weakReference == null ? null : weakReference.get();
                     if (activity != null) {
                         if (!isFinishing()) {
                             changeState(null);
                             changChildBinderState();
-                            handler.postDelayed(bindRunnable, 50);
+                            if (bindAbleAutoRefresh) {
+                                handler.postDelayed(bindRunnable, 50);
+                            } else {
+                                bindRunnable = null;
+                            }
                         } else {
                             handler.removeCallbacks(bindRunnable);
                             bindRunnable = null;
