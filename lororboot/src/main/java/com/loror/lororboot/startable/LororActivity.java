@@ -156,7 +156,6 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
             bindRunnable = new Runnable() {
                 @Override
                 public void run() {
-
                     LororActivity activity = weakReference == null ? null : weakReference.get();
                     if (activity != null) {
                         if (!isFinishing()) {
@@ -173,6 +172,8 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
                             bindHolders.clear();
                             registedBinders.clear();
                         }
+                    } else {
+                        bindRunnable = null;
                     }
                 }
             };
