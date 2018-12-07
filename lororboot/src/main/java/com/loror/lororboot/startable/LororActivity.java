@@ -42,7 +42,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
 
     protected Context context = this;
 
-    private static Handler handler = new Handler();
+    protected static Handler handler = new Handler();
     private WeakReference<LororActivity> weakReference;
     private Runnable bindRunnable;
     private boolean bindAbleAutoRefresh = true;

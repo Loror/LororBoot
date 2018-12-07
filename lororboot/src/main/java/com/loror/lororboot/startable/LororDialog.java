@@ -118,7 +118,7 @@ public class LororDialog extends AlertDialog implements DialogInterface.OnDismis
             if (bindHolders.size() > 0) {
                 activity.registerBinder(this);
                 if (!activity.isBindAbleAutoRefresh()) {
-                    activity.runOnUiThread(new Runnable() {
+                    LororActivity.handler.post(new Runnable() {
                         @Override
                         public void run() {
                             changeState(null);
