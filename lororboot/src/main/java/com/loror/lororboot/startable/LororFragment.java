@@ -105,6 +105,14 @@ public class LororFragment extends Fragment implements StartDilogAble, DataChang
         if (activity != null) {
             if (bindHolders.size() > 0) {
                 activity.registerBinder(this);
+                if (!activity.isBindAbleAutoRefresh()) {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            changeState(null);
+                        }
+                    });
+                }
             }
         }
     }

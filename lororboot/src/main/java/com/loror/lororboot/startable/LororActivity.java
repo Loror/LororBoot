@@ -41,12 +41,14 @@ import java.util.List;
 public class LororActivity extends AppCompatActivity implements StartDilogAble, DataChangeAble, AutoRunAble {
 
     protected Context context = this;
+
+    private static Handler handler = new Handler();
     private WeakReference<LororActivity> weakReference;
+    private Runnable bindRunnable;
     private boolean bindAbleAutoRefresh = true;
     private List<BindHolder> bindHolders = new LinkedList<>();
     private List<BindAble> registedBinders = new ArrayList<>();
-    private Runnable bindRunnable;
-    private static Handler handler = new Handler();
+
     private int requestCode;
     private SparseArray<String> permissionRequestMap;
     private Method permissionResult;
@@ -150,6 +152,10 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
         if (bindAbleAutoRefresh) {
             startBinder();
         }
+    }
+
+    public boolean isBindAbleAutoRefresh() {
+        return bindAbleAutoRefresh;
     }
 
     protected void startBinder() {
