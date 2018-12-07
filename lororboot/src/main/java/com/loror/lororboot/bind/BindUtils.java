@@ -30,6 +30,7 @@ import com.loror.lororboot.startable.LororDialog;
 import com.loror.lororboot.startable.LororFragment;
 import com.loror.lororboot.views.BindAbleBannerView;
 import com.loror.lororboot.views.BindAblePointView;
+import com.loror.lororboot.views.BindRefreshAble;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -166,7 +167,9 @@ public class BindUtils {
     protected static void specialBinder(final BindHolder bindHolder, View view, final BindAble bindAble) {
         final Field field = bindHolder.field;
         final int id = view.getId();
-        if (view instanceof EditText) {
+        if (view instanceof BindRefreshAble) {
+            ((BindRefreshAble) view).find();
+        } else if (view instanceof EditText) {
             Object tag = view.getTag(id);
             if (tag instanceof TextWatcher) {
                 ((EditText) view).removeTextChangedListener((TextWatcher) tag);
@@ -362,7 +365,9 @@ public class BindUtils {
                 bindHolder.compareTag = volume;
             }
             if (!bindHolder.onlyEvent) {
-                if (bindHolder.view instanceof CheckBox) {
+                if (bindHolder.view instanceof BindRefreshAble) {
+                    ((BindRefreshAble) bindHolder.view).refresh(volume);
+                } else if (bindHolder.view instanceof CheckBox) {
                     ((CheckBox) bindHolder.view).setChecked(!(volume == null || !(Boolean) volume));
                 } else if (bindHolder.view instanceof TextView) {
                     if (bindHolder.field.getType() == CharSequence.class) {
