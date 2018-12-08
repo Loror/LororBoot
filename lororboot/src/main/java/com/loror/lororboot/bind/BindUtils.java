@@ -196,18 +196,10 @@ public class BindUtils {
                         Class<?> type = field.getType();
                         if (type == String.class) {
                             field.set(bindAble, bindHolder.compareTag = value);
-                        } else if (type == Integer.class) {
-                            field.set(bindAble, bindHolder.compareTag = Integer.parseInt(value));
-                        } else if (type == Long.class) {
-                            field.set(bindAble, bindHolder.compareTag = Long.parseLong(value));
-                        } else if (type == Float.class) {
-                            field.set(bindAble, bindHolder.compareTag = Float.parseFloat(value));
-                        } else if (type == Double.class) {
-                            field.set(bindAble, bindHolder.compareTag = Double.parseDouble(value));
                         } else if (type == CharSequence.class) {
                             field.set(bindAble, bindHolder.compareTag = s);
                         } else {
-                            throw new IllegalStateException("EditText为双向绑定，只支持属性为String，CharSequence，Integer，Long，Float，Double类型(" + bindAble.getClass().getName() + "->" + field.getName() + ")");
+                            throw new IllegalStateException("EditText为双向绑定，只支持属性为String，CharSequence类型(" + bindAble.getClass().getName() + "->" + field.getName() + ")");
                         }
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
