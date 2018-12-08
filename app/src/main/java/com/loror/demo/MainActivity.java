@@ -126,6 +126,7 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
     public void receiveData(String name, Intent data) {
         if ("toast".equals(name)) {
             Toast.makeText(this, data.getStringExtra("msg"), Toast.LENGTH_SHORT).show();
+            text = "收到消息了";
         }
     }
 }

@@ -48,6 +48,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     private boolean bindAbleAutoRefresh = true;
     private List<BindHolder> bindHolders = new LinkedList<>();
     private List<BindAble> registedBinders = new ArrayList<>();
+    private boolean paused;
 
     private int requestCode;
     private SparseArray<String> permissionRequestMap;
@@ -74,6 +75,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
 
     @Override
     protected void onResume() {
+        paused = false;
         RequestPermission permission = getClass().getAnnotation(RequestPermission.class);
         if (permission != null && permission.when() == RequestTime.ONRESUME) {
             requestPermissions(permission);
@@ -92,6 +94,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
 
     @Override
     protected void onPause() {
+        paused = true;
         //banner停止滚动
         for (BindHolder bindHolder : bindHolders) {
             if (bindHolder.getView() instanceof BindAbleBannerView) {
@@ -173,7 +176,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
                             changeState(null);
                             changChildBinderState();
                             if (bindAbleAutoRefresh) {
-                                handler.postDelayed(bindRunnable, 50);
+                                handler.postDelayed(bindRunnable, paused ? 500 : 30);
                             } else {
                                 bindRunnable = null;
                             }
