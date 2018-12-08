@@ -194,7 +194,6 @@ public class BindUtils {
                     }
                     try {
                         Class<?> type = field.getType();
-                        String old = bindHolder.compareTag == null ? null : String.valueOf(bindHolder.compareTag);
                         if (type == String.class) {
                             field.set(bindAble, bindHolder.compareTag = value);
                         } else if (type == Integer.class) {
