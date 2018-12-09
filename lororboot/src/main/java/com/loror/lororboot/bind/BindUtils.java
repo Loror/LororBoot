@@ -168,7 +168,7 @@ public class BindUtils {
         final Field field = bindHolder.field;
         final int id = view.getId();
         if (view instanceof BindRefreshAble) {
-            ((BindRefreshAble) view).find();
+            ((BindRefreshAble) view).find(new FieldControl(bindAble, bindHolder.field));
         } else if (view instanceof EditText) {
             Object tag = view.getTag(id);
             if (tag instanceof TextWatcher) {
