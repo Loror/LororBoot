@@ -55,7 +55,7 @@ public class BindUtils {
             boolean interrupt = bindAble.onBindFind(bindHolder);
             specialBinder(bindHolder, bindHolder.getView(), bindAble);
             if (interrupt) {
-                Object volume = getVolume(bindHolder, bindAble);
+                Object volume = getValue(bindHolder, bindAble);
                 if (volume instanceof List) {
                     bindHolder.compareTag = ((List) volume).size();
                 } else {
@@ -75,7 +75,7 @@ public class BindUtils {
                             break;
                     }
                 }
-                Object volume = getVolume(bindHolder, bindAble);
+                Object volume = getValue(bindHolder, bindAble);
                 if (volume instanceof List) {
                     bindHolder.compareTag = -1;
                 }
@@ -325,21 +325,21 @@ public class BindUtils {
         }
     }
 
-    protected static Object getVolume(BindHolder bindHolder, BindAble bindAble) {
-        Object volume = null;
+    protected static Object getValue(BindHolder bindHolder, BindAble bindAble) {
+        Object value = null;
         try {
-            volume = bindHolder.field.get(bindAble);
+            value = bindHolder.field.get(bindAble);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        return volume;
+        return value;
     }
 
     /**
      * 检测BindHolder变化并更新显示
      */
     public static void showBindHolder(BindHolder bindHolder, BindAble bindAble) {
-        Object volume = getVolume(bindHolder, bindAble);
+        Object volume = getValue(bindHolder, bindAble);
         boolean isList = volume instanceof List;
         boolean volumeChange = !isList && ((bindHolder.compareTag == null && volume != null) || (bindHolder.compareTag != null && !bindHolder.compareTag.equals(volume)));
         boolean listChange = isList && (bindHolder.compareTag == null || (int) bindHolder.compareTag != ((List) volume).size());
@@ -357,7 +357,7 @@ public class BindUtils {
             }
             if (!bindHolder.onlyEvent) {
                 if (bindHolder.view instanceof BindRefreshAble) {
-                    ((BindRefreshAble) bindHolder.view).refresh(volume);
+                    ((BindRefreshAble) bindHolder.view).refresh(new Value(bindHolder.format, bindHolder.empty, volume));
                 } else if (bindHolder.view instanceof CheckBox) {
                     ((CheckBox) bindHolder.view).setChecked(!(volume == null || !(Boolean) volume));
                 } else if (bindHolder.view instanceof TextView) {
