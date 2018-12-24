@@ -304,6 +304,11 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 success = true;
             }
+            if (permission == null) {
+                if (permissions != null && permissions.length > 0) {
+                    permission = permissions[0];
+                }
+            }
             onPermissionsResult(permission, success);
         }
     }
