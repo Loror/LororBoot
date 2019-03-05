@@ -59,7 +59,7 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
 
     private void initView() {
         image = "http://img.zcool.cn/community/0117e2571b8b246ac72538120dd8a4.jpg@1280w_1l_2o_100sh.jpg";
-        listBanners.add(new Banner("http://img05.tooopen.com/images/20150820/tooopen_sy_139205349641.jpg"));
+        listBanners.add(new Banner("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1551797289462&di=c583d77f74705a9664e585111693e4cd&imgtype=0&src=http%3A%2F%2Fwww.pptbz.com%2Fpptpic%2FUploadFiles_6909%2F201203%2F2012031220134655.jpg"));
         listBanners.add(new Banner("http://i0.hdslb.com/bfs/archive/83a12dcbe6401c27e16a3333b1eba91191ac3c8e.jpg"));
         notifyListDataChangeById(R.id.banner);
     }
