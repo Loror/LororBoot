@@ -8,14 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataBus {
-    private static List<DataBusReceiver> receivers = new ArrayList<>();
+    private static List<ThreadModeReceiver> receivers = new ArrayList<>();
 
     /**
      * 添加接收者
      */
     public static void addReceiver(DataBusReceiver receiver) {
         if (!receivers.contains(receiver)) {
-            receivers.add(receiver);
+            receivers.add(new ThreadModeReceiver(receiver));
         }
     }
 
@@ -63,7 +63,7 @@ public class DataBus {
                         intent.removeExtra("loror.RemoteDataBusReceiver.name");
                         intent.removeExtra("loror.RemoteDataBusReceiver.tag");
                     }
-                    dataBusReceiver.receiveData(name, isNullData ? null : intent);
+                    new ThreadModeReceiver(dataBusReceiver).receiveData(name, isNullData ? null : intent);
                 }
             }
         };
