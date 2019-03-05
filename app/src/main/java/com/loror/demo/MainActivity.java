@@ -130,5 +130,6 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
             Toast.makeText(this, data.getStringExtra("msg"), Toast.LENGTH_SHORT).show();
             text = "收到消息了";
         }
+        Log.e("DATA_BUS", (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
     }
 }
