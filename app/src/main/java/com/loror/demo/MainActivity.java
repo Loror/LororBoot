@@ -16,6 +16,7 @@ import com.loror.lororboot.annotation.PermissionResult;
 import com.loror.lororboot.annotation.RequestPermission;
 import com.loror.lororboot.annotation.RunThread;
 import com.loror.lororboot.annotation.RunTime;
+import com.loror.lororboot.annotation.WitchThread;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.dataBus.DataBusReceiver;
 import com.loror.lororboot.dataBus.RemoteDataBusReceiver;
@@ -123,6 +124,7 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
     }
 
     @Override
+    @WitchThread(RunThread.MAINTHREAD)
     public void receiveData(String name, Intent data) {
         if ("toast".equals(name)) {
             Toast.makeText(this, data.getStringExtra("msg"), Toast.LENGTH_SHORT).show();
