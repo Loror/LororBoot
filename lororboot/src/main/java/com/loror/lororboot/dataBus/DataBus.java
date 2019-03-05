@@ -14,7 +14,7 @@ public class DataBus {
      * 添加接收者
      */
     public static void addReceiver(DataBusReceiver receiver) {
-        if (!receivers.contains(receiver)) {
+        if (!receivers.contains(new ThreadModeReceiver(receiver))) {
             receivers.add(new ThreadModeReceiver(receiver));
         }
     }
@@ -23,7 +23,7 @@ public class DataBus {
      * 移除接收者
      */
     public static void removeReceiver(DataBusReceiver receiver) {
-        receivers.remove(receiver);
+        receivers.remove(new ThreadModeReceiver(receiver));
     }
 
     /**
