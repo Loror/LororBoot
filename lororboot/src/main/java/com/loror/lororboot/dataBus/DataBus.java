@@ -81,11 +81,11 @@ public class DataBus {
                 String name = intent.getStringExtra("loror.RemoteDataBusReceiver.name");
                 if (name != null) {
                     boolean isNullData = intent.getStringExtra("loror.RemoteDataBusReceiver.tag") != null;
-                    DataBus.stickEvent = new StickEvent(name, isNullData ? null : intent);
                     if (!isNullData) {
                         intent.removeExtra("loror.RemoteDataBusReceiver.name");
                         intent.removeExtra("loror.RemoteDataBusReceiver.tag");
                     }
+                    DataBus.stickEvent = new StickEvent(name, isNullData ? null : intent);
                     threadModeReceiver.receiveData(name, isNullData ? null : intent);
                 }
             }
