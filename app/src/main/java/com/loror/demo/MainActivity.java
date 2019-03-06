@@ -12,13 +12,11 @@ import com.loror.lororUtil.view.Click;
 import com.loror.lororUtil.view.ItemClick;
 import com.loror.lororboot.annotation.AutoRun;
 import com.loror.lororboot.annotation.Bind;
-import com.loror.lororboot.annotation.PermissionResult;
 import com.loror.lororboot.annotation.RequestPermission;
 import com.loror.lororboot.annotation.RunThread;
 import com.loror.lororboot.annotation.RunTime;
-import com.loror.lororboot.annotation.WitchThread;
+import com.loror.lororboot.annotation.DataRun;
 import com.loror.lororboot.bind.BindHolder;
-import com.loror.lororboot.dataBus.DataBusReceiver;
 import com.loror.lororboot.dataBus.RemoteDataBusReceiver;
 import com.loror.lororboot.startable.LororActivity;
 
@@ -82,11 +80,15 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
 
     @Click(id = R.id.second)
     public void second(View view) {
+        Intent data = new Intent();
+        data.putExtra("data", "滞后消息送达");
+        sendDataToBus("SecondActivity.sticky", data);
         startActivity(new Intent(this, SecondActivity.class));
     }
 
-    @PermissionResult
-    public void permissionResult(String permission, boolean success) {
+    @Override
+    public void onPermissionsResult(String permission, boolean success) {
+        super.onPermissionsResult(permission, success);
         Log.e("PERMISSION", permission + " " + success);
         if (!success) {
             Toast.makeText(this, "获取权限失败", Toast.LENGTH_SHORT).show();
@@ -106,7 +108,7 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
     }
 
     //RunTime.AFTERONCREATE,oncreate后自动执行;RunTime.BEFOREONDESTROY,ondestroy前自动执行;RunTime.USERCALL,用户主动通过切入点方法名调用
-    @AutoRun(when = RunTime.AFTERONCREATE, thread = RunThread.LASTTHREAD)
+    @AutoRun(when = RunTime.AFTERONCREATE)
     public void initData(String result) {
         Log.e("AUTO_RUN", result + " ");
         Log.e("AUTO_RUN", "initData" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
@@ -124,7 +126,7 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
     }
 
     @Override
-    @WitchThread(RunThread.MAINTHREAD)
+    @DataRun(thread = RunThread.MAINTHREAD)
     public void receiveData(String name, Intent data) {
         if ("toast".equals(name)) {
             Toast.makeText(this, data.getStringExtra("msg"), Toast.LENGTH_SHORT).show();

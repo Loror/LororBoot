@@ -1,2 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.loror.lororboot" />
+    package="com.loror.lororboot">
+
+    <uses-permission android:name="android.permission.BROADCAST_STICKY" />
+</manifest>

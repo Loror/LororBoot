@@ -8,6 +8,8 @@ import java.lang.annotation.Target;
 //Receuver运行所在线程
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
-public @interface WitchThread {
-    @RunThread int value();
+public @interface DataRun {
+    @RunThread int thread() default RunThread.LASTTHREAD;//运行线程
+
+    boolean sticky() default false;//是否粘性
 }

@@ -5,7 +5,7 @@ import android.os.Looper;
 
 import com.loror.lororUtil.flyweight.ObjectPool;
 import com.loror.lororboot.annotation.RunThread;
-import com.loror.lororboot.annotation.WitchThread;
+import com.loror.lororboot.annotation.DataRun;
 
 import java.lang.reflect.Method;
 
@@ -13,6 +13,7 @@ public class ThreadModeReceiver {
     private DataBusReceiver receiver;
     @RunThread
     private int thread = RunThread.LASTTHREAD;
+    private boolean sticky;
 
     public ThreadModeReceiver(DataBusReceiver receiver) {
         this.receiver = receiver;
@@ -20,9 +21,10 @@ public class ThreadModeReceiver {
             try {
                 Method method = receiver.getClass().getDeclaredMethod("receiveData", String.class, Intent.class);
                 if (method != null) {
-                    WitchThread runThread = method.getAnnotation(WitchThread.class);
-                    if (runThread != null) {
-                        this.thread = runThread.value();
+                    DataRun dataRun = method.getAnnotation(DataRun.class);
+                    if (dataRun != null) {
+                        this.thread = dataRun.thread();
+                        this.sticky = dataRun.sticky();
                     }
                 }
             } catch (Exception e) {
@@ -60,6 +62,10 @@ public class ThreadModeReceiver {
                     break;
             }
         }
+    }
+
+    public boolean isSticky() {
+        return sticky;
     }
 
     @Override
