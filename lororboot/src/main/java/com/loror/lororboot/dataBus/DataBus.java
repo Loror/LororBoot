@@ -53,6 +53,7 @@ public class DataBus {
      * 创建BroadcastReceiver
      */
     public static BroadcastReceiver createBroadcastReceiver(final RemoteDataBusReceiver dataBusReceiver) {
+        final ThreadModeReceiver threadModeReceiver = new ThreadModeReceiver(dataBusReceiver);
         return new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -63,7 +64,7 @@ public class DataBus {
                         intent.removeExtra("loror.RemoteDataBusReceiver.name");
                         intent.removeExtra("loror.RemoteDataBusReceiver.tag");
                     }
-                    new ThreadModeReceiver(dataBusReceiver).receiveData(name, isNullData ? null : intent);
+                    threadModeReceiver.receiveData(name, isNullData ? null : intent);
                 }
             }
         };
