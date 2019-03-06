@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Looper;
 
 import com.loror.lororUtil.flyweight.ObjectPool;
-import com.loror.lororUtil.view.Click;
 import com.loror.lororboot.annotation.RunThread;
 import com.loror.lororboot.annotation.WitchThread;
 

@@ -61,7 +61,7 @@ public class Decorater {
         if (autoRunAble instanceof DataBusReceiver) {
             if (autoRunAble instanceof RemoteDataBusReceiver) {
                 if (receiver == null) {
-                    receiver = DataBus.createBroadcastReceiver((DataBusReceiver) autoRunAble);
+                    receiver = DataBus.createBroadcastReceiver((RemoteDataBusReceiver) autoRunAble);
                     context.registerReceiver(receiver, new IntentFilter("loror.RemoteDataBusReceiver"));
                 }
             } else {

@@ -52,7 +52,7 @@ public class DataBus {
     /**
      * 创建BroadcastReceiver
      */
-    public static BroadcastReceiver createBroadcastReceiver(final DataBusReceiver dataBusReceiver) {
+    public static BroadcastReceiver createBroadcastReceiver(final RemoteDataBusReceiver dataBusReceiver) {
         return new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
