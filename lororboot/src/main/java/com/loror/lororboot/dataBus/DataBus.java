@@ -56,8 +56,7 @@ public class DataBus {
             data.setAction("loror.RemoteDataBusReceiver");
             data.setPackage(context.getPackageName());
             data.putExtra("loror.RemoteDataBusReceiver.name", name);
-            context.sendBroadcast(data);
-            data.putExtra("loror.RemoteDataBusReceiver.sticky", true);
+//            context.sendBroadcast(data);
             context.sendStickyBroadcast(data);
         } catch (Exception e) {
             e.printStackTrace();
@@ -83,14 +82,12 @@ public class DataBus {
                 String name = intent.getStringExtra("loror.RemoteDataBusReceiver.name");
                 if (name != null) {
                     boolean isNullData = intent.getStringExtra("loror.RemoteDataBusReceiver.tag") != null;
+                    DataBus.stickEvent = new StickEvent(name, isNullData ? null : intent);
                     if (!isNullData) {
                         intent.removeExtra("loror.RemoteDataBusReceiver.name");
                         intent.removeExtra("loror.RemoteDataBusReceiver.tag");
                     }
-                    DataBus.stickEvent = new StickEvent(name, isNullData ? null : intent);
-                    if (!intent.getBooleanExtra("loror.RemoteDataBusReceiver.sticky", false)) {
-                        threadModeReceiver.receiveData(name, isNullData ? null : intent);
-                    }
+                    threadModeReceiver.receiveData(name, isNullData ? null : intent);
                 }
             }
         };
