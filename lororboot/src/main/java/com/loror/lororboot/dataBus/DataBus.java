@@ -56,11 +56,7 @@ public class DataBus {
             data.setAction("loror.RemoteDataBusReceiver");
             data.setPackage(context.getPackageName());
             data.putExtra("loror.RemoteDataBusReceiver.name", name);
-            try {
-                context.sendStickyBroadcast(data);
-            } catch (Throwable e) {
-                context.sendBroadcast(data);
-            }
+            context.sendBroadcast(data);
         } catch (Exception e) {
             e.printStackTrace();
         }
