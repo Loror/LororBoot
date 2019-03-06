@@ -11,8 +11,8 @@ import java.lang.reflect.Method;
 
 public class ThreadModeReceiver {
     private DataBusReceiver receiver;
-    private @RunThread
-    int thread = RunThread.LASTTHREAD;
+    @RunThread
+    private int thread = RunThread.LASTTHREAD;
 
     public ThreadModeReceiver(DataBusReceiver receiver) {
         this.receiver = receiver;
@@ -54,6 +54,7 @@ public class ThreadModeReceiver {
                         }
                     }.start();
                     break;
+                case RunThread.LASTTHREAD:
                 default:
                     receiver.receiveData(name, data);
                     break;
