@@ -11,4 +11,6 @@ public @interface RequestPermission {
     String[] value();//需要申请的权限
 
     @RequestTime int when() default RequestTime.ONCREATE;//申请时间
+
+    boolean requestAnyway() default false;//是否以前被拒绝仍然申请
 }

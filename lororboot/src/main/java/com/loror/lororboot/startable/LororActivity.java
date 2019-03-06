@@ -17,7 +17,6 @@ import android.util.SparseArray;
 import android.widget.Toast;
 
 import com.loror.lororUtil.view.ViewUtil;
-import com.loror.lororboot.annotation.PermissionResult;
 import com.loror.lororboot.annotation.RequestPermission;
 import com.loror.lororboot.annotation.RequestTime;
 import com.loror.lororboot.annotation.RunThread;
@@ -32,8 +31,6 @@ import com.loror.lororboot.views.BindAbleBannerView;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -52,7 +49,6 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
 
     private int requestCode;
     private SparseArray<String> permissionRequestMap;
-    private Method permissionResult;
     private Decorater decorater;
 
     @Override
@@ -233,8 +229,9 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
 
     private void requestPermissions(RequestPermission permission) {
         String[] requests = permission.value();
+        boolean anyway = permission.requestAnyway();
         for (int i = 0; i < requests.length; i++) {
-            requestPermission(requests[i]);
+            requestPermission(requests[i], anyway);
         }
     }
 
@@ -242,21 +239,28 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
      * 动态申请权限
      */
     public void requestPermission(String permission) {
+        requestPermission(permission, false);
+    }
+
+    /**
+     * 动态申请权限
+     */
+    public void requestPermission(String permission, boolean requestAnyway) {
         if (permissionRequestMap == null) {
             permissionRequestMap = new SparseArray<>();
-            Method[] methods = getClass().getDeclaredMethods();
-            for (int i = 0; i < methods.length; i++) {
-                if (methods[i].getAnnotation(PermissionResult.class) != null) {
-                    permissionResult = methods[i];
-                    break;
-                }
-            }
         }
         int hasIt = 0;
         if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
             // 权限申请曾经被用户拒绝
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
-                hasIt = 2;
+                if (requestAnyway) {
+                    permissionRequestMap.put(requestCode, permission);
+                    // 进行权限请求
+                    ActivityCompat.requestPermissions(this, new String[]{permission}, requestCode);
+                    requestCode++;
+                } else {
+                    hasIt = 2;
+                }
             } else {
                 permissionRequestMap.put(requestCode, permission);
                 // 进行权限请求
@@ -266,7 +270,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
         } else {
             hasIt = 1;
         }
-        if (hasIt > 0 && permissionResult != null) {
+        if (hasIt > 0) {
             onPermissionsResult(permission, hasIt == 1);
         }
     }
@@ -282,15 +286,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
      * 请求权限回调
      */
     public void onPermissionsResult(String permission, boolean success) {
-        if (permissionResult != null) {
-            try {
-                permissionResult.invoke(this, permission, success);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }
-        }
+
     }
 
     @Override

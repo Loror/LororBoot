@@ -88,7 +88,6 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
 
     @Override
     public void onPermissionsResult(String permission, boolean success) {
-        super.onPermissionsResult(permission, success);
         Log.e("PERMISSION", permission + " " + success);
         if (!success) {
             Toast.makeText(this, "获取权限失败", Toast.LENGTH_SHORT).show();
