@@ -67,14 +67,6 @@ public class DataBus {
      */
     public static BroadcastReceiver createBroadcastReceiver(final RemoteDataBusReceiver dataBusReceiver) {
         final ThreadModeReceiver threadModeReceiver = new ThreadModeReceiver(dataBusReceiver);
-        if (DataBus.stickEvent != null && threadModeReceiver.isSticky()) {
-            ObjectPool.getInstance().getHandler().post(new Runnable() {
-                @Override
-                public void run() {
-                    threadModeReceiver.receiveData(DataBus.stickEvent.name, DataBus.stickEvent.data);
-                }
-            });
-        }
         return new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
