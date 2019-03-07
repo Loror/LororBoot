@@ -19,6 +19,7 @@ import com.loror.lororboot.annotation.DataRun;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.dataBus.RemoteDataBusReceiver;
 import com.loror.lororboot.httpApi.ApiClient;
+import com.loror.lororboot.httpApi.ByteArray;
 import com.loror.lororboot.httpApi.Observer;
 import com.loror.lororboot.startable.LororActivity;
 
@@ -63,10 +64,10 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
                 .setBaseUrl("https://www.baidu.com")
                 .create(ServerApi.class)
                 .getResult("1")
-                .subscribe(new Observer<String>() {
+                .subscribe(new Observer<ByteArray>() {
                     @Override
-                    public void success(String data) {
-                        Log.e("RESULT", data + " ");
+                    public void success(ByteArray data) {
+                        Log.e("RESULT", data.toString() + " ");
                     }
 
                     @Override

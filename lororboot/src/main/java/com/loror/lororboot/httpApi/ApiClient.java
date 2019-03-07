@@ -206,7 +206,7 @@ public class ApiClient {
     private void result(Responce responce, Class<?> classType, Observer observer) {
         if (responce.getCode() == 200) {
             try {
-                Object bean = classType == String.class ? responce.toString() : classType == byte[].class ? responce.result : jsonParser == null ? null : jsonParser.jsonToObject(responce.toString(), classType);
+                Object bean = classType == String.class ? responce.toString() : classType == ByteArray.class ? new ByteArray(responce.result) : jsonParser == null ? null : jsonParser.jsonToObject(responce.toString(), classType);
                 observer.success(bean);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -239,7 +239,7 @@ public class ApiClient {
     private Object result(Responce responce, Class<?> classType) {
         if (responce.getCode() == 200) {
             try {
-                return classType == String.class ? responce.toString() : classType == byte[].class ? responce.result : jsonParser == null ? null : jsonParser.jsonToObject(responce.toString(), classType);
+                return classType == String.class ? responce.toString() : classType == ByteArray.class ? new ByteArray(responce.result) : jsonParser == null ? null : jsonParser.jsonToObject(responce.toString(), classType);
             } catch (Exception e) {
                 e.printStackTrace();
             }
