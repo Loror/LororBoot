@@ -33,7 +33,7 @@ public class SecondActivity extends LororActivity implements RemoteDataBusReceiv
     }
 
     @Override
-    @DataRun(thread = RunThread.MAINTHREAD, sticky = true)
+    @DataRun(thread = RunThread.MAINTHREAD, sticky = true)//sticky暂不支持跨进程
     public void receiveData(String name, Intent data) {
         if ("SecondActivity.sticky".equals(name)) {
             text.setText(data.getStringExtra("data"));
