@@ -18,6 +18,8 @@ import com.loror.lororboot.annotation.RunTime;
 import com.loror.lororboot.annotation.DataRun;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.dataBus.RemoteDataBusReceiver;
+import com.loror.lororboot.httpApi.ApiClient;
+import com.loror.lororboot.httpApi.Observer;
 import com.loror.lororboot.startable.LororActivity;
 
 import java.util.ArrayList;
@@ -53,7 +55,27 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
             listItems.add(item);
         }
         notifyListDataChangeById(R.id.listView);//若list的size发生变化，不调用该方法也会自动刷新，如仅修改了list中对象属性而size未改变应主动调用该方法通知刷新
+        initData();
     }
+
+    private void initData() {
+        new ApiClient()
+                .setBaseUrl("https://www.baidu.com")
+                .create(ServerApi.class)
+                .getResult("1")
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void success(String data) {
+                        Log.e("RESULT", data + " ");
+                    }
+
+                    @Override
+                    public void failed(int code, Throwable e) {
+                        Log.e("RESULT", code + " = " + e);
+                    }
+                });
+    }
+
 
     private void initView() {
         image = "http://img.zcool.cn/community/0117e2571b8b246ac72538120dd8a4.jpg@1280w_1l_2o_100sh.jpg";
