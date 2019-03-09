@@ -8,6 +8,7 @@ import com.loror.lororUtil.http.HttpClient;
 import com.loror.lororUtil.http.RequestParams;
 import com.loror.lororUtil.http.Responce;
 import com.loror.lororboot.annotation.GET;
+import com.loror.lororboot.annotation.Header;
 import com.loror.lororboot.annotation.POST;
 import com.loror.lororboot.annotation.Param;
 
@@ -19,6 +20,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.List;
 
 public class ApiClient {
 
@@ -116,34 +118,44 @@ public class ApiClient {
                         params.addParams(key, old.get(key));
                     }
                 }
-            } else {
-                String name = getFieldName(annotations[i]);
-                if (name != null) {
-                    if (args[i] instanceof FileBody) {
-                        params.addParams(name, (FileBody) args[i]);
-                    } else if (args[i] instanceof File) {
-                        params.addParams(name, new FileBody(((File) args[i]).getAbsolutePath()));
-                    } else {
-                        params.addParams(name, String.valueOf(args[i]));
+                List<FileBody> oldFile = params.getFiles();
+                if (oldFile.size() > 0) {
+                    for (FileBody file : oldFile) {
+                        params.addParams(file.getKey(), file);
                     }
                 }
+            } else {
+                addField(params, annotations[i], args[i]);
             }
         }
         return params;
     }
 
     /**
-     * 获取键名
+     * 添加Field
      */
-    private String getFieldName(Annotation[] annotations) {
-        Param field = null;
+    private void addField(RequestParams params, Annotation[] annotations, Object arg) {
         for (int i = 0; i < annotations.length; i++) {
             if (annotations[i].annotationType() == Param.class) {
-                field = (Param) annotations[i];
+                String name = ((Param) annotations[i]).value();
+                if (name.length() > 0) {
+                    if (arg instanceof FileBody) {
+                        params.addParams(name, (FileBody) arg);
+                    } else if (arg instanceof File) {
+                        params.addParams(name, new FileBody(((File) arg).getAbsolutePath()));
+                    } else {
+                        params.addParams(name, String.valueOf(arg));
+                    }
+                }
+                break;
+            } else if (annotations[i].annotationType() == Header.class) {
+                String name = ((Header) annotations[i]).value();
+                if (name.length() > 0) {
+                    params.addHeader(name, String.valueOf(arg));
+                }
                 break;
             }
         }
-        return field == null ? null : field.value();
     }
 
     /**
