@@ -76,7 +76,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
         if (permission != null && permission.when() == RequestTime.ONRESUME) {
             requestPermissions(permission);
         }
-        decorater.onResume();
+        decorater.onResumeOrStart();
         super.onResume();
         //banner恢复滚动
         if (!isFinishing()) {

@@ -77,7 +77,7 @@ public class LororDialog extends AlertDialog implements DialogInterface.OnDismis
 
     @Override
     protected void onStart() {
-        decorater.onStart();
+        decorater.onResumeOrStart();
         registerToParent();
         super.onStart();
     }

@@ -57,7 +57,7 @@ public class Decorater {
     /**
      * 注册data监听
      */
-    private void registerDataBusReceiver() {
+    private void registerDataBusReceiverIfNot() {
         if (autoRunAble instanceof DataBusReceiver) {
             if (autoRunAble instanceof RemoteDataBusReceiver) {
                 if (receiver == null) {
@@ -73,7 +73,7 @@ public class Decorater {
     /**
      * 注销data监听
      */
-    private void unregisterDataBusReceiver() {
+    private void unregisterDataBusReceiverIfRegistered() {
         if (autoRunAble instanceof DataBusReceiver) {
             if (autoRunAble instanceof RemoteDataBusReceiver) {
                 if (receiver != null) {
@@ -91,36 +91,28 @@ public class Decorater {
      */
     public void onCreate() {
         createState = 1;
-        registerDataBusReceiver();
+        registerDataBusReceiverIfNot();
     }
 
-    public void onResume() {
+    public void onResumeOrStart() {
         if (createState == 1) {
             createState = 2;
             AutoRunUtil.runAutoRunHolderByPenetration(RunTime.AFTERONCREATE, autoRunHolders, autoRunAble);
         }
-    }
-
-    public void onStart() {
-        if (createState == 1) {
-            createState = 2;
-            AutoRunUtil.runAutoRunHolderByPenetration(RunTime.AFTERONCREATE, autoRunHolders, autoRunAble);
-        }
-        registerDataBusReceiver();
+        registerDataBusReceiverIfNot();
     }
 
     public void onStop() {
-        unregisterDataBusReceiver();
+        unregisterDataBusReceiverIfRegistered();
     }
 
     public void onDestroy() {
         AutoRunUtil.runAutoRunHolderByPenetration(RunTime.BEFOREONDESTROY, autoRunHolders, autoRunAble);
-        autoRunHolders.clear();
-        unregisterDataBusReceiver();
+        release();
     }
 
     public void release() {
         autoRunHolders.clear();
-        unregisterDataBusReceiver();
+        unregisterDataBusReceiverIfRegistered();
     }
 }

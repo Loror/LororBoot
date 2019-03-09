@@ -48,7 +48,7 @@ public class LororFragment extends Fragment implements StartDilogAble, DataChang
 
     @Override
     public void onResume() {
-        decorater.onResume();
+        decorater.onResumeOrStart();
         super.onResume();
         //banner恢复滚动
         LororActivity activity = weakReference == null ? null : weakReference.get();
