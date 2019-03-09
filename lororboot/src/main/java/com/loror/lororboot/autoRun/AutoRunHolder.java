@@ -8,6 +8,7 @@ public class AutoRunHolder {
     protected String methodName;
     protected String relationMethod;
     protected int thread;
+    protected int delay;
     protected Method method;
     protected AutoRunHolder previous;
     protected AutoRunHolder next;
@@ -84,5 +85,13 @@ public class AutoRunHolder {
 
     public Method getMethod() {
         return method;
+    }
+
+    public void setDelay(int delay) {
+        this.delay = delay;
+    }
+
+    public int getDelay() {
+        return delay;
     }
 }

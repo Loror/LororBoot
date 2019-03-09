@@ -360,7 +360,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     }
 
     @Override
-    public void run(@RunThread int thread, Runnable runnable) {
-        decorater.run(thread, runnable, handler);
+    public void run(@RunThread int thread, int delay, Runnable runnable) {
+        decorater.run(thread, delay, runnable);
     }
 }

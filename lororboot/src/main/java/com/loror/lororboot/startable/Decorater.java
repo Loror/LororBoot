@@ -37,20 +37,49 @@ public class Decorater {
         AutoRunUtil.runAutoRunHolderByPenetration(methodName, autoRunHolders, autoRunAble);
     }
 
-    public void run(@RunThread int thread, Runnable runnable, Handler handler) {
+    public void run(@RunThread int thread, final int delay, final Runnable runnable) {
+        Handler handler = LororActivity.handler;
         if (thread == RunThread.MAINTHREAD) {
-            if (Looper.getMainLooper() == Looper.myLooper()) {
-                runnable.run();
+            if (delay > 0) {
+                handler.postDelayed(runnable, delay);
             } else {
-                if (handler == null) {
-                    handler = new Handler();
+                if (Looper.getMainLooper() == Looper.myLooper()) {
+                    runnable.run();
+                } else {
+                    handler.post(runnable);
                 }
-                handler.post(runnable);
             }
         } else if (thread == RunThread.NEWTHREAD) {
-            new Thread(runnable).start();
+            if (delay > 0) {
+                new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(delay);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        runnable.run();
+                    }
+                }.start();
+            } else {
+                new Thread(runnable).start();
+            }
         } else {
-            runnable.run();
+            if (delay > 0) {
+                if (Looper.getMainLooper() == Looper.myLooper()) {
+                    handler.postDelayed(runnable, delay);
+                } else {
+                    try {
+                        Thread.sleep(delay);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    runnable.run();
+                }
+            } else {
+                runnable.run();
+            }
         }
     }
 

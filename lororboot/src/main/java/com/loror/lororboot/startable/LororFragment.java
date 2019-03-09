@@ -223,7 +223,7 @@ public class LororFragment extends Fragment implements StartDilogAble, DataChang
     }
 
     @Override
-    public void run(int thread, Runnable runnable) {
-        decorater.run(thread, runnable, new Handler());
+    public void run(int thread, int delay, Runnable runnable) {
+        decorater.run(thread, delay, runnable);
     }
 }

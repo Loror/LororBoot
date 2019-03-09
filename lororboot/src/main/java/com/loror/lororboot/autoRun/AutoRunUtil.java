@@ -24,6 +24,7 @@ public class AutoRunUtil {
                 holder.methodName = method.getName();
                 holder.relationMethod = run.relationMethod().length() == 0 ? null : run.relationMethod();
                 holder.thread = run.thread();
+                holder.delay = run.delay();
                 holder.method = method;
                 if (holder.when == RunTime.USERCALL || holder.when == RunTime.AFTERONCREATE || holder.when == RunTime.BEFOREONDESTROY) {
                     penetrations.add(holder);
@@ -101,7 +102,7 @@ public class AutoRunUtil {
     public static void runAutoRunHolders(AutoRunHolder penetration, final AutoRunAble autoRunAble) {
         final Object[] result = new Object[1];
         final AutoRunHolder[] head = new AutoRunHolder[]{penetration.getLinkHead()};
-        autoRunAble.run(head[0].thread, new Runnable() {
+        autoRunAble.run(head[0].thread, head[0].delay, new Runnable() {
             @Override
             public void run() {
                 head[0].getMethod().setAccessible(true);
@@ -125,7 +126,7 @@ public class AutoRunUtil {
                 }
                 if (head[0].next != null) {
                     head[0] = head[0].next;
-                    autoRunAble.run(head[0].thread, this);
+                    autoRunAble.run(head[0].thread, head[0].delay, this);
                 }
             }
         });

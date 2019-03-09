@@ -268,7 +268,7 @@ public class LororDialog extends AlertDialog implements DialogInterface.OnDismis
     }
 
     @Override
-    public void run(@RunThread int thread, Runnable runnable) {
-        decorater.run(thread, runnable, new Handler());
+    public void run(@RunThread int thread, int delay, Runnable runnable) {
+        decorater.run(thread, delay, runnable);
     }
 }
