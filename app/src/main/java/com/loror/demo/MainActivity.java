@@ -67,12 +67,12 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
                 .subscribe(new Observer<Responce>() {
                     @Override
                     public void success(Responce data) {
-                        Log.e("RESULT", data.toString() + " ");
+                        Log.e("RESULT_", data.toString() + " ");
                     }
 
                     @Override
                     public void failed(int code, Throwable e) {
-                        Log.e("RESULT", code + " = " + e);
+                        Log.e("RESULT_", code + " = " + e);
                     }
                 });
     }
