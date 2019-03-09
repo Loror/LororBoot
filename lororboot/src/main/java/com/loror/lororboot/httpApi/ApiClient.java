@@ -7,6 +7,9 @@ import com.loror.lororUtil.http.FileBody;
 import com.loror.lororUtil.http.HttpClient;
 import com.loror.lororUtil.http.RequestParams;
 import com.loror.lororUtil.http.Responce;
+import com.loror.lororboot.annotation.GET;
+import com.loror.lororboot.annotation.POST;
+import com.loror.lororboot.annotation.Param;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -133,10 +136,10 @@ public class ApiClient {
      * 获取键名
      */
     private String getFieldName(Annotation[] annotations) {
-        Field field = null;
+        Param field = null;
         for (int i = 0; i < annotations.length; i++) {
-            if (annotations[i].annotationType() == Field.class) {
-                field = (Field) annotations[i];
+            if (annotations[i].annotationType() == Param.class) {
+                field = (Param) annotations[i];
                 break;
             }
         }
