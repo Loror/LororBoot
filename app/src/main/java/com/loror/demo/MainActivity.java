@@ -11,6 +11,8 @@ import android.widget.Toast;
 import com.loror.lororUtil.http.Responce;
 import com.loror.lororUtil.view.Click;
 import com.loror.lororUtil.view.ItemClick;
+import com.loror.lororUtil.view.ItemLongClick;
+import com.loror.lororUtil.view.LongClick;
 import com.loror.lororboot.annotation.AutoRun;
 import com.loror.lororboot.annotation.Bind;
 import com.loror.lororboot.annotation.RequestPermission;
@@ -113,6 +115,11 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
         startDialog(new Intent(this, SingleDialog.class));
     }
 
+    @LongClick(id = R.id.dialog)
+    public void dialogLong(View view) {
+        Toast.makeText(this, "长按测试", Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     public void onPermissionsResult(String permission, boolean success) {
         Log.e("PERMISSION", permission + " " + success);
@@ -131,6 +138,11 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
     @ItemClick(id = R.id.banner)
     public void bannerClick(View view, int position) {
         Toast.makeText(this, "第" + position + "横幅点击", Toast.LENGTH_SHORT).show();
+    }
+
+    @ItemLongClick(id = R.id.listView)
+    public void listViewLongClick(View view, int position) {
+        Toast.makeText(this, "第" + position + "行长按", Toast.LENGTH_SHORT).show();
     }
 
     //RunTime.AFTERONCREATE,oncreate后自动执行;RunTime.BEFOREONDESTROY,ondestroy前自动执行;RunTime.USERCALL,用户主动通过切入点方法名调用
