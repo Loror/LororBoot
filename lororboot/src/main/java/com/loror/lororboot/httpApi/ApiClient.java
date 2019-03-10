@@ -114,13 +114,13 @@ public class ApiClient {
         for (int i = 0; i < annotations.length; i++) {
             if (args[i] instanceof RequestParams) {
                 HashMap<String, String> old = params.getParmas();
+                List<FileBody> oldFile = params.getFiles();
                 params = (RequestParams) args[i];
                 if (old.size() > 0) {
                     for (String key : old.keySet()) {
                         params.addParams(key, old.get(key));
                     }
                 }
-                List<FileBody> oldFile = params.getFiles();
                 if (oldFile.size() > 0) {
                     for (FileBody file : oldFile) {
                         params.addParams(file.getKey(), file);
