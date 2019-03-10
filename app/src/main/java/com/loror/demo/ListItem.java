@@ -10,7 +10,7 @@ public class ListItem extends BindAbleItem {
 
     @Override
     public int viewType() {
-        return obtainPosition() % 2 == 0 ? 0 : 1;
+        return obtainPosition() % 2;
     }
 
     @Override

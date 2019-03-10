@@ -27,7 +27,13 @@ public class RecyclerBindAbleAdapter extends RecyclerView.Adapter<RecyclerBindAb
         if (list.size() > 0) {
             Object item = list.get(position);
             if (item instanceof BindAbleItem && ((BindAbleItem) item).viewTypeCount() > 1) {
-                type = ((BindAbleItem) item).viewType();
+                BindAbleItem bindAbleItem = (BindAbleItem) item;
+                BinderAdapter.Mark mark = new BinderAdapter.Mark();
+                mark.bindAble = this.bindAble;
+                mark.position = position;
+                mark.size = list.size();
+                bindAbleItem.refreshMark(mark);
+                type = bindAbleItem.viewType();
             }
         }
         return type;
