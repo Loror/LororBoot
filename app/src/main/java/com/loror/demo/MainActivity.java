@@ -108,6 +108,11 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
         startActivity(new Intent(this, SecondActivity.class));
     }
 
+    @Click(id = R.id.dialog)
+    public void dialog(View view) {
+        startDialog(new Intent(this, SingleDialog.class));
+    }
+
     @Override
     public void onPermissionsResult(String permission, boolean success) {
         Log.e("PERMISSION", permission + " " + success);

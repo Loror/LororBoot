@@ -2,10 +2,8 @@ package com.loror.lororboot.startable;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -22,7 +20,6 @@ import com.loror.lororboot.dataChange.DataChangeUtils;
 import com.loror.lororboot.views.BindAbleBannerView;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -176,8 +173,7 @@ public class LororFragment extends Fragment implements StartDilogAble, DataChang
     public void startDialog(Intent intent) {
         try {
             Class classType = Class.forName(intent.getComponent().getClassName());
-            Constructor<Dialog> con = classType.getConstructor(Context.class);
-            Dialog obj = con.newInstance(getContext());
+            Dialog obj = LaunchModeDialog.createDialog(classType, getActivity());
             if (obj instanceof LororDialog) {
                 ((LororDialog) obj).putIntent(intent);
             } else if (intent.getFlags() != Intent.FLAG_ACTIVITY_NO_USER_ACTION) {
@@ -194,8 +190,7 @@ public class LororFragment extends Fragment implements StartDilogAble, DataChang
     public void startDialogForResult(Intent intent, final int requestCode) {
         try {
             Class classType = Class.forName(intent.getComponent().getClassName());
-            Constructor<Dialog> con = classType.getConstructor(Context.class);
-            Dialog obj = con.newInstance(getContext());
+            Dialog obj = LaunchModeDialog.createDialog(classType, getActivity());
             if (obj instanceof LororDialog) {
                 ((LororDialog) obj).putIntent(intent);
                 ((LororDialog) obj).forResult(requestCode, new LororDialog.ForResult() {

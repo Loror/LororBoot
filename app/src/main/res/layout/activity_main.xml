@@ -85,6 +85,14 @@
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="100dp"
             android:text="跳转" />
+
+        <Button
+            android:id="@+id/dialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="200dp"
+            android:text="弹窗" />
     </FrameLayout>
 
     <ListView

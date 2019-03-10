@@ -30,7 +30,6 @@ import com.loror.lororboot.dataChange.DataChangeUtils;
 import com.loror.lororboot.views.BindAbleBannerView;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -102,6 +101,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
 
     @Override
     protected void onDestroy() {
+        LaunchModeDialog.destroyDialogs(this);
         bindHolders.clear();
         decorater.onDestroy();
         super.onDestroy();
@@ -110,6 +110,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     //用于适配部分oppo手机finish后不调用onDestroy生命周期的问题
     @Override
     public void finish() {
+        LaunchModeDialog.destroyDialogs(this);
         List<Fragment> fragments = getSupportFragmentManager().getFragments();
         if (fragments != null) {
             for (Fragment fragment : fragments) {
@@ -313,8 +314,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     public void startDialog(Intent intent) {
         try {
             Class classType = Class.forName(intent.getComponent().getClassName());
-            Constructor<Dialog> con = classType.getConstructor(Context.class);
-            Dialog obj = con.newInstance(this);
+            Dialog obj = LaunchModeDialog.createDialog(classType, this);
             if (obj instanceof LororDialog) {
                 ((LororDialog) obj).putIntent(intent);
             } else if (intent.getFlags() != Intent.FLAG_ACTIVITY_NO_USER_ACTION) {
@@ -331,8 +331,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     public void startDialogForResult(Intent intent, final int requestCode) {
         try {
             Class classType = Class.forName(intent.getComponent().getClassName());
-            Constructor<Dialog> con = classType.getConstructor(Context.class);
-            Dialog obj = con.newInstance(this);
+            Dialog obj = LaunchModeDialog.createDialog(classType, this);
             if (obj instanceof LororDialog) {
                 ((LororDialog) obj).putIntent(intent);
                 ((LororDialog) obj).forResult(requestCode, new LororDialog.ForResult() {
