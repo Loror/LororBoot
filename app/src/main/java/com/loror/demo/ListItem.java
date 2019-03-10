@@ -19,7 +19,7 @@ public class ListItem extends BindAbleItem {
     }
 
     @Override
-    public int getLayout() {
-        return obtainPosition() % 2 == 0 ? R.layout.item_list_view : R.layout.item_list_view_2;
+    public int getLayout(int viewType) {
+        return viewType == 0 ? R.layout.item_list_view : R.layout.item_list_view_2;
     }
 }

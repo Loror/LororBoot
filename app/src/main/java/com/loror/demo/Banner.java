@@ -25,7 +25,7 @@ public class Banner extends BindAbleItem {
     }
 
     @Override
-    public int getLayout() {
+    public int getLayout(int viewType) {
         return R.layout.item_banner;
     }
 }

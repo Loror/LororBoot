@@ -10,7 +10,6 @@ import android.widget.ImageView;
 
 import com.loror.lororUtil.image.ImageUtil;
 import com.loror.lororUtil.view.OnItemClickListener;
-import com.loror.lororboot.views.EmptyLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,7 +114,7 @@ public class BindAbleBannerAdapter extends PagerAdapter {
     protected View getItemView(ViewGroup container, int position) {
         Object item = list.get(position);
         if (item instanceof BindAbleItem) {
-            return LayoutInflater.from(context).inflate(((BindAbleItem) item).getLayout(), container, false);
+            return LayoutInflater.from(context).inflate(((BindAbleItem) item).getLayout(((BindAbleItem) item).viewType()), container, false);
         } else {
             ImageView imageView = new ImageView(context);
             ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);

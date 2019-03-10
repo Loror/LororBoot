@@ -20,6 +20,7 @@ public class BinderAdapter extends BaseAdapter {
     private String emptyString = "暂无数据";
     private BindAble bindAble;
     private boolean itemEnable = true;
+    private static final int viewTagKey = 3 << 24 + 2;
 
     public BinderAdapter(Context context, List list, BindAble bindAble) {
         this.context = context;
@@ -49,7 +50,7 @@ public class BinderAdapter extends BaseAdapter {
         int type = super.getItemViewType(position);
         if (list.size() > 0) {
             Object item = list.get(position);
-            if (item instanceof BindAbleItem && ((BindAbleItem) item).viewTypeCount() > 1) {
+            if (item instanceof BindAbleItem) {
                 BindAbleItem bindAbleItem = (BindAbleItem) item;
                 Mark mark = new Mark();
                 mark.bindAble = this.bindAble;
@@ -113,8 +114,9 @@ public class BinderAdapter extends BaseAdapter {
             mark.position = position;
             mark.size = list.size();
             bindAbleItem.refreshMark(mark);
-            if (convertView == null || convertView instanceof EmptyLayout) {
-                convertView = inflater.inflate(bindAbleItem.getLayout(), parent, false);
+            if (convertView == null || convertView instanceof EmptyLayout || (Integer) convertView.getTag(viewTagKey) != bindAbleItem.viewType()) {
+                convertView = inflater.inflate(bindAbleItem.getLayout(bindAbleItem.viewType()), parent, false);
+                convertView.setTag(viewTagKey, bindAbleItem.viewType());
             }
             bindAbleItem.updateBind(convertView);
         }

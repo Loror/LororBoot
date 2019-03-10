@@ -1,6 +1,7 @@
 package com.loror.lororboot.bind;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +27,7 @@ public class RecyclerBindAbleAdapter extends RecyclerView.Adapter<RecyclerBindAb
         int type = super.getItemViewType(position);
         if (list.size() > 0) {
             Object item = list.get(position);
-            if (item instanceof BindAbleItem && ((BindAbleItem) item).viewTypeCount() > 1) {
+            if (item instanceof BindAbleItem) {
                 BindAbleItem bindAbleItem = (BindAbleItem) item;
                 BinderAdapter.Mark mark = new BinderAdapter.Mark();
                 mark.bindAble = this.bindAble;
@@ -44,24 +45,24 @@ public class RecyclerBindAbleAdapter extends RecyclerView.Adapter<RecyclerBindAb
     }
 
     @Override
-    public RecyclerBindAbleAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    @NonNull
+    public RecyclerBindAbleAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Object item = list.get(0);
         if (!(item instanceof BindAbleItem)) {
             throw new IllegalStateException("RecyclerView只支持绑定List<? extends BindAbleItem>类型");
         }
         BindAbleItem bindAbleItem = (BindAbleItem) item;
-        View convertView = inflater.inflate(bindAbleItem.getLayout(), parent, false);
+        View convertView = inflater.inflate(bindAbleItem.getLayout(viewType), parent, false);
         return new ViewHolder(convertView);
     }
 
     @Override
-    public void onBindViewHolder(RecyclerBindAbleAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerBindAbleAdapter.ViewHolder holder, int position) {
         BindAbleItem bindAbleItem = (BindAbleItem) list.get(position);
-        holder.bindAbleItem = bindAbleItem;
         BinderAdapter.Mark mark = new BinderAdapter.Mark();
         mark.bindAble = this.bindAble;
         mark.size = list.size();
-        mark.position = position;
+        mark.position = holder.getAdapterPosition();
         bindAbleItem.refreshMark(mark);
         bindAbleItem.updateBind(holder.itemView);
     }
@@ -72,8 +73,6 @@ public class RecyclerBindAbleAdapter extends RecyclerView.Adapter<RecyclerBindAb
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public BindAbleItem bindAbleItem;
-
         public ViewHolder(View itemView) {
             super(itemView);
         }

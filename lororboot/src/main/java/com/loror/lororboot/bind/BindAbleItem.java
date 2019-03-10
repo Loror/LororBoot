@@ -36,7 +36,7 @@ public abstract class BindAbleItem implements DataChangeAble {
     }
 
     @LayoutRes
-    public abstract int getLayout();
+    public abstract int getLayout(int viewType);
 
     @Override
     public boolean onBindFind(BindHolder holder) {
