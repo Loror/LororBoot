@@ -7,9 +7,11 @@ import com.loror.lororUtil.http.FileBody;
 import com.loror.lororUtil.http.HttpClient;
 import com.loror.lororUtil.http.RequestParams;
 import com.loror.lororUtil.http.Responce;
+import com.loror.lororboot.annotation.DELETE;
 import com.loror.lororboot.annotation.GET;
 import com.loror.lororboot.annotation.Header;
 import com.loror.lororboot.annotation.POST;
+import com.loror.lororboot.annotation.PUT;
 import com.loror.lororboot.annotation.Param;
 
 import java.io.File;
@@ -55,7 +57,7 @@ public class ApiClient {
     }
 
     private static class Res {
-        private int type;
+        private int type;//1,get;2,post;3,delete;4,put
         private String url;
 
         private Res(int type, String url) {
@@ -170,6 +172,16 @@ public class ApiClient {
             POST post = method.getAnnotation(POST.class);
             if (post != null) {
                 res = new Res(2, post.value());
+            } else {
+                DELETE delete = method.getAnnotation(DELETE.class);
+                if (delete != null) {
+                    res = new Res(3, delete.value());
+                } else {
+                    PUT put = method.getAnnotation(PUT.class);
+                    if (put != null) {
+                        res = new Res(4, put.value());
+                    }
+                }
             }
         }
         if (res == null) {
@@ -193,6 +205,20 @@ public class ApiClient {
             });
         } else if (type == 2) {
             client.asyncPost(getUrl(), params, new DefaultAsyncClient() {
+                @Override
+                public void callBack(Responce responce) {
+                    result(responce, getTClass(observer), observer);
+                }
+            });
+        } else if (type == 3) {
+            client.asyncDelete(getUrl(), params, new DefaultAsyncClient() {
+                @Override
+                public void callBack(Responce responce) {
+                    result(responce, getTClass(observer), observer);
+                }
+            });
+        } else if (type == 4) {
+            client.asyncPut(getUrl(), params, new DefaultAsyncClient() {
                 @Override
                 public void callBack(Responce responce) {
                     result(responce, getTClass(observer), observer);
@@ -243,6 +269,12 @@ public class ApiClient {
             return result(responce, classType);
         } else if (type == 2) {
             Responce responce = client.post(getUrl(), params);
+            return result(responce, classType);
+        } else if (type == 3) {
+            Responce responce = client.delete(getUrl(), params);
+            return result(responce, classType);
+        } else if (type == 4) {
+            Responce responce = client.put(getUrl(), params);
             return result(responce, classType);
         }
         return null;
