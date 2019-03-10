@@ -1,6 +1,7 @@
 package com.loror.lororboot.bind;
 
 import android.support.annotation.LayoutRes;
+import android.view.View;
 
 import com.loror.lororUtil.view.ViewUtil;
 import com.loror.lororboot.annotation.FrameCall;
@@ -58,7 +59,7 @@ public abstract class BindAbleItem implements DataChangeAble {
     }
 
     @FrameCall
-    protected final void refreshMark(BinderAdapter.Mark mark){
+    protected final void refreshMark(BinderAdapter.Mark mark) {
         this.position = mark.position;
         this.size = mark.size;
         this.outBindAble = mark.bindAble;
@@ -66,18 +67,18 @@ public abstract class BindAbleItem implements DataChangeAble {
 
     @Override
     public final void updateBind(Object tag) {
-        BinderAdapter.Mark mark = (BinderAdapter.Mark) tag;
+        View convertView = (View) tag;
         List<BindHolder> bindHolders;
-        if (mark.convertView.getTag() == null) {
+        if (convertView.getTag() == null) {
             bindHolders = new LinkedList<>();
-            BindUtils.findBindHolders(bindHolders, this, mark.convertView);
-            mark.convertView.setTag(bindHolders);
+            BindUtils.findBindHolders(bindHolders, this, convertView);
+            convertView.setTag(bindHolders);
         } else {
-            bindHolders = (List<BindHolder>) mark.convertView.getTag();
+            bindHolders = (List<BindHolder>) convertView.getTag();
         }
         //刷新显示并触发事件，解决控件复用问题
         BindUtils.initHolders(bindHolders, this, position);
-        ViewUtil.click(this, mark.convertView);
+        ViewUtil.click(this, convertView);
         this.bindHolders = bindHolders;
         changeState(null);
     }

@@ -50,7 +50,13 @@ public class BinderAdapter extends BaseAdapter {
         if (list.size() > 0) {
             Object item = list.get(position);
             if (item instanceof BindAbleItem && ((BindAbleItem) item).viewTypeCount() > 1) {
-                type = ((BindAbleItem) item).viewType();
+                BindAbleItem bindAbleItem = (BindAbleItem) item;
+                Mark mark = new Mark();
+                mark.bindAble = this.bindAble;
+                mark.position = position;
+                mark.size = list.size();
+                bindAbleItem.refreshMark(mark);
+                type = bindAbleItem.viewType();
             }
         }
         return type;
@@ -110,8 +116,7 @@ public class BinderAdapter extends BaseAdapter {
             if (convertView == null || convertView instanceof EmptyLayout) {
                 convertView = inflater.inflate(bindAbleItem.getLayout(), null, false);
             }
-            mark.convertView = convertView;
-            bindAbleItem.updateBind(mark);
+            bindAbleItem.updateBind(convertView);
         }
         return convertView;
     }
@@ -136,6 +141,5 @@ public class BinderAdapter extends BaseAdapter {
         int position;
         int size;
         BindAble bindAble;
-        View convertView;
     }
 }
