@@ -23,7 +23,7 @@ public class LaunchModeDialog {
      */
     public static Dialog createDialog(Class classType, Context activity) throws Exception {
         if (activity instanceof Activity) {
-            LaunchMode mode = activity.getClass().getAnnotation(LaunchMode.class);
+            LaunchMode mode = (LaunchMode) classType.getAnnotation(LaunchMode.class);
             int type = mode == null ? LaunchMode.STANDARD : mode.value();
             if (type == LaunchMode.SINGLEINACTIVITY) {
                 List<Dialog> dialogs = savedDialog.get(activity);
