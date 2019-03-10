@@ -114,7 +114,7 @@ public class BinderAdapter extends BaseAdapter {
             mark.size = list.size();
             bindAbleItem.refreshMark(mark);
             if (convertView == null || convertView instanceof EmptyLayout) {
-                convertView = inflater.inflate(bindAbleItem.getLayout(), null, false);
+                convertView = inflater.inflate(bindAbleItem.getLayout(), parent, false);
             }
             bindAbleItem.updateBind(convertView);
         }
