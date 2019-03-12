@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.loror.lororUtil.http.HttpClient;
+import com.loror.lororUtil.http.RequestParams;
 import com.loror.lororUtil.http.Responce;
 import com.loror.lororUtil.view.Click;
 import com.loror.lororUtil.view.ItemClick;
@@ -23,6 +25,7 @@ import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.dataBus.RemoteDataBusReceiver;
 import com.loror.lororboot.httpApi.ApiClient;
 import com.loror.lororboot.httpApi.Observer;
+import com.loror.lororboot.httpApi.OnRequestListener;
 import com.loror.lororboot.startable.LororActivity;
 
 import java.util.ArrayList;
@@ -64,6 +67,17 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
     private void initData() {
         new ApiClient()
                 .setBaseUrl("https://www.baidu.com")
+                .setOnRequestListener(new OnRequestListener() {
+                    @Override
+                    public void onRequestBegin(HttpClient client, RequestParams params, String url) {
+                        Log.e("RESULT_", url + " " + params);
+                    }
+
+                    @Override
+                    public void onRequestEnd(Responce responce, RequestParams params, String url) {
+
+                    }
+                })
                 .create(ServerApi.class)
                 .getResult("1")
                 .subscribe(new Observer<Responce>() {

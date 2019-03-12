@@ -227,6 +227,9 @@ public class ApiClient {
             client.asyncGet(getUrl(), params, new DefaultAsyncClient() {
                 @Override
                 public void callBack(Responce responce) {
+                    if (onRequestListener != null) {
+                        onRequestListener.onRequestEnd(responce, params, getUrl());
+                    }
                     result(responce, getTClass(observer), observer);
                 }
             });
@@ -234,6 +237,9 @@ public class ApiClient {
             client.asyncPost(getUrl(), params, new DefaultAsyncClient() {
                 @Override
                 public void callBack(Responce responce) {
+                    if (onRequestListener != null) {
+                        onRequestListener.onRequestEnd(responce, params, getUrl());
+                    }
                     result(responce, getTClass(observer), observer);
                 }
             });
@@ -241,6 +247,9 @@ public class ApiClient {
             client.asyncDelete(getUrl(), params, new DefaultAsyncClient() {
                 @Override
                 public void callBack(Responce responce) {
+                    if (onRequestListener != null) {
+                        onRequestListener.onRequestEnd(responce, params, getUrl());
+                    }
                     result(responce, getTClass(observer), observer);
                 }
             });
@@ -248,6 +257,9 @@ public class ApiClient {
             client.asyncPut(getUrl(), params, new DefaultAsyncClient() {
                 @Override
                 public void callBack(Responce responce) {
+                    if (onRequestListener != null) {
+                        onRequestListener.onRequestEnd(responce, params, getUrl());
+                    }
                     result(responce, getTClass(observer), observer);
                 }
             });
@@ -294,20 +306,20 @@ public class ApiClient {
             onRequestListener.onRequestBegin(client, params, getUrl());
         }
         int type = res.type;
+        Responce responce = null;
         if (type == 1) {
-            Responce responce = client.get(getUrl(), params);
-            return result(responce, classType);
+            responce = client.get(getUrl(), params);
         } else if (type == 2) {
-            Responce responce = client.post(getUrl(), params);
-            return result(responce, classType);
+            responce = client.post(getUrl(), params);
         } else if (type == 3) {
-            Responce responce = client.delete(getUrl(), params);
-            return result(responce, classType);
+            responce = client.delete(getUrl(), params);
         } else if (type == 4) {
-            Responce responce = client.put(getUrl(), params);
-            return result(responce, classType);
+            responce = client.put(getUrl(), params);
         }
-        return null;
+        if (onRequestListener != null) {
+            onRequestListener.onRequestEnd(responce, params, getUrl());
+        }
+        return responce == null ? null : result(responce, classType);
     }
 
     /**
