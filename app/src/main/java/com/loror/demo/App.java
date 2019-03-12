@@ -15,6 +15,11 @@ public class App extends LororApplication {
             public Object jsonToObject(String json, Class<?> classType) {
                 return JSON.parseObject(json, classType);
             }
+
+            @Override
+            public String objectToJson(Object object) {
+                return JSON.toJSONString(object);
+            }
         });
     }
 
