@@ -13,6 +13,8 @@ import com.loror.lororboot.annotation.Header;
 import com.loror.lororboot.annotation.POST;
 import com.loror.lororboot.annotation.PUT;
 import com.loror.lororboot.annotation.Param;
+import com.loror.lororboot.annotation.ParamJson;
+import com.loror.lororboot.annotation.ParamObject;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -30,9 +32,15 @@ public class ApiClient {
     private Res res;
     private RequestParams params;
     private static JsonParser jsonParser;
+    private OnRequestListener onRequestListener;
 
     public ApiClient setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
+        return this;
+    }
+
+    public ApiClient setOnRequestListener(OnRequestListener onRequestListener) {
+        this.onRequestListener = onRequestListener;
         return this;
     }
 
@@ -150,6 +158,22 @@ public class ApiClient {
                     }
                 }
                 break;
+            } else if (annotations[i].annotationType() == ParamObject.class) {
+                if (arg != null) {
+                    params.fromObject(arg);
+                }
+                break;
+            } else if (annotations[i].annotationType() == ParamJson.class) {
+                if (arg != null) {
+                    if (arg instanceof String) {
+                        params.asJson((String) arg);
+                    } else if (jsonParser != null) {
+                        params.asJson(jsonParser.objectToJson(arg));
+                    } else {
+                        params.asJson(String.valueOf(arg));
+                    }
+                }
+                break;
             } else if (annotations[i].annotationType() == Header.class) {
                 String name = ((Header) annotations[i]).value();
                 if (name.length() > 0) {
@@ -195,6 +219,9 @@ public class ApiClient {
      */
     protected void asyncConnect(final Observer observer) {
         final HttpClient client = new HttpClient();
+        if (onRequestListener != null) {
+            onRequestListener.onRequestBegin(client, params, getUrl());
+        }
         int type = getType();
         if (type == 1) {
             client.asyncGet(getUrl(), params, new DefaultAsyncClient() {
@@ -263,6 +290,9 @@ public class ApiClient {
      */
     private Object connect(Class<?> classType) {
         final HttpClient client = new HttpClient();
+        if (onRequestListener != null) {
+            onRequestListener.onRequestBegin(client, params, getUrl());
+        }
         int type = res.type;
         if (type == 1) {
             Responce responce = client.get(getUrl(), params);
