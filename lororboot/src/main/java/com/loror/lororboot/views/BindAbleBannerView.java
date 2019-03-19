@@ -26,7 +26,7 @@ public class BindAbleBannerView extends ViewPager implements ItemClickAble {
     private PagerAdapter adapter;
     private OnItemClickListener onItemClicklistener;
     private BindAblePointView pointView;
-    private Context context;
+    private Activity activity;
 
     public BindAbleBannerView(Context context) {
         this(context, null);
@@ -34,7 +34,7 @@ public class BindAbleBannerView extends ViewPager implements ItemClickAble {
 
     public BindAbleBannerView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.context = context;
+        this.activity = context instanceof Activity ? (Activity) context : null;
         TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.BindAbleBannerView);
         peroid = array != null ? array.getInt(R.styleable.BindAbleBannerView_changePeroid, 5000) : 5000;
         if (array != null) {
@@ -164,7 +164,7 @@ public class BindAbleBannerView extends ViewPager implements ItemClickAble {
                             thread = null;
                             break;
                         }
-                        if (context instanceof Activity && ((Activity) context).isFinishing()) {
+                        if (activity != null && activity.isFinishing()) {
                             thread = null;
                             break;
                         }
