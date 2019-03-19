@@ -3,6 +3,7 @@ package com.loror.lororboot.views;
 import java.lang.reflect.Field;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Handler;
@@ -25,6 +26,7 @@ public class BindAbleBannerView extends ViewPager implements ItemClickAble {
     private PagerAdapter adapter;
     private OnItemClickListener onItemClicklistener;
     private BindAblePointView pointView;
+    private Context context;
 
     public BindAbleBannerView(Context context) {
         this(context, null);
@@ -32,6 +34,7 @@ public class BindAbleBannerView extends ViewPager implements ItemClickAble {
 
     public BindAbleBannerView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.context = context;
         TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.BindAbleBannerView);
         peroid = array != null ? array.getInt(R.styleable.BindAbleBannerView_changePeroid, 5000) : 5000;
         if (array != null) {
@@ -120,7 +123,7 @@ public class BindAbleBannerView extends ViewPager implements ItemClickAble {
     @Override
     public void setOnItemClickListener(OnItemClickListener onItemClicklistener) {
         this.onItemClicklistener = onItemClicklistener;
-        if (adapter != null && adapter instanceof BindAbleBannerAdapter) {
+        if (adapter instanceof BindAbleBannerAdapter) {
             ((BindAbleBannerAdapter) adapter).setOnItemClicklistener(onItemClicklistener);
         }
     }
@@ -128,7 +131,7 @@ public class BindAbleBannerView extends ViewPager implements ItemClickAble {
     @Override
     public void setAdapter(final PagerAdapter adapter) {
         this.adapter = adapter;
-        if (adapter != null && adapter instanceof BindAbleBannerAdapter) {
+        if (adapter instanceof BindAbleBannerAdapter) {
             ((BindAbleBannerAdapter) adapter).setOnItemClicklistener(onItemClicklistener);
         }
         super.setAdapter(adapter);
@@ -158,7 +161,12 @@ public class BindAbleBannerView extends ViewPager implements ItemClickAble {
                         try {
                             sleep(peroid);
                         } catch (InterruptedException e) {
-                            return;
+                            thread = null;
+                            break;
+                        }
+                        if (context instanceof Activity && ((Activity) context).isFinishing()) {
+                            thread = null;
+                            break;
                         }
                         if (!pause) {
                             handler.sendEmptyMessage(0);
@@ -177,7 +185,6 @@ public class BindAbleBannerView extends ViewPager implements ItemClickAble {
     public void stopScrol() {
         if (thread != null) {
             thread.interrupt();
-            thread = null;
         }
     }
 
