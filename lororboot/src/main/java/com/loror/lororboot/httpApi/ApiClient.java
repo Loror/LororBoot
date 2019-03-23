@@ -7,6 +7,7 @@ import com.loror.lororUtil.http.FileBody;
 import com.loror.lororUtil.http.HttpClient;
 import com.loror.lororUtil.http.RequestParams;
 import com.loror.lororUtil.http.Responce;
+import com.loror.lororboot.annotation.BaseUrl;
 import com.loror.lororboot.annotation.DELETE;
 import com.loror.lororboot.annotation.GET;
 import com.loror.lororboot.annotation.Header;
@@ -28,7 +29,7 @@ import java.util.List;
 
 public class ApiClient {
 
-    private String baseUrl;
+    private String baseUrl, anoBaseUrl;
     private Res res;
     private RequestParams params;
     private static JsonParser jsonParser;
@@ -57,7 +58,8 @@ public class ApiClient {
     }
 
     public String getUrl() {
-        return baseUrl != null ? (baseUrl + res.url) : res.url;
+        return anoBaseUrl != null && anoBaseUrl.length() != 0 ? (anoBaseUrl + res.url) :
+                baseUrl != null ? (baseUrl + res.url) : res.url;
     }
 
     public RequestParams getParams() {
@@ -78,6 +80,10 @@ public class ApiClient {
      * 创建Api对象
      */
     public <T> T create(Class<T> service) {
+        BaseUrl baseUrl = service.getAnnotation(BaseUrl.class);
+        if (baseUrl != null) {
+            this.anoBaseUrl = baseUrl.value();
+        }
         return (T) Proxy.newProxyInstance(service.getClassLoader(), new Class<?>[]{service},
                 new InvocationHandler() {
 
@@ -284,7 +290,8 @@ public class ApiClient {
      * 处理返回结果
      */
     private void result(Responce responce, Class<?> classType, Observer observer) {
-        if (responce.getCode() == 200) {
+        //200系列尝试解析，返回类型Responce通过success返回
+        if (responce.getCode() / 100 == 2 || classType == Responce.class) {
             try {
                 Object bean = classType == String.class ? responce.toString() : classType == Responce.class ? responce : jsonParser == null ? null : jsonParser.jsonToObject(responce.toString(), classType);
                 observer.success(bean);
@@ -326,12 +333,10 @@ public class ApiClient {
      * 处理返回结果
      */
     private Object result(Responce responce, Class<?> classType) {
-        if (responce.getCode() == 200) {
-            try {
-                return classType == String.class ? responce.toString() : classType == Responce.class ? responce : jsonParser == null ? null : jsonParser.jsonToObject(responce.toString(), classType);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        try {
+            return classType == String.class ? responce.toString() : classType == Responce.class ? responce : jsonParser == null ? null : jsonParser.jsonToObject(responce.toString(), classType);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }

@@ -66,7 +66,7 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
 
     private void initData() {
         new ApiClient()
-                .setBaseUrl("https://www.baidu.com")
+                .setBaseUrl("https://www.baidu.com") //可在此设置，也可使用注解，注解优先度较高，会覆盖此处设置
                 .setOnRequestListener(new OnRequestListener() {
                     @Override
                     public void onRequestBegin(HttpClient client, RequestParams params, String url) {
