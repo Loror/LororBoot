@@ -15,9 +15,26 @@ import java.util.List;
 
 public class ApiRequest {
 
+    private String baseUrl, anoBaseUrl;
     private RequestParams params;
-    private int type = -1;//1,get;2,post;3,delete;4,put
+    private int type;//1,get;2,post;3,delete;4,put
     private String url;
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public void setAnoBaseUrl(String anoBaseUrl) {
+        this.anoBaseUrl = anoBaseUrl;
+    }
+
+    public String getAnoBaseUrl() {
+        return anoBaseUrl;
+    }
 
     public void setType(int type) {
         this.type = type;
@@ -31,8 +48,11 @@ public class ApiRequest {
         this.url = url;
     }
 
-    public String getUrl(String baseUrl) {
-        return baseUrl != null && baseUrl.length() != 0 ? (baseUrl + url) : url;
+    public String getUrl() {
+        return anoBaseUrl != null && anoBaseUrl.length() != 0 ?
+                (anoBaseUrl + url) : baseUrl != null && baseUrl.length() != 0 ?
+                (baseUrl + url) :
+                url;
     }
 
     public RequestParams getParams() {

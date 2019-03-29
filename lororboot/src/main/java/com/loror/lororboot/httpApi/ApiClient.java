@@ -20,7 +20,7 @@ import java.lang.reflect.Type;
 
 public class ApiClient {
 
-    private String baseUrl, anoBaseUrl;
+    private String baseUrl;
 
     protected static JsonParser jsonParser;
     private OnRequestListener onRequestListener;
@@ -48,8 +48,11 @@ public class ApiClient {
      */
     public <T> T create(Class<T> service) {
         BaseUrl baseUrl = service.getAnnotation(BaseUrl.class);
+        final String anoBaseUrl;
         if (baseUrl != null) {
-            this.anoBaseUrl = baseUrl.value();
+            anoBaseUrl = baseUrl.value();
+        } else {
+            anoBaseUrl = null;
         }
         return (T) Proxy.newProxyInstance(service.getClassLoader(), new Class<?>[]{service},
                 new InvocationHandler() {
@@ -62,7 +65,8 @@ public class ApiClient {
                             return method.invoke(this, args);
                         }
                         ApiRequest apiRequest = getApiRequest(method);
-                        if (apiRequest.getType() != -1) {
+                        if (apiRequest.getType() != 0) {
+                            apiRequest.setAnoBaseUrl(anoBaseUrl);
                             apiRequest.generateParams(method, args);
                             if (method.getReturnType() == Observable.class) {
                                 Observable observable = generateObservable(method, args);
@@ -92,6 +96,7 @@ public class ApiClient {
      */
     private ApiRequest getApiRequest(Method method) {
         ApiRequest apiRequest = new ApiRequest();
+        apiRequest.setBaseUrl(baseUrl);
         GET get = method.getAnnotation(GET.class);
         if (get != null) {
             apiRequest.setType(1);
@@ -124,7 +129,7 @@ public class ApiClient {
     protected void asyncConnect(ApiRequest apiRequest, final Observer observer) {
         final HttpClient client = new HttpClient();
         final RequestParams params = apiRequest.getParams();
-        final String url = apiRequest.getUrl(anoBaseUrl != null && anoBaseUrl.length() != 0 ? anoBaseUrl : baseUrl);
+        final String url = apiRequest.getUrl();
         if (onRequestListener != null) {
             onRequestListener.onRequestBegin(client, params, url);
         }
@@ -210,7 +215,7 @@ public class ApiClient {
     private Object connect(ApiRequest apiRequest, Class<?> classType) {
         final HttpClient client = new HttpClient();
         final RequestParams params = apiRequest.getParams();
-        final String url = apiRequest.getUrl(anoBaseUrl != null && anoBaseUrl.length() != 0 ? anoBaseUrl : baseUrl);
+        final String url = apiRequest.getUrl();
         if (onRequestListener != null) {
             onRequestListener.onRequestBegin(client, params, url);
         }
