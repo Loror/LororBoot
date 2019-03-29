@@ -43,7 +43,6 @@ public class ApiClient {
         return jsonParser;
     }
 
-
     /**
      * 创建Api对象
      */
