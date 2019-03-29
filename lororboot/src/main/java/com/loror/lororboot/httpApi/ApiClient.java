@@ -3,36 +3,26 @@ package com.loror.lororboot.httpApi;
 import android.support.annotation.Nullable;
 
 import com.loror.lororUtil.http.DefaultAsyncClient;
-import com.loror.lororUtil.http.FileBody;
 import com.loror.lororUtil.http.HttpClient;
 import com.loror.lororUtil.http.RequestParams;
 import com.loror.lororUtil.http.Responce;
 import com.loror.lororboot.annotation.BaseUrl;
 import com.loror.lororboot.annotation.DELETE;
 import com.loror.lororboot.annotation.GET;
-import com.loror.lororboot.annotation.Header;
 import com.loror.lororboot.annotation.POST;
 import com.loror.lororboot.annotation.PUT;
-import com.loror.lororboot.annotation.Param;
-import com.loror.lororboot.annotation.ParamJson;
-import com.loror.lororboot.annotation.ParamObject;
 
-import java.io.File;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.List;
 
 public class ApiClient {
 
     private String baseUrl, anoBaseUrl;
-    private Res res;
-    private RequestParams params;
-    private static JsonParser jsonParser;
+
+    protected static JsonParser jsonParser;
     private OnRequestListener onRequestListener;
 
     public ApiClient setBaseUrl(String baseUrl) {
@@ -53,28 +43,6 @@ public class ApiClient {
         return jsonParser;
     }
 
-    public int getType() {
-        return res.type;
-    }
-
-    public String getUrl() {
-        return anoBaseUrl != null && anoBaseUrl.length() != 0 ? (anoBaseUrl + res.url) :
-                baseUrl != null ? (baseUrl + res.url) : res.url;
-    }
-
-    public RequestParams getParams() {
-        return params;
-    }
-
-    private static class Res {
-        private int type;//1,get;2,post;3,delete;4,put
-        private String url;
-
-        private Res(int type, String url) {
-            this.type = type;
-            this.url = url;
-        }
-    }
 
     /**
      * 创建Api对象
@@ -94,13 +62,15 @@ public class ApiClient {
                         if (method.getDeclaringClass() == Object.class) {
                             return method.invoke(this, args);
                         }
-                        res = getRequestType(method);
-                        if (res != null) {
-                            params = generateParams(method, args);
+                        ApiRequest apiRequest = getApiRequest(method);
+                        if (apiRequest.getType() != -1) {
+                            apiRequest.generateParams(method, args);
                             if (method.getReturnType() == Observable.class) {
-                                return generateObservable(method, args);
+                                Observable observable = generateObservable(method, args);
+                                observable.setApiRequest(apiRequest);
+                                return observable;
                             } else {
-                                return connect(method.getReturnType());
+                                return connect(apiRequest, method.getReturnType());
                             }
                         }
                         return null;
@@ -118,153 +88,84 @@ public class ApiClient {
         return observable;
     }
 
-
     /**
-     * 创建RequestParams
+     * 获取ApiRequest
      */
-    private RequestParams generateParams(Method method, Object[] args) throws Throwable {
-        RequestParams params = new RequestParams();
-        Annotation[][] annotations = method.getParameterAnnotations();
-        for (int i = 0; i < annotations.length; i++) {
-            if (args[i] instanceof RequestParams) {
-                HashMap<String, String> old = params.getParmas();
-                List<FileBody> oldFile = params.getFiles();
-                params = (RequestParams) args[i];
-                if (old.size() > 0) {
-                    for (String key : old.keySet()) {
-                        params.addParams(key, old.get(key));
-                    }
-                }
-                if (oldFile.size() > 0) {
-                    for (FileBody file : oldFile) {
-                        params.addParams(file.getKey(), file);
-                    }
-                }
-            } else {
-                addField(params, annotations[i], args[i]);
-            }
-        }
-        return params;
-    }
-
-    /**
-     * 添加Field
-     */
-    private void addField(RequestParams params, Annotation[] annotations, Object arg) {
-        for (int i = 0; i < annotations.length; i++) {
-            if (annotations[i].annotationType() == Param.class) {
-                String name = ((Param) annotations[i]).value();
-                if (name.length() > 0) {
-                    if (arg instanceof FileBody) {
-                        params.addParams(name, (FileBody) arg);
-                    } else if (arg instanceof File) {
-                        params.addParams(name, new FileBody(((File) arg).getAbsolutePath()));
-                    } else {
-                        params.addParams(name, String.valueOf(arg));
-                    }
-                }
-                break;
-            } else if (annotations[i].annotationType() == ParamObject.class) {
-                if (arg != null) {
-                    params.fromObject(arg);
-                }
-                break;
-            } else if (annotations[i].annotationType() == ParamJson.class) {
-                if (arg != null) {
-                    if (arg instanceof String) {
-                        params.asJson((String) arg);
-                    } else if (jsonParser != null) {
-                        params.asJson(jsonParser.objectToJson(arg));
-                    } else {
-                        params.asJson(String.valueOf(arg));
-                    }
-                }
-                break;
-            } else if (annotations[i].annotationType() == Header.class) {
-                String name = ((Header) annotations[i]).value();
-                if (name.length() > 0) {
-                    params.addHeader(name, String.valueOf(arg));
-                }
-                break;
-            }
-        }
-    }
-
-    /**
-     * 获取type
-     */
-    private Res getRequestType(Method method) {
-        Res res = null;
+    private ApiRequest getApiRequest(Method method) {
+        ApiRequest apiRequest = new ApiRequest();
         GET get = method.getAnnotation(GET.class);
         if (get != null) {
-            res = new Res(1, get.value());
+            apiRequest.setType(1);
+            apiRequest.setUrl(get.value());
         } else {
             POST post = method.getAnnotation(POST.class);
             if (post != null) {
-                res = new Res(2, post.value());
+                apiRequest.setType(2);
+                apiRequest.setUrl(post.value());
             } else {
                 DELETE delete = method.getAnnotation(DELETE.class);
                 if (delete != null) {
-                    res = new Res(3, delete.value());
+                    apiRequest.setType(3);
+                    apiRequest.setUrl(delete.value());
                 } else {
                     PUT put = method.getAnnotation(PUT.class);
                     if (put != null) {
-                        res = new Res(4, put.value());
+                        apiRequest.setType(4);
+                        apiRequest.setUrl(put.value());
                     }
                 }
             }
         }
-        if (res == null) {
-            res = new Res(0, "");
-        }
-        return res;
+        return apiRequest;
     }
 
     /**
      * 异步请求
      */
-    protected void asyncConnect(final Observer observer) {
+    protected void asyncConnect(ApiRequest apiRequest, final Observer observer) {
         final HttpClient client = new HttpClient();
+        final RequestParams params = apiRequest.getParams();
+        final String url = apiRequest.getUrl(anoBaseUrl != null && anoBaseUrl.length() != 0 ? anoBaseUrl : baseUrl);
         if (onRequestListener != null) {
-            onRequestListener.onRequestBegin(client, params, getUrl());
+            onRequestListener.onRequestBegin(client, params, url);
         }
-        int type = getType();
+        int type = apiRequest.getType();
         if (type == 1) {
-            client.asyncGet(getUrl(), params, new DefaultAsyncClient() {
+            client.asyncGet(url, params, new DefaultAsyncClient() {
                 @Override
                 public void callBack(Responce responce) {
                     if (onRequestListener != null) {
-                        onRequestListener.onRequestEnd(responce, params, getUrl());
+                        onRequestListener.onRequestEnd(responce, params, url);
                     }
                     result(responce, getTClass(observer), observer);
                 }
             });
         } else if (type == 2) {
-            client.asyncPost(getUrl(), params, new DefaultAsyncClient() {
+            client.asyncPost(url, params, new DefaultAsyncClient() {
                 @Override
                 public void callBack(Responce responce) {
                     if (onRequestListener != null) {
-                        onRequestListener.onRequestEnd(responce, params, getUrl());
+                        onRequestListener.onRequestEnd(responce, params, url);
                     }
                     result(responce, getTClass(observer), observer);
                 }
             });
         } else if (type == 3) {
-            client.asyncDelete(getUrl(), params, new DefaultAsyncClient() {
+            client.asyncDelete(url, params, new DefaultAsyncClient() {
                 @Override
                 public void callBack(Responce responce) {
                     if (onRequestListener != null) {
-                        onRequestListener.onRequestEnd(responce, params, getUrl());
+                        onRequestListener.onRequestEnd(responce, params, url);
                     }
                     result(responce, getTClass(observer), observer);
                 }
             });
         } else if (type == 4) {
-            client.asyncPut(getUrl(), params, new DefaultAsyncClient() {
+            client.asyncPut(url, params, new DefaultAsyncClient() {
                 @Override
                 public void callBack(Responce responce) {
                     if (onRequestListener != null) {
-                        onRequestListener.onRequestEnd(responce, params, getUrl());
+                        onRequestListener.onRequestEnd(responce, params, url);
                     }
                     result(responce, getTClass(observer), observer);
                 }
@@ -307,24 +208,26 @@ public class ApiClient {
     /**
      * 同步请求
      */
-    private Object connect(Class<?> classType) {
+    private Object connect(ApiRequest apiRequest, Class<?> classType) {
         final HttpClient client = new HttpClient();
+        final RequestParams params = apiRequest.getParams();
+        final String url = apiRequest.getUrl(anoBaseUrl != null && anoBaseUrl.length() != 0 ? anoBaseUrl : baseUrl);
         if (onRequestListener != null) {
-            onRequestListener.onRequestBegin(client, params, getUrl());
+            onRequestListener.onRequestBegin(client, params, url);
         }
-        int type = res.type;
+        int type = apiRequest.getType();
         Responce responce = null;
         if (type == 1) {
-            responce = client.get(getUrl(), params);
+            responce = client.get(url, params);
         } else if (type == 2) {
-            responce = client.post(getUrl(), params);
+            responce = client.post(url, params);
         } else if (type == 3) {
-            responce = client.delete(getUrl(), params);
+            responce = client.delete(url, params);
         } else if (type == 4) {
-            responce = client.put(getUrl(), params);
+            responce = client.put(url, params);
         }
         if (onRequestListener != null) {
-            onRequestListener.onRequestEnd(responce, params, getUrl());
+            onRequestListener.onRequestEnd(responce, params, url);
         }
         return responce == null ? null : result(responce, classType);
     }
