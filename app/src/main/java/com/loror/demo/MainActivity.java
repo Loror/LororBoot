@@ -137,10 +137,15 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
     @Override
     public void onPermissionsResult(String permission, boolean success) {
         Log.e("PERMISSION", permission + " " + success);
+        switch (permission) {
+            case Manifest.permission.WRITE_EXTERNAL_STORAGE:
+                if (success) {
+                    initView();
+                }
+                break;
+        }
         if (!success) {
             Toast.makeText(this, "获取权限失败", Toast.LENGTH_SHORT).show();
-        } else {
-            initView();
         }
     }
 
