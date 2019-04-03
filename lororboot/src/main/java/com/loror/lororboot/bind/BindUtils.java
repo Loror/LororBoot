@@ -24,6 +24,7 @@ import com.loror.lororboot.LororApplication;
 import com.loror.lororboot.annotation.AppendId;
 import com.loror.lororboot.annotation.Bind;
 import com.loror.lororboot.annotation.DisableItem;
+import com.loror.lororboot.annotation.Gif;
 import com.loror.lororboot.annotation.Visibility;
 import com.loror.lororboot.startable.LororActivity;
 import com.loror.lororboot.startable.LororDialog;
@@ -112,6 +113,7 @@ public class BindUtils {
                         bindHolder.imageWidth = bind.imageWidth();
                         bindHolder.onlyEvent = bind.onlyEvent();
                         bindHolder.disableItem = field.getAnnotation(DisableItem.class) != null;
+                        bindHolder.gif = field.getAnnotation(Gif.class) != null;
                         if (bind.bitmapConverter() != BitmapConverter.class && view instanceof ImageView) {
                             try {
                                 bindHolder.bitmapConverter = bind.bitmapConverter().newInstance();
@@ -382,7 +384,8 @@ public class BindUtils {
                         if (width > 1080) {
                             width = 1080;
                         }
-                        ImageUtil imageUtil = ImageUtil.with(imageView.getContext()).from(vol).to(imageView).setWidthLimit(width).setNoSdCache(LororApplication.NoImageSdCardCache);
+                        ImageUtil imageUtil = ImageUtil.with(imageView.getContext())
+                                .from(vol).to(imageView).setWidthLimit(width).setNoSdCache(LororApplication.NoImageSdCardCache).setIsGif(bindHolder.gif);
                         if (bindHolder.imagePlace != 0) {
                             imageUtil.setDefaultImage(bindHolder.imagePlace);
                         }
