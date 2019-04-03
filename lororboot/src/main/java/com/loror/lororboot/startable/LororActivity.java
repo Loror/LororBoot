@@ -13,7 +13,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.SparseArray;
 import android.widget.Toast;
 
 import com.loror.lororUtil.view.ViewUtil;
@@ -47,7 +46,6 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     private boolean paused;
 
     private int requestCode;
-    private SparseArray<String> permissionRequestMap;
     private Decorater decorater;
 
     @Override
@@ -231,9 +229,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     private void requestPermissions(RequestPermission permission) {
         String[] requests = permission.value();
         boolean anyway = permission.requestAnyway();
-        for (int i = 0; i < requests.length; i++) {
-            requestPermission(requests[i], anyway);
-        }
+        requestPermissions(requests, anyway);
     }
 
     /**
@@ -246,33 +242,43 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     /**
      * 动态申请权限
      */
+    public void requestPermissions(String[] permission) {
+        requestPermissions(permission, false);
+    }
+
+    /**
+     * 动态申请权限
+     */
     public void requestPermission(String permission, boolean requestAnyway) {
-        if (permissionRequestMap == null) {
-            permissionRequestMap = new SparseArray<>();
-        }
-        int hasIt = 0;
-        if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-            // 权限申请曾经被用户拒绝
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
-                if (requestAnyway) {
-                    permissionRequestMap.put(requestCode, permission);
-                    // 进行权限请求
-                    ActivityCompat.requestPermissions(this, new String[]{permission}, requestCode);
-                    requestCode++;
+        requestPermissions(new String[]{permission}, requestAnyway);
+    }
+
+    /**
+     * 动态申请权限
+     */
+    public void requestPermissions(String[] permission, boolean requestAnyway) {
+        List<String> requests = new ArrayList<>();
+        for (int i = 0; i < permission.length; i++) {
+            if (ContextCompat.checkSelfPermission(this, permission[i]) != PackageManager.PERMISSION_GRANTED) {
+                // 权限申请曾经被用户拒绝
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission[i])) {
+                    if (requestAnyway) {
+                        requests.add(permission[i]);
+                    } else {
+                        onPermissionsResult(permission[i], false);
+                    }
                 } else {
-                    hasIt = 2;
+                    requests.add(permission[i]);
                 }
             } else {
-                permissionRequestMap.put(requestCode, permission);
-                // 进行权限请求
-                ActivityCompat.requestPermissions(this, new String[]{permission}, requestCode);
-                requestCode++;
+                onPermissionsResult(permission[i], true);
             }
-        } else {
-            hasIt = 1;
         }
-        if (hasIt > 0) {
-            onPermissionsResult(permission, hasIt == 1);
+
+        if (requests.size() > 0) {
+            // 进行权限请求
+            ActivityCompat.requestPermissions(this, requests.toArray(new String[0]), requestCode);
+            requestCode++;
         }
     }
 
@@ -293,18 +299,12 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (permissionRequestMap != null) {
-            String permission = permissionRequestMap.get(requestCode);
-            permissionRequestMap.remove(requestCode);
+        for (int i = 0; i < permissions.length; i++) {
+            String permission = permissions[i];
             boolean success = false;
             // 如果请求被拒绝，那么通常grantResults数组为空
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.length > 0 && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                 success = true;
-            }
-            if (permission == null) {
-                if (permissions != null && permissions.length > 0) {
-                    permission = permissions[0];
-                }
             }
             onPermissionsResult(permission, success);
         }

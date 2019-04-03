@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 //继承DataBusReceiver只能接收到同一进程发送的数据，继承RemoteDataBusReceiver可接收到同一进程和其他进程发送的消息，可根据需要选择
-@RequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+@RequestPermission(value = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE}, requestAnyway = true)
 public class MainActivity extends LororActivity implements RemoteDataBusReceiver {
 
     /**
