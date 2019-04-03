@@ -379,15 +379,7 @@ public class BindUtils {
                     ImageView imageView = (ImageView) bindHolder.view;
                     if (vol != null) {
                         int width = bindHolder.imageWidth;
-                        if (width == 0) {
-                            imageView.getWidth();
-                        }
-                        if (width == 0) {
-                            width = imageView.getMeasuredWidth();
-                        }
-                        if (width == 0) {
-                            width = 300;
-                        } else if (width > 1080) {
+                        if (width > 1080) {
                             width = 1080;
                         }
                         ImageUtil imageUtil = ImageUtil.with(imageView.getContext()).from(vol).to(imageView).setWidthLimit(width).setNoSdCache(LororApplication.NoImageSdCardCache);

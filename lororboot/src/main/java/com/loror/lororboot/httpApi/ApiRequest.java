@@ -67,7 +67,7 @@ public class ApiRequest {
         Annotation[][] annotations = method.getParameterAnnotations();
         for (int i = 0; i < annotations.length; i++) {
             if (args[i] instanceof RequestParams) {
-                HashMap<String, String> old = params.getParmas();
+                HashMap<String, String> old = params.getParams();
                 List<FileBody> oldFile = params.getFiles();
                 params = (RequestParams) args[i];
                 if (old.size() > 0) {
