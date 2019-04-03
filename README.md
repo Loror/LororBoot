@@ -41,6 +41,19 @@ compile('com.github.Loror:LororBoot:v1.0.10release') {
     * imageWidth() 指定ImageView缓存图宽度
     * visibility() 控件显示状态
     * onlyEvent() 是否不显示变量到控件只触发事件
+
+* 注解@GET @POST @PUT @DELETE
+    * 网络访问注解封装，类似retrofit，修饰于接口上的方法
+    * 支持返回类型原生responce（Responce），字符串（String），对象（将使用Json解释器生成对象）
+    * 返回Observable对象时为异步请求，直接返回所需对象将同步请求
+    * 内部未内置json解析框架，请在Application中指定json解析方式
+    
+* 注解@BaseUrl
+    * 网络访问注解封装，修饰于接口上
+    
+* 注解@Header @Param @ParamObject @ParamJson
+    * 网络访问注解封装，修饰于方法中参数，用于标示请求时传递的参数
+    * 分别为添加到header，添加一个参数，抽取对象中所有属性到参数，以Json方式上传（指定传参为json后，其他参数将被拼接到url中）
     
 </br>
 内部已引入库LororUtil(https://github.com/Loror/LororUtil)  
