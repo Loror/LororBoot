@@ -76,16 +76,21 @@ public class BindAbleBannerAdapter extends PagerAdapter {
             bindAbleItem.refreshMark(mark);
             bindAbleItem.updateBind(view);
         } else {
-            ImageUtil imageUtil = ImageUtil.with(context).from(String.valueOf(list.get(position))).to((ImageView) view);
-            int width = widthLimit;
-            if (width == 0) {
-                width = 720;
+            Object volume = list.get(position);
+            if (volume instanceof Integer) {
+                ((ImageView) view).setImageResource((Integer) volume);
+            } else {
+                ImageUtil imageUtil = ImageUtil.with(context).from(String.valueOf(volume)).to((ImageView) view);
+                int width = widthLimit;
+                if (width == 0) {
+                    width = 720;
+                }
+                imageUtil.setWidthLimit(width);
+                if (imagePlace != 0) {
+                    imageUtil.setDefaultImage(imagePlace);
+                }
+                imageUtil.loadImage();
             }
-            imageUtil.setWidthLimit(width);
-            if (imagePlace != 0) {
-                imageUtil.setDefaultImage(imagePlace);
-            }
-            imageUtil.loadImage();
         }
     }
 

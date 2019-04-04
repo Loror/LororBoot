@@ -380,17 +380,21 @@ public class BindUtils {
                 } else if (bindHolder.view instanceof ImageView) {
                     ImageView imageView = (ImageView) bindHolder.view;
                     if (vol != null) {
-                        int width = bindHolder.imageWidth;
-                        if (width > 1080) {
-                            width = 1080;
+                        if (volume instanceof Integer) {
+                            imageView.setImageResource((Integer) volume);
+                        } else {
+                            int width = bindHolder.imageWidth;
+                            if (width > 1080) {
+                                width = 1080;
+                            }
+                            ImageUtil imageUtil = ImageUtil.with(imageView.getContext())
+                                    .from(vol).to(imageView).setWidthLimit(width).setNoSdCache(LororApplication.NoImageSdCardCache).setIsGif(bindHolder.gif);
+                            if (bindHolder.imagePlace != 0) {
+                                imageUtil.setDefaultImage(bindHolder.imagePlace);
+                            }
+                            imageUtil.setBitmapConverter(bindHolder.bitmapConverter);
+                            imageUtil.loadImage();
                         }
-                        ImageUtil imageUtil = ImageUtil.with(imageView.getContext())
-                                .from(vol).to(imageView).setWidthLimit(width).setNoSdCache(LororApplication.NoImageSdCardCache).setIsGif(bindHolder.gif);
-                        if (bindHolder.imagePlace != 0) {
-                            imageUtil.setDefaultImage(bindHolder.imagePlace);
-                        }
-                        imageUtil.setBitmapConverter(bindHolder.bitmapConverter);
-                        imageUtil.loadImage();
                     } else {
                         //为空时占位
                         if (bindHolder.imagePlace != 0) {
