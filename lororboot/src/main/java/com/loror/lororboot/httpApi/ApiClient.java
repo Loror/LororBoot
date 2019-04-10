@@ -142,16 +142,15 @@ public class ApiClient {
                 public void callBack(Responce responce) {
                     ApiResult result = null;
                     if (onRequestListener != null) {
-                        onRequestListener.onRequestEnd(client, result = new ApiResult(url, params, responce));
+                        result = new ApiResult(url, params, responce);
+                        result.observer = observer;
+                        result.type = 1;
+                        result.request = apiRequest;
+                        result.client = ApiClient.this;
+                        onRequestListener.onRequestEnd(client, result);
                     }
-                    if (result != null && result.hook != null) {
-                        result.hook.observer = observer;
-                        result.hook.type = 1;
-                        result.hook.request = apiRequest;
-                        result.hook.client = ApiClient.this;
-                        if (!result.hook.accept) {
-                            result(responce, getTClass(observer), observer);
-                        }
+                    if (result != null && result.accept) {
+                        //已被处理拦截
                     } else {
                         result(responce, getTClass(observer), observer);
                     }
@@ -230,17 +229,14 @@ public class ApiClient {
         }
         ApiResult result = null;
         if (onRequestListener != null) {
-            onRequestListener.onRequestEnd(client, result = new ApiResult(url, params, responce));
+            result = new ApiResult(url, params, responce);
+            result.classType = classType;
+            result.request = apiRequest;
+            result.client = ApiClient.this;
+            onRequestListener.onRequestEnd(client, result);
         }
-        if (result != null && result.hook != null) {
-            result.hook.classType = classType;
-            result.hook.request = apiRequest;
-            result.hook.client = ApiClient.this;
-            if (!result.hook.accept) {
-                return responce == null ? null : result(responce, classType);
-            } else {
-                return result.hook.responce;
-            }
+        if (result != null && result.accept) {
+            return result.responceObject;
         } else {
             return responce == null ? null : result(responce, classType);
         }
