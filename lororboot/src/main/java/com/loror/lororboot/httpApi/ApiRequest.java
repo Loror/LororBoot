@@ -56,6 +56,10 @@ public class ApiRequest {
                 url;
     }
 
+    public int getUseTimes() {
+        return useTimes;
+    }
+
     public RequestParams getParams() {
         return params;
     }
