@@ -5,24 +5,20 @@ import com.loror.lororUtil.http.Responce;
 
 public class ApiResult {
 
-    protected int type;//0，同步，1，异步
-    protected boolean accept;//是否已经重新请求
+    //基本信息
     protected String url;
     protected RequestParams params;
     protected Responce responce;
 
-    //框架需使用的参数
+    protected int type;//0，同步，1，异步
+    protected boolean accept;//是否已经重新请求
+
+    //框架需使用的参数及拦截所需参数
     protected ApiRequest request;
     protected ApiClient client;
     protected Class<?> classType;
     protected Observer observer;
     protected Object responceObject;
-
-    public ApiResult(String url, RequestParams params, Responce responce) {
-        this.url = url;
-        this.params = params;
-        this.responce = responce;
-    }
 
     public String getUrl() {
         return url;
@@ -34,6 +30,10 @@ public class ApiResult {
 
     public Responce getResponce() {
         return responce;
+    }
+
+    public int getType() {
+        return type;
     }
 
     public void setAccept(boolean accept) {
@@ -58,6 +58,13 @@ public class ApiResult {
 
     public Observer getObserver() {
         return observer;
+    }
+
+    /**
+     * json转对象
+     */
+    public Object parseObject(String json, Class<?> classType) {
+        return client.parseObject(json, classType);
     }
 
     //通知重新请求，结束后请求将接收到新的结果

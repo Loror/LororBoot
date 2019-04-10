@@ -142,7 +142,10 @@ public class ApiClient {
                 public void callBack(Responce responce) {
                     ApiResult result = null;
                     if (onRequestListener != null) {
-                        result = new ApiResult(url, params, responce);
+                        result = new ApiResult();
+                        result.url = url;
+                        result.params = params;
+                        result.responce = responce;
                         result.observer = observer;
                         result.classType = getTClass(observer);
                         result.type = 1;
@@ -195,7 +198,7 @@ public class ApiClient {
         //200系列尝试解析，返回类型Responce通过success返回
         if (responce.getCode() / 100 == 2 || classType == Responce.class) {
             try {
-                Object bean = classType == String.class ? responce.toString() : classType == Responce.class ? responce : jsonParser == null ? null : jsonParser.jsonToObject(responce.toString(), classType);
+                Object bean = classType == String.class ? responce.toString() : classType == Responce.class ? responce : parseObject(responce.toString(), classType);
                 observer.success(bean);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -230,7 +233,10 @@ public class ApiClient {
         }
         ApiResult result = null;
         if (onRequestListener != null) {
-            result = new ApiResult(url, params, responce);
+            result = new ApiResult();
+            result.url = url;
+            result.params = params;
+            result.responce = responce;
             result.classType = classType;
             result.request = apiRequest;
             result.client = ApiClient.this;
@@ -248,11 +254,18 @@ public class ApiClient {
      */
     private Object result(Responce responce, Class<?> classType) {
         try {
-            return classType == String.class ? responce.toString() : classType == Responce.class ? responce : jsonParser == null ? null : jsonParser.jsonToObject(responce.toString(), classType);
+            return classType == String.class ? responce.toString() : classType == Responce.class ? responce : parseObject(responce.toString(), classType);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * json转对象
+     */
+    protected Object parseObject(String json, Class<?> classType) {
+        return jsonParser == null ? null : jsonParser.jsonToObject(json, classType);
     }
 
 }
