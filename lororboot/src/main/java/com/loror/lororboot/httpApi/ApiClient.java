@@ -144,6 +144,7 @@ public class ApiClient {
                     if (onRequestListener != null) {
                         result = new ApiResult(url, params, responce);
                         result.observer = observer;
+                        result.classType = getTClass(observer);
                         result.type = 1;
                         result.request = apiRequest;
                         result.client = ApiClient.this;
