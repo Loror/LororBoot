@@ -5,7 +5,7 @@ import com.loror.lororUtil.http.RequestParams;
 import com.loror.lororUtil.http.Responce;
 
 public interface OnRequestListener {
-    void onRequestBegin(HttpClient client, RequestParams params, String url);
+    void onRequestBegin(HttpClient client, ApiRequest request);
 
-    void onRequestEnd(Responce responce, RequestParams params, String url);
+    void onRequestEnd(HttpClient client, ApiResult result);
 }

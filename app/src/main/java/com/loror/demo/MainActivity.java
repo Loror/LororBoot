@@ -24,6 +24,8 @@ import com.loror.lororboot.annotation.DataRun;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.dataBus.RemoteDataBusReceiver;
 import com.loror.lororboot.httpApi.ApiClient;
+import com.loror.lororboot.httpApi.ApiRequest;
+import com.loror.lororboot.httpApi.ApiResult;
 import com.loror.lororboot.httpApi.Observer;
 import com.loror.lororboot.httpApi.OnRequestListener;
 import com.loror.lororboot.startable.LororActivity;
@@ -69,12 +71,12 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
                 .setBaseUrl("https://www.baidu.com") //可在此设置，也可使用注解，注解优先度较高，会覆盖此处设置
                 .setOnRequestListener(new OnRequestListener() {
                     @Override
-                    public void onRequestBegin(HttpClient client, RequestParams params, String url) {
-                        Log.e("RESULT_", url + " " + params);
+                    public void onRequestBegin(HttpClient client, ApiRequest request) {
+                        Log.e("RESULT_", request.getUrl() + " " + request.getParams());
                     }
 
                     @Override
-                    public void onRequestEnd(Responce responce, RequestParams params, String url) {
+                    public void onRequestEnd(HttpClient client, ApiResult result) {
 
                     }
                 })

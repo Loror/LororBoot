@@ -19,6 +19,7 @@ public class ApiRequest {
     private RequestParams params;
     private int type;//1,get;2,post;3,delete;4,put
     private String url;
+    protected int useTimes;//计数Request使用次数
 
     public void setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
@@ -62,7 +63,7 @@ public class ApiRequest {
     /**
      * 创建RequestParams
      */
-    public void generateParams(Method method, Object[] args) throws Throwable {
+    protected void generateParams(Method method, Object[] args) throws Throwable {
         params = new RequestParams();
         Annotation[][] annotations = method.getParameterAnnotations();
         for (int i = 0; i < annotations.length; i++) {

@@ -2,6 +2,7 @@ package com.loror.lororboot.httpApi;
 
 import android.support.annotation.Nullable;
 
+import com.loror.lororUtil.http.AsyncClient;
 import com.loror.lororUtil.http.DefaultAsyncClient;
 import com.loror.lororUtil.http.HttpClient;
 import com.loror.lororUtil.http.RequestParams;
@@ -126,54 +127,50 @@ public class ApiClient {
     /**
      * 异步请求
      */
-    protected void asyncConnect(ApiRequest apiRequest, final Observer observer) {
+    protected void asyncConnect(final ApiRequest apiRequest, final Observer observer) {
+        ++apiRequest.useTimes;
         final HttpClient client = new HttpClient();
         final RequestParams params = apiRequest.getParams();
         final String url = apiRequest.getUrl();
         if (onRequestListener != null) {
-            onRequestListener.onRequestBegin(client, params, url);
+            onRequestListener.onRequestBegin(client, apiRequest);
         }
         int type = apiRequest.getType();
-        if (type == 1) {
-            client.asyncGet(url, params, new DefaultAsyncClient() {
+        if (type != 0) {
+            AsyncClient<Responce> asyncClient = new DefaultAsyncClient() {
                 @Override
                 public void callBack(Responce responce) {
+                    ApiResult result = null;
                     if (onRequestListener != null) {
-                        onRequestListener.onRequestEnd(responce, params, url);
+                        onRequestListener.onRequestEnd(client, result = new ApiResult(url, params, responce));
                     }
-                    result(responce, getTClass(observer), observer);
-                }
-            });
-        } else if (type == 2) {
-            client.asyncPost(url, params, new DefaultAsyncClient() {
-                @Override
-                public void callBack(Responce responce) {
-                    if (onRequestListener != null) {
-                        onRequestListener.onRequestEnd(responce, params, url);
+                    if (result != null && result.hook != null) {
+                        result.hook.observer = observer;
+                        result.hook.type = 1;
+                        result.hook.request = apiRequest;
+                        result.hook.client = ApiClient.this;
+                        if (!result.hook.accept) {
+                            result(responce, getTClass(observer), observer);
+                        }
+                    } else {
+                        result(responce, getTClass(observer), observer);
                     }
-                    result(responce, getTClass(observer), observer);
                 }
-            });
-        } else if (type == 3) {
-            client.asyncDelete(url, params, new DefaultAsyncClient() {
-                @Override
-                public void callBack(Responce responce) {
-                    if (onRequestListener != null) {
-                        onRequestListener.onRequestEnd(responce, params, url);
-                    }
-                    result(responce, getTClass(observer), observer);
-                }
-            });
-        } else if (type == 4) {
-            client.asyncPut(url, params, new DefaultAsyncClient() {
-                @Override
-                public void callBack(Responce responce) {
-                    if (onRequestListener != null) {
-                        onRequestListener.onRequestEnd(responce, params, url);
-                    }
-                    result(responce, getTClass(observer), observer);
-                }
-            });
+            };
+            switch (type) {
+                case 1:
+                    client.asyncGet(url, params, asyncClient);
+                    break;
+                case 2:
+                    client.asyncPost(url, params, asyncClient);
+                    break;
+                case 3:
+                    client.asyncDelete(url, params, asyncClient);
+                    break;
+                case 4:
+                    client.asyncPut(url, params, asyncClient);
+                    break;
+            }
         }
     }
 
@@ -212,12 +209,13 @@ public class ApiClient {
     /**
      * 同步请求
      */
-    private Object connect(ApiRequest apiRequest, Class<?> classType) {
+    protected Object connect(ApiRequest apiRequest, Class<?> classType) {
+        ++apiRequest.useTimes;
         final HttpClient client = new HttpClient();
         final RequestParams params = apiRequest.getParams();
         final String url = apiRequest.getUrl();
         if (onRequestListener != null) {
-            onRequestListener.onRequestBegin(client, params, url);
+            onRequestListener.onRequestBegin(client, apiRequest);
         }
         int type = apiRequest.getType();
         Responce responce = null;
@@ -230,10 +228,22 @@ public class ApiClient {
         } else if (type == 4) {
             responce = client.put(url, params);
         }
+        ApiResult result = null;
         if (onRequestListener != null) {
-            onRequestListener.onRequestEnd(responce, params, url);
+            onRequestListener.onRequestEnd(client, result = new ApiResult(url, params, responce));
         }
-        return responce == null ? null : result(responce, classType);
+        if (result != null && result.hook != null) {
+            result.hook.classType = classType;
+            result.hook.request = apiRequest;
+            result.hook.client = ApiClient.this;
+            if (!result.hook.accept) {
+                return responce == null ? null : result(responce, classType);
+            } else {
+                return result.hook.responce;
+            }
+        } else {
+            return responce == null ? null : result(responce, classType);
+        }
     }
 
     /**
