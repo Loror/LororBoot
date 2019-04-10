@@ -7,9 +7,9 @@ public class ApiResult {
 
     protected int type;//0，同步，1，异步
     protected boolean accept;//是否已经重新请求
-    private String url;
-    private RequestParams params;
-    private Responce responce;
+    protected String url;
+    protected RequestParams params;
+    protected Responce responce;
 
     //框架需使用的参数
     protected ApiRequest request;
@@ -34,10 +34,6 @@ public class ApiResult {
 
     public Responce getResponce() {
         return responce;
-    }
-
-    public void setResponce(Responce responce) {
-        this.responce = responce;
     }
 
     public void setAccept(boolean accept) {
