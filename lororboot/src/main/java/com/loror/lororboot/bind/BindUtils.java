@@ -191,9 +191,6 @@ public class BindUtils {
                 public void afterTextChanged(Editable s) {
                     String value = bindHolder.format == null ?
                             s.toString() : s.toString().replace(bindHolder.format.replace("%s", ""), "");
-                    if (bindHolder.event != null) {
-                        bindAble.event(bindHolder, bindHolder.compareTag == null ? null : String.valueOf(bindHolder.compareTag), value);
-                    }
                     try {
                         Class<?> type = field.getType();
                         if (type == String.class) {
@@ -205,6 +202,9 @@ public class BindUtils {
                         }
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
+                    }
+                    if (bindHolder.event != null) {
+                        bindAble.event(bindHolder, bindHolder.compareTag == null ? null : String.valueOf(bindHolder.compareTag), value);
                     }
                 }
             };
