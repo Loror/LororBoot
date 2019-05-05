@@ -6,7 +6,7 @@
 
 ```
 dependencies {
-    compile 'com.github.Loror:LororBoot:v1.0.13release'
+    compile 'com.github.Loror:LororBoot:v1.0.14release'
 }
 
 allprojects {
@@ -20,7 +20,7 @@ allprojects {
 如有v4包等冲突建议引入时排除v4包，框架对recyclerView进行了支持，如排除了support包请手动为你的项目引入recyclerView，
 否则请删除exclude group: 'com.android.support'
 ```
-compile('com.github.Loror:LororBoot:v1.0.13release') {
+compile('com.github.Loror:LororBoot:v1.0.14release') {
         exclude group: 'com.android.support'
         exclude module: 'appcompat-v7'
         exclude module: 'support-v4'

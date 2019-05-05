@@ -70,8 +70,9 @@ public class ApiRequest {
     protected void generateParams(Method method, Object[] args) throws Throwable {
         params = new RequestParams();
         Annotation[][] annotations = method.getParameterAnnotations();
+        Class<?>[] types = method.getParameterTypes();
         for (int i = 0; i < annotations.length; i++) {
-            if (args[i] instanceof RequestParams) {
+            if (types[i] == RequestParams.class) {
                 HashMap<String, String> old = params.getParams();
                 List<FileBody> oldFile = params.getFiles();
                 params = (RequestParams) args[i];
@@ -86,7 +87,7 @@ public class ApiRequest {
                     }
                 }
             } else {
-                addField(params, annotations[i], args[i]);
+                addField(params, annotations[i], types[i], args[i]);
             }
         }
     }
@@ -94,17 +95,17 @@ public class ApiRequest {
     /**
      * 添加Field
      */
-    private void addField(RequestParams params, Annotation[] annotations, Object arg) {
+    private void addField(RequestParams params, Annotation[] annotations, Class<?> type, Object arg) {
         for (int i = 0; i < annotations.length; i++) {
             if (annotations[i].annotationType() == Param.class) {
                 String name = ((Param) annotations[i]).value();
                 if (name.length() > 0) {
-                    if (arg instanceof FileBody) {
+                    if (type == FileBody.class) {
                         params.addParams(name, (FileBody) arg);
-                    } else if (arg instanceof File) {
-                        params.addParams(name, new FileBody(((File) arg).getAbsolutePath()));
+                    } else if (type == File.class) {
+                        params.addParams(name, new FileBody(arg == null ? null : ((File) arg).getAbsolutePath()));
                     } else {
-                        params.addParams(name, String.valueOf(arg));
+                        params.addParams(name, arg == null ? null : String.valueOf(arg));
                     }
                 }
                 break;
@@ -115,7 +116,7 @@ public class ApiRequest {
                 break;
             } else if (annotations[i].annotationType() == ParamJson.class) {
                 if (arg != null) {
-                    if (arg instanceof String) {
+                    if (type == String.class) {
                         params.asJson((String) arg);
                     } else if (ApiClient.jsonParser != null) {
                         params.asJson(ApiClient.jsonParser.objectToJson(arg));
@@ -127,7 +128,7 @@ public class ApiRequest {
             } else if (annotations[i].annotationType() == Header.class) {
                 String name = ((Header) annotations[i]).value();
                 if (name.length() > 0) {
-                    params.addHeader(name, String.valueOf(arg));
+                    params.addHeader(name, arg == null ? "" : String.valueOf(arg));
                 }
                 break;
             }
