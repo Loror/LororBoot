@@ -380,7 +380,7 @@ public class BindUtils {
                     }
                 } else if (bindHolder.view instanceof ImageView) {
                     ImageView imageView = (ImageView) bindHolder.view;
-                    if (volume instanceof Integer) {
+                    if (volume instanceof Integer && bindHolder.format == null) {
                         imageView.setImageResource((Integer) volume);
                     } else {
                         int width = bindHolder.imageWidth;
