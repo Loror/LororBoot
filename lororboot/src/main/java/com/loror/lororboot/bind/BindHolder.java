@@ -18,6 +18,7 @@ public class BindHolder {
     protected String empty;
     protected int visibility = Visibility.NOTCHANGE;
     protected int imagePlace;
+    protected int errorPlace;
     protected int imageWidth;
     protected boolean gif;
     protected BitmapConverter bitmapConverter;
@@ -86,6 +87,7 @@ public class BindHolder {
         clone.empty = empty;
         clone.visibility = visibility;
         clone.imagePlace = imagePlace;
+        clone.errorPlace = errorPlace;
         clone.imageWidth = imageWidth;
         clone.onlyEvent = onlyEvent;
         clone.disableItem = disableItem;

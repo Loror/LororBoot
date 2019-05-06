@@ -23,6 +23,8 @@ public @interface Bind {
 
     @DrawableRes int imagePlace() default 0;//ImageView加载占位图
 
+    @DrawableRes int errorPlace() default 0;//ImageView加载异常占位图
+
     int imageWidth() default 0;//指定ImageView缓存图宽度
 
     Class<? extends BitmapConverter> bitmapConverter() default BitmapConverter.class;//图片预处理

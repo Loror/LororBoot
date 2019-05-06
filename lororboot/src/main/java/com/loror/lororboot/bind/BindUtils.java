@@ -110,6 +110,7 @@ public class BindUtils {
                         bindHolder.empty = bind.empty().length() == 0 ? null : bind.empty();
                         bindHolder.visibility = bind.visibility();
                         bindHolder.imagePlace = bind.imagePlace();
+                        bindHolder.errorPlace = bind.errorPlace();
                         bindHolder.imageWidth = bind.imageWidth();
                         bindHolder.onlyEvent = bind.onlyEvent();
                         bindHolder.disableItem = field.getAnnotation(DisableItem.class) != null;
@@ -379,29 +380,23 @@ public class BindUtils {
                     }
                 } else if (bindHolder.view instanceof ImageView) {
                     ImageView imageView = (ImageView) bindHolder.view;
-                    if (vol != null) {
-                        if (volume instanceof Integer) {
-                            imageView.setImageResource((Integer) volume);
-                        } else {
-                            int width = bindHolder.imageWidth;
-                            if (width > 1080) {
-                                width = 1080;
-                            }
-                            ImageUtil imageUtil = ImageUtil.with(imageView.getContext())
-                                    .from(vol).to(imageView).setWidthLimit(width).setNoSdCache(LororApplication.NoImageSdCardCache).setIsGif(bindHolder.gif);
-                            if (bindHolder.imagePlace != 0) {
-                                imageUtil.setDefaultImage(bindHolder.imagePlace);
-                            }
-                            imageUtil.setBitmapConverter(bindHolder.bitmapConverter);
-                            imageUtil.loadImage();
-                        }
+                    if (volume instanceof Integer) {
+                        imageView.setImageResource((Integer) volume);
                     } else {
-                        //为空时占位
-                        if (bindHolder.imagePlace != 0) {
-                            imageView.setImageResource(bindHolder.imagePlace);
-                        } else {
-                            imageView.setImageBitmap(ObjectPool.getInstance().getDefaultImage());
+                        int width = bindHolder.imageWidth;
+                        if (width > 1080) {
+                            width = 1080;
                         }
+                        ImageUtil imageUtil = ImageUtil.with(imageView.getContext())
+                                .from(vol == null ? "" : vol).to(imageView).setWidthLimit(width).setNoSdCache(LororApplication.NoImageSdCardCache).setIsGif(bindHolder.gif);
+                        if (bindHolder.imagePlace != 0) {
+                            imageUtil.setDefaultImage(bindHolder.imagePlace);
+                        }
+                        if (bindHolder.errorPlace != 0) {
+                            imageUtil.setErrorImage(bindHolder.errorPlace);
+                        }
+                        imageUtil.setBitmapConverter(bindHolder.bitmapConverter);
+                        imageUtil.loadImage();
                     }
                 } else if (bindHolder.view instanceof ProgressBar) {
                     if (volume == null) {
