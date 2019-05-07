@@ -79,6 +79,8 @@ public class BindUtils {
                 Object volume = getValue(bindHolder, bindAble);
                 if (volume instanceof List) {
                     bindHolder.compareTag = -1;
+                } else {
+                    bindHolder.compareTag = null;
                 }
             }
         }
