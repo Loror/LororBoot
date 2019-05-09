@@ -104,6 +104,21 @@ public class ApiRequest {
                         params.addParams(name, (FileBody) arg);
                     } else if (type == File.class) {
                         params.addParams(name, new FileBody(arg == null ? null : ((File) arg).getAbsolutePath()));
+                    } else if (type.isArray()) {
+                        if (arg != null) {
+                            Object[] array = (Object[]) arg;
+                            if (type.getComponentType() == FileBody.class) {
+                                for (int j = 0; j < array.length; j++) {
+                                    params.addParams(name, (FileBody) array[j]);
+                                }
+                            } else if (type.getComponentType() == File.class) {
+                                for (int j = 0; j < array.length; j++) {
+                                    params.addParams(name, new FileBody(array[j] == null ? null : ((File) array[j]).getAbsolutePath()));
+                                }
+                            } else {
+                                params.addParams(name, array);
+                            }
+                        }
                     } else {
                         params.addParams(name, arg == null ? null : String.valueOf(arg));
                     }
