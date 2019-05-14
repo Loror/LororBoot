@@ -82,6 +82,7 @@ public class BindUtils {
                 } else {
                     bindHolder.compareTag = null;
                 }
+                bindHolder.isFirst = true;
             }
         }
     }
