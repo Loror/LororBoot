@@ -1,10 +1,13 @@
 package com.loror.lororboot.bind;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.LayoutRes;
 import android.view.View;
 
 import com.loror.lororUtil.view.ViewUtil;
 import com.loror.lororboot.annotation.FrameCall;
+import com.loror.lororboot.dataBus.DataBus;
 import com.loror.lororboot.dataChange.DataChangeUtils;
 
 import java.util.LinkedList;
@@ -14,6 +17,7 @@ public abstract class BindAbleItem implements DataChangeAble {
     private transient BindAble outBindAble;
     private transient List<BindHolder> bindHolders;
     private transient int position, size;
+    private transient Context context;
 
     public BindAble obtainOutBindAble() {
         return outBindAble;
@@ -76,6 +80,7 @@ public abstract class BindAbleItem implements DataChangeAble {
         } else {
             bindHolders = (List<BindHolder>) convertView.getTag();
         }
+        context = convertView.getContext();
         //刷新显示并触发事件，解决控件复用问题
         BindUtils.initHolders(bindHolders, this, position);
         ViewUtil.click(this, convertView);
@@ -89,5 +94,9 @@ public abstract class BindAbleItem implements DataChangeAble {
             runnable.run();
         }
         BindUtils.showBindHolders(bindHolders, this);
+    }
+
+    public void sendDataToBus(String name, Intent data) {
+        DataBus.notifyReceivers(name, data, context);
     }
 }

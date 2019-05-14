@@ -167,7 +167,7 @@ public class LororActivity extends AppCompatActivity implements StartDilogAble, 
                             bindRunnable = null;
                             return;
                         } // 无需开启刷新
-                        if (!isFinishing()) {
+                        if (!activity.isFinishing()) {
                             changeState(null);
                             changChildBinderState();
                             if (bindAbleAutoRefresh) {
