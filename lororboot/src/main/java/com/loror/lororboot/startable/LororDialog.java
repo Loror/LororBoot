@@ -182,6 +182,7 @@ public class LororDialog extends AlertDialog implements DialogInterface.OnDismis
     }
 
     public void putIntent(Intent intent) {
+        this.resultCode = RESULT_CANCEL;
         this.intent = intent;
     }
 

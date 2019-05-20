@@ -2,6 +2,7 @@ package com.loror.lororboot.httpApi;
 
 import com.loror.lororUtil.http.FileBody;
 import com.loror.lororUtil.http.RequestParams;
+import com.loror.lororboot.annotation.DefaultParams;
 import com.loror.lororboot.annotation.Header;
 import com.loror.lororboot.annotation.Param;
 import com.loror.lororboot.annotation.ParamJson;
@@ -69,6 +70,13 @@ public class ApiRequest {
      */
     protected void generateParams(Method method, Object[] args) throws Throwable {
         params = new RequestParams();
+        DefaultParams defaultParams = method.getAnnotation(DefaultParams.class);
+        if (defaultParams != null) {
+            int size = Math.min(defaultParams.keys().length, defaultParams.values().length);
+            for (int i = 0; i < size; i++) {
+                params.addParams(defaultParams.keys()[i], defaultParams.values()[i]);
+            }
+        }
         Annotation[][] annotations = method.getParameterAnnotations();
         Class<?>[] types = method.getParameterTypes();
         for (int i = 0; i < annotations.length; i++) {
