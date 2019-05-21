@@ -77,7 +77,7 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
 
                     @Override
                     public void onRequestEnd(HttpClient client, ApiResult result) {
-                        result.setAccept(true);
+                        result.setAccept(true);//该设置用于拦截请求返回
                         Responce responce = new Responce();
                         responce.result = "被我拦截修改啦".getBytes();
                         result.getObserver().success(responce);
