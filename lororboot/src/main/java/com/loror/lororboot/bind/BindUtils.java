@@ -344,7 +344,7 @@ public class BindUtils {
     /**
      * 检测BindHolder变化并更新显示
      */
-    public static void showBindHolder(BindHolder bindHolder, BindAble bindAble) {
+    public static void showBindHolder(final BindHolder bindHolder, BindAble bindAble) {
         Object volume = getValue(bindHolder, bindAble);
         boolean isList = volume instanceof List;
         boolean volumeChange = !isList && ((bindHolder.compareTag == null && volume != null) || (bindHolder.compareTag != null && !bindHolder.compareTag.equals(volume)));
@@ -415,8 +415,19 @@ public class BindUtils {
                     BinderAdapter adapter = (BinderAdapter) bindHolder.view.getTag(bindHolder.view.getId());
                     adapter.notifyDataSetChanged();
                 } else if (bindHolder.view instanceof RecyclerView) {
-                    RecyclerBindAbleAdapter adapter = (RecyclerBindAbleAdapter) bindHolder.view.getTag(bindHolder.view.getId());
-                    adapter.notifyDataSetChanged();
+                    final RecyclerView recyclerView = (RecyclerView) bindHolder.view;
+                    Runnable runnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!recyclerView.isComputingLayout()) {
+                                RecyclerBindAbleAdapter adapter = (RecyclerBindAbleAdapter) bindHolder.view.getTag(bindHolder.view.getId());
+                                adapter.notifyDataSetChanged();
+                            } else {
+                                recyclerView.postDelayed(this, 10);
+                            }
+                        }
+                    };//正在布局中则延迟刷新
+                    runnable.run();
                 } else if (bindHolder.view instanceof BindAbleBannerView) {
                     if (volume == null) {
                         throw new IllegalStateException("BindAbleBannerView绑定的List<?>不能为null(" + bindAble.getClass().getName() + "->" + bindHolder.field.getName() + ")");
