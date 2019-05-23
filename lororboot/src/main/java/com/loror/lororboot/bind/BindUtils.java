@@ -17,7 +17,6 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.loror.lororUtil.flyweight.ObjectPool;
 import com.loror.lororUtil.image.BitmapConverter;
 import com.loror.lororUtil.image.ImageUtil;
 import com.loror.lororboot.LororApplication;
