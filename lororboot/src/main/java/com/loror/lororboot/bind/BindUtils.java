@@ -222,13 +222,13 @@ public class BindUtils {
             ((CheckBox) view).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (bindHolder.event != null) {
-                        bindAble.event(bindHolder, String.valueOf(!isChecked), String.valueOf(isChecked));
-                    }
                     try {
                         field.set(bindAble, bindHolder.compareTag = isChecked);
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
+                    }
+                    if (bindHolder.event != null) {
+                        bindAble.event(bindHolder, String.valueOf(!isChecked), String.valueOf(isChecked));
                     }
                 }
             });
