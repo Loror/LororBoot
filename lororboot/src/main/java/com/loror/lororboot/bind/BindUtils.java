@@ -195,6 +195,7 @@ public class BindUtils {
                 public void afterTextChanged(Editable s) {
                     String value = bindHolder.format == null ?
                             s.toString() : s.toString().replace(bindHolder.format.replace("%s", ""), "");
+                    boolean volumeChange = bindHolder.compareTag == null || !bindHolder.compareTag.equals(value);
                     try {
                         Class<?> type = field.getType();
                         if (type == String.class) {
@@ -207,7 +208,7 @@ public class BindUtils {
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
-                    if (bindHolder.event != null) {
+                    if (volumeChange && bindHolder.event != null) {
                         bindAble.event(bindHolder, bindHolder.compareTag == null ? null : String.valueOf(bindHolder.compareTag), value);
                     }
                 }
@@ -222,12 +223,14 @@ public class BindUtils {
             ((CheckBox) view).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    Object volume = isChecked;
+                    boolean volumeChange = bindHolder.compareTag == null || !bindHolder.compareTag.equals(volume);
                     try {
                         field.set(bindAble, bindHolder.compareTag = isChecked);
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
-                    if (bindHolder.event != null) {
+                    if (volumeChange && bindHolder.event != null) {
                         bindAble.event(bindHolder, String.valueOf(!isChecked), String.valueOf(isChecked));
                     }
                 }
