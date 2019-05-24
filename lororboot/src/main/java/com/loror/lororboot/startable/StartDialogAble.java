@@ -2,7 +2,7 @@ package com.loror.lororboot.startable;
 
 import android.content.Intent;
 
-public interface StartDilogAble {
+public interface StartDialogAble {
     /**
      * 打开dialog
      */

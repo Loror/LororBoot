@@ -26,7 +26,7 @@ import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.List;
 
-public class LororDialog extends AlertDialog implements DialogInterface.OnDismissListener, StartDilogAble, DataChangeAble, AutoRunAble {
+public class LororDialog extends AlertDialog implements DialogInterface.OnDismissListener, StartDialogAble, DataChangeAble, AutoRunAble {
 
     protected static final int RESULT_OK = -1;
     protected static final int RESULT_CANCEL = 0;

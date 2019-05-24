@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class LororActivity extends AppCompatActivity implements StartDilogAble, DataChangeAble, AutoRunAble {
+public class LororActivity extends AppCompatActivity implements StartDialogAble, DataChangeAble, AutoRunAble {
 
     protected Context context = this;
 

@@ -23,7 +23,7 @@ import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.List;
 
-public class LororFragment extends Fragment implements StartDilogAble, DataChangeAble, AutoRunAble {
+public class LororFragment extends Fragment implements StartDialogAble, DataChangeAble, AutoRunAble {
 
     private List<BindHolder> bindHolders = new LinkedList<>();
     private WeakReference<LororActivity> weakReference;
