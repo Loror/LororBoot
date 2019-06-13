@@ -9,6 +9,7 @@ import com.loror.lororboot.annotation.Header;
 import com.loror.lororboot.annotation.Param;
 import com.loror.lororboot.annotation.ParamJson;
 import com.loror.lororboot.annotation.ParamObject;
+import com.loror.lororboot.annotation.UrlEnCode;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -89,6 +90,10 @@ public class ApiRequest {
         ForceForm forceForm = method.getAnnotation(ForceForm.class);
         if (forceForm != null) {
             params.setUserFormForPost(true);
+        }
+        UrlEnCode urlEnCode = method.getAnnotation(UrlEnCode.class);
+        if (urlEnCode != null) {
+            params.setUseDefaultConverterInPost(true);
         }
         Annotation[][] annotations = method.getParameterAnnotations();
         Class<?>[] types = method.getParameterTypes();
