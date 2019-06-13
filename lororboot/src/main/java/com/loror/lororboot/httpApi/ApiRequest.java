@@ -2,7 +2,9 @@ package com.loror.lororboot.httpApi;
 
 import com.loror.lororUtil.http.FileBody;
 import com.loror.lororUtil.http.RequestParams;
+import com.loror.lororboot.annotation.DefaultHeaders;
 import com.loror.lororboot.annotation.DefaultParams;
+import com.loror.lororboot.annotation.ForceForm;
 import com.loror.lororboot.annotation.Header;
 import com.loror.lororboot.annotation.Param;
 import com.loror.lororboot.annotation.ParamJson;
@@ -76,6 +78,17 @@ public class ApiRequest {
             for (int i = 0; i < size; i++) {
                 params.addParams(defaultParams.keys()[i], defaultParams.values()[i]);
             }
+        }
+        DefaultHeaders defaultHeaders = method.getAnnotation(DefaultHeaders.class);
+        if (defaultHeaders != null) {
+            int size = Math.min(defaultHeaders.keys().length, defaultHeaders.values().length);
+            for (int i = 0; i < size; i++) {
+                params.addHeader(defaultHeaders.keys()[i], defaultHeaders.values()[i]);
+            }
+        }
+        ForceForm forceForm = method.getAnnotation(ForceForm.class);
+        if (forceForm != null) {
+            params.setUserFormForPost(true);
         }
         Annotation[][] annotations = method.getParameterAnnotations();
         Class<?>[] types = method.getParameterTypes();
