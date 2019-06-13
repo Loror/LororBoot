@@ -120,29 +120,27 @@ public class ApiRequest {
         for (int i = 0; i < annotations.length; i++) {
             if (annotations[i].annotationType() == Param.class) {
                 String name = ((Param) annotations[i]).value();
-                if (name.length() > 0) {
-                    if (type == FileBody.class) {
-                        params.addParams(name, (FileBody) arg);
-                    } else if (type == File.class) {
-                        params.addParams(name, new FileBody(arg == null ? null : ((File) arg).getAbsolutePath()));
-                    } else if (type.isArray()) {
-                        if (arg != null) {
-                            Object[] array = (Object[]) arg;
-                            if (type.getComponentType() == FileBody.class) {
-                                for (int j = 0; j < array.length; j++) {
-                                    params.addParams(name, (FileBody) array[j]);
-                                }
-                            } else if (type.getComponentType() == File.class) {
-                                for (int j = 0; j < array.length; j++) {
-                                    params.addParams(name, new FileBody(array[j] == null ? null : ((File) array[j]).getAbsolutePath()));
-                                }
-                            } else {
-                                params.addParams(name, array);
+                if (type == FileBody.class) {
+                    params.addParams(name, (FileBody) arg);
+                } else if (type == File.class) {
+                    params.addParams(name, new FileBody(arg == null ? null : ((File) arg).getAbsolutePath()));
+                } else if (type.isArray()) {
+                    if (arg != null) {
+                        Object[] array = (Object[]) arg;
+                        if (type.getComponentType() == FileBody.class) {
+                            for (int j = 0; j < array.length; j++) {
+                                params.addParams(name, (FileBody) array[j]);
                             }
+                        } else if (type.getComponentType() == File.class) {
+                            for (int j = 0; j < array.length; j++) {
+                                params.addParams(name, new FileBody(array[j] == null ? null : ((File) array[j]).getAbsolutePath()));
+                            }
+                        } else {
+                            params.addParams(name, array);
                         }
-                    } else {
-                        params.addParams(name, arg == null ? null : String.valueOf(arg));
                     }
+                } else {
+                    params.addParams(name, arg == null ? null : String.valueOf(arg));
                 }
                 break;
             } else if (annotations[i].annotationType() == ParamObject.class) {
@@ -163,9 +161,7 @@ public class ApiRequest {
                 break;
             } else if (annotations[i].annotationType() == Header.class) {
                 String name = ((Header) annotations[i]).value();
-                if (name.length() > 0) {
-                    params.addHeader(name, arg == null ? "" : String.valueOf(arg));
-                }
+                params.addHeader(name, arg == null ? "" : String.valueOf(arg));
                 break;
             }
         }
