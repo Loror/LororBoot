@@ -175,6 +175,12 @@ public class BindUtils {
         if (view instanceof BindRefreshAble) {
             ((BindRefreshAble) view).find(new FieldControl(bindAble, bindHolder));
         } else if (view instanceof EditText) {
+            if (!bindHolder.onlyEvent) {
+                Class<?> type = field.getType();
+                if (type != String.class && type != CharSequence.class) {
+                    throw new IllegalStateException("EditText为双向绑定，只支持属性为String，CharSequence类型(" + bindAble.getClass().getName() + "->" + field.getName() + ")");
+                }
+            }
             Object tag = view.getTag(id);
             if (tag instanceof TextWatcher) {
                 ((EditText) view).removeTextChangedListener((TextWatcher) tag);
@@ -195,17 +201,17 @@ public class BindUtils {
                     String value = bindHolder.format == null ?
                             s.toString() : s.toString().replace(bindHolder.format.replace("%s", ""), "");
                     Object old = bindHolder.compareTag;
-                    try {
-                        Class<?> type = field.getType();
-                        if (type == String.class) {
-                            field.set(bindAble, bindHolder.compareTag = value);
-                        } else if (type == CharSequence.class) {
-                            field.set(bindAble, bindHolder.compareTag = s);
-                        } else {
-                            throw new IllegalStateException("EditText为双向绑定，只支持属性为String，CharSequence类型(" + bindAble.getClass().getName() + "->" + field.getName() + ")");
+                    if (!bindHolder.onlyEvent) {
+                        try {
+                            Class<?> type = field.getType();
+                            if (type == String.class) {
+                                field.set(bindAble, bindHolder.compareTag = value);
+                            } else if (type == CharSequence.class) {
+                                field.set(bindAble, bindHolder.compareTag = s);
+                            }
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
                         }
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
                     }
                     if (bindHolder.event != null) {
                         bindAble.event(bindHolder, old == null ? null : String.valueOf(old), value);
@@ -215,17 +221,21 @@ public class BindUtils {
             ((EditText) view).addTextChangedListener(watcher);
             view.setTag(id, watcher);
         } else if (view instanceof CheckBox) {
-            Class<?> type = field.getType();
-            if (type != boolean.class && type != Boolean.class) {
-                throw new IllegalStateException("CheckBox为双向绑定，只支持绑定Boolean类型(" + bindAble.getClass().getName() + "->" + field.getName() + ")");
+            if (!bindHolder.onlyEvent) {
+                Class<?> type = field.getType();
+                if (type != boolean.class && type != Boolean.class) {
+                    throw new IllegalStateException("CheckBox为双向绑定，只支持绑定Boolean类型(" + bindAble.getClass().getName() + "->" + field.getName() + ")");
+                }
             }
             ((CheckBox) view).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    try {
-                        field.set(bindAble, bindHolder.compareTag = isChecked);
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
+                    if (!bindHolder.onlyEvent) {
+                        try {
+                            field.set(bindAble, bindHolder.compareTag = isChecked);
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
                     }
                     if (bindHolder.event != null) {
                         bindAble.event(bindHolder, String.valueOf(!isChecked), String.valueOf(isChecked));
@@ -233,9 +243,11 @@ public class BindUtils {
                 }
             });
         } else if (view instanceof ProgressBar) {
-            Class<?> type = field.getType();
-            if (type != Integer.class && type != Long.class && type != int.class && type != long.class) {
-                throw new IllegalStateException("ProgressBar只支持绑定Integer,Long类型(" + bindAble.getClass().getName() + "->" + field.getName() + ")");
+            if (!bindHolder.onlyEvent) {
+                Class<?> type = field.getType();
+                if (type != Integer.class && type != Long.class && type != int.class && type != long.class) {
+                    throw new IllegalStateException("ProgressBar只支持绑定Integer,Long类型(" + bindAble.getClass().getName() + "->" + field.getName() + ")");
+                }
             }
         } else if (view instanceof AbsListView) {
             Class<?> type = field.getType();
@@ -320,6 +332,7 @@ public class BindUtils {
                 throw new IllegalStateException("BindAbleBannerViewPager只支持绑定List<?>类型(" + bindAble.getClass().getName() + "->" + field.getName() + ")");
             }
         }
+
     }
 
     /**
