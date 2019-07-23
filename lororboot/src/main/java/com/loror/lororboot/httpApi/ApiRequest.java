@@ -2,6 +2,7 @@ package com.loror.lororboot.httpApi;
 
 import com.loror.lororUtil.http.FileBody;
 import com.loror.lororUtil.http.RequestParams;
+import com.loror.lororboot.annotation.AsJson;
 import com.loror.lororboot.annotation.DefaultHeaders;
 import com.loror.lororboot.annotation.DefaultParams;
 import com.loror.lororboot.annotation.ForceForm;
@@ -91,6 +92,10 @@ public class ApiRequest {
         if (forceForm != null) {
             params.setUserFormForPost(true);
         }
+        AsJson asJson = method.getAnnotation(AsJson.class);
+        if (asJson != null) {
+            params.setAsJson(true);
+        }
         UrlEnCode urlEnCode = method.getAnnotation(UrlEnCode.class);
         if (urlEnCode != null) {
             params.setUseDefaultConverterInPost(true);
@@ -99,12 +104,31 @@ public class ApiRequest {
         Class<?>[] types = method.getParameterTypes();
         for (int i = 0; i < annotations.length; i++) {
             if (types[i] == RequestParams.class) {
-                HashMap<String, String> old = params.getParams();
+                HashMap<String, Object> old = params.getParams();
                 List<FileBody> oldFile = params.getFiles();
                 params = (RequestParams) args[i];
                 if (old.size() > 0) {
                     for (String key : old.keySet()) {
-                        params.addParams(key, old.get(key));
+                        Object value = old.get(key);
+                        if (value != null) {
+                            if (value instanceof Integer) {
+                                params.addParams(key, (Integer) value);
+                            } else if (value instanceof Long) {
+                                params.addParams(key, (Long) value);
+                            } else if (value instanceof Float) {
+                                params.addParams(key, (Float) value);
+                            } else if (value instanceof Double) {
+                                params.addParams(key, (Double) value);
+                            } else if (value instanceof Boolean) {
+                                params.addParams(key, (Boolean) value);
+                            } else if (value.getClass().isArray()) {
+                                params.addParams(key, (Object[]) value);
+                            } else {
+                                params.addParams(key, String.valueOf(value));
+                            }
+                        } else {
+                            params.addParams(key, (String) null);
+                        }
                     }
                 }
                 if (oldFile.size() > 0) {
@@ -156,11 +180,11 @@ public class ApiRequest {
             } else if (annotations[i].annotationType() == ParamJson.class) {
                 if (arg != null) {
                     if (type == String.class) {
-                        params.asJson((String) arg);
+                        params.setJson((String) arg);
                     } else if (ApiClient.jsonParser != null) {
-                        params.asJson(ApiClient.jsonParser.objectToJson(arg));
+                        params.setJson(ApiClient.jsonParser.objectToJson(arg));
                     } else {
-                        params.asJson(String.valueOf(arg));
+                        params.setJson(String.valueOf(arg));
                     }
                 }
                 break;
