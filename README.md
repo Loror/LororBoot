@@ -29,7 +29,7 @@ compile('com.github.Loror:LororBoot:v1.0.34release') {
 
 可参考demo使用，使用时需继承LororActivity，LororFragment，LororDialog，BindAbleItem使用，以上均实现于BindAble接口，也可自己实现BindAble接口复写绑定、事件处理。
 
-## annotation包
+## 主框架bind
 
 * 注解@Bind
     * 绑定控件与变量关系，支持TextView，ImageView，ListView，GridView，RecyclerView，BandAbleBannerView等，自动为EditText双向绑定
@@ -41,6 +41,30 @@ compile('com.github.Loror:LororBoot:v1.0.34release') {
     * imageWidth() 指定ImageView缓存图宽度
     * visibility() 控件显示状态
     * onlyEvent() 是否不显示变量到控件只触发事件
+
+* 示例代码
+```
+    @Bind(id = R.id.checkBox)
+    boolean checked = true;
+    @Bind(id = R.id.textView)
+    String text = "绑定TextView显示";
+    @Bind(id = R.id.editText)
+    String doubleBindText = "绑定EditText内容";
+    @Bind(id = R.id.imageView, imagePlace = R.mipmap.ic_launcher, bitmapConverter = RoundBitmapConverter.class)
+    String image;
+    @Bind(id = R.id.listView)
+    List<ListItem> listItems = new ArrayList<>();
+    @Bind(id = R.id.banner, imagePlace = R.mipmap.ic_launcher)
+    List<Banner> listBanners = new ArrayList<>();
+```
+
+CheckBox（双向绑定）仅支持绑定boolean(Boolean)类型；TextView绑定的参数显示时将使用String.valueOf(object)获取内容显示；EditText的双向绑定仅在绑定String/CharSequence时生效；
+ImageView支持绑定String类型（自动适配sd卡/网络图片地址进行加载），int类型（此时只能使用drawable，否则会出错）；AbsListView（ListView/GridView等）/RecyclerView仅支持绑定List(或ArrayList)<? extends BindAbleItem>，
+否则抛出异常；BindAbleBannerView（内部banner控件）支持绑定List(或ArrayList)<? extends BindAbleItem>/List<String>类型，使用BindAbleItem可指定banner控件样式，否则将仅显示图片；
+ProgressBar仅支持绑定int(Integer)，long(Long)类型。
+注：CheckBox，EditText自动双向绑定，控件内容改变时参数将自动修改。
+
+
 
 * 注解@GET @POST @PUT @DELETE
     * 网络访问注解封装，类似retrofit，修饰于接口上的方法
