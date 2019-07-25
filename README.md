@@ -106,6 +106,49 @@ public class ListItem extends BindAbleItem {
 * 注解@Header @Param @ParamObject @ParamJson
     * 网络访问注解封装，修饰于方法中参数，用于标示请求时传递的参数
     * 分别为添加到header，添加一个参数，抽取对象中所有属性到参数，以Json方式上传（指定传参为json后，其他参数将被拼接到url中）
+ 
+* 示例代码
+  
+```  
+@BaseUrl("http://127.0.0.1")
+public interface ServerApi {
+    @GET("/test")
+    @DefaultParams(keys = "key", values = "123")//用于指定固定参数，key，value位置需一一对应
+    Observable<Responce> getResult(@Header("token") String token, @Param("id") String id);
+    //支持返回类型原生responce（Responce），字符串（String），对象（将使用Json解释器生成对象）
+    //请求类型@GET，@POST，@DELETE，@PUT
+    //参数@Header，@Param，@ParamObject，@ParamJson
+}
+```
+
+```
+new ApiClient()
+    .setBaseUrl("https://www.baidu.com") //可在此设置，也可使用注解，注解优先度较高，会覆盖此处设置
+    .setOnRequestListener(new OnRequestListener() {//监听请求的生命周期，可做公共处理
+        @Override
+        public void onRequestBegin(HttpClient client, ApiRequest request) {
+            Log.e("RESULT_", request.getUrl() + " " + request.getParams());
+        }
+
+        @Override
+        public void onRequestEnd(HttpClient client, ApiResult result) {
+            
+        }
+    })
+    .create(ServerApi.class)
+    .getResult("xxxx",1")
+    .subscribe(new Observer<Responce>() {
+        @Override
+        public void success(Responce data) {
+            Log.e("RESULT_", data.toString() + " ");
+        }
+
+        @Override
+        public void failed(int code, Throwable e) {
+            Log.e("RESULT_", code + " = " + e);
+        }
+    });
+```
     
 </br>
 内部已引入库LororUtil(https://github.com/Loror/LororUtil)  
