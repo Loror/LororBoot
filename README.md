@@ -160,10 +160,28 @@ new ApiClient()
 ```
     
 注：网络请求包含多个默认配置
+</br>
 GET/DELETE请求，默认参数将进行url编码
+</br>
 POST/PUT，默认参数不进行url编码，参数中带有文件时将使用multipart/form-data进行传参；@AsJson将param组合为json进行提交，
-    @ParamJson指定了json参数时，其他参数将拼接到url中进行提交，@ParamJson会覆盖@AsJson使其失效，json传参仅对post生效，post参数中携带文件时无法使用json传参，json相关注解将失效；
+    @ParamJson指定了json参数时，其他参数将拼接到url中进行提交，@ParamJson会覆盖@AsJson使其失效，json传参仅对post生效，post参数中携带文件时无法使用json传参，json相关注解将失效
+</br>
+框架内部未引入json解析器，请用你使用的json解析器配置json解析，推荐在application中指定
 
+```
+//如要使用注解形式网络访问，必须实现Json解释器
+ApiClient.setJsonParser(new JsonParser() {
+    @Override
+    public Object jsonToObject(String json, Class<?> classType) {
+        return JSON.parseObject(json, classType);
+    }
+
+    @Override
+    public String objectToJson(Object object) {
+        return JSON.toJSONString(object);
+    }
+});
+```
 
 其它方法详见LororUtil库
 
