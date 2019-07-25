@@ -42,7 +42,7 @@ compile('com.github.Loror:LororBoot:v1.0.34release') {
     * visibility() 控件显示状态
     * onlyEvent() 是否不显示变量到控件只触发事件
 
-* 示例代码
+* Bind示例代码
 ```
     @Bind(id = R.id.checkBox)
     boolean checked = true;
@@ -52,6 +52,8 @@ compile('com.github.Loror:LororBoot:v1.0.34release') {
     String doubleBindText = "绑定EditText内容";
     @Bind(id = R.id.imageView, imagePlace = R.mipmap.ic_launcher, bitmapConverter = RoundBitmapConverter.class)
     String image;
+    @Bind(id = R.id.progressBar)
+    int progress;
     @Bind(id = R.id.listView)
     List<ListItem> listItems = new ArrayList<>();
     @Bind(id = R.id.banner, imagePlace = R.mipmap.ic_launcher)
@@ -64,7 +66,33 @@ ImageView支持绑定String类型（自动适配sd卡/网络图片地址进行�
 ProgressBar仅支持绑定int(Integer)，long(Long)类型。
 注：CheckBox，EditText自动双向绑定，控件内容改变时参数将自动修改。
 
+* BindAbleItem示例代码
+```
+public class ListItem extends BindAbleItem {
 
+    @Bind(id = R.id.text)
+    public String text;
+
+    @Override
+    public int viewType() {
+        return obtainPosition() % 2;
+    }
+
+    @Override
+    public int viewTypeCount() {
+        return 2;
+    }
+
+    @Override
+    public int getLayout(int viewType) {
+        return viewType == 0 ? R.layout.item_list_view : R.layout.item_list_view_2;
+    }
+}
+```
+
+继承BindAbleItem后可实现上述方法，指定layout等。内置方法obtainPosition()可获取当前item所处位置。obtainOutBindAble()可获取通过@Bind绑定该BindAbleItem的对象。
+
+## 网络访问框架
 
 * 注解@GET @POST @PUT @DELETE
     * 网络访问注解封装，类似retrofit，修饰于接口上的方法
