@@ -92,6 +92,9 @@ public class ListItem extends BindAbleItem {
 
 继承BindAbleItem后可实现上述方法，指定layout等。内置方法obtainPosition()可获取当前item所处位置。obtainOutBindAble()可获取通过@Bind绑定该BindAbleItem的对象。
 
+注：默认bind为自动刷新模式，可定义BaseActivity继承于LororActivity，在onCreate中使用方法setBindAbleAutoRefresh(false)关闭自动刷新，
+若关闭自动刷新，请在修改bind的参数后手动调用changeState(null)刷新控件显示
+
 ## 网络访问框架
 
 * 注解@GET @POST @PUT @DELETE
@@ -103,9 +106,15 @@ public class ListItem extends BindAbleItem {
 * 注解@BaseUrl
     * 网络访问注解封装，修饰于接口上
     
-* 注解@Header @Param @ParamObject @ParamJson
+* 注解@Header @Param @ParamObject @ParamJson @DefaultHeaders @DefaultParams
     * 网络访问注解封装，修饰于方法中参数，用于标示请求时传递的参数
     * 分别为添加到header，添加一个参数，抽取对象中所有属性到参数，以Json方式上传（指定传参为json后，其他参数将被拼接到url中）
+
+* 注解@AsJson
+    * 网络访问参数将以json形式上传，仅对post生效
+
+* 注解@UrlEncode
+    * 对网络访问参数进行url编码
  
 * 示例代码
   
@@ -150,6 +159,15 @@ new ApiClient()
     });
 ```
     
+注：网络请求包含多个默认配置
+GET/DELETE请求，默认参数将进行url编码
+POST/PUT，默认参数不进行url编码，参数中带有文件时将使用multipart/form-data进行传参；@AsJson将param组合为json进行提交，
+    @ParamJson指定了json参数时，其他参数将拼接到url中进行提交，@ParamJson会覆盖@AsJson使其失效，json传参仅对post生效，post参数中携带文件时无法使用json传参，json相关注解将失效；
+
+
+其它方法详见LororUtil库
+
+
 </br>
 内部已引入库LororUtil(https://github.com/Loror/LororUtil)  
 </br>
