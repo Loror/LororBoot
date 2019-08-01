@@ -186,6 +186,32 @@ ApiClient.setJsonParser(new JsonParser() {
 });
 ```
 
+## 消息传递框架
+
+* 示例代码
+
+* 接口DataBusReceiver(同进程消息)，RemoteDataBusReceiver(跨进程消息)
+    * 继承于LororActivity，LororFragment，LororDialog的类实现接口自动管理生命周期，通过方法sendDataToBus(String name, Intent data)发送消息
+    
+```
+public class MainActivity extends LororActivity implements RemoteDataBusReceiver {
+    @Override
+    @DataRun(thread = RunThread.MAINTHREAD)//指定执行线程
+    public void receiveData(String name, Intent data) {
+        if ("toast".equals(name)) {
+            Toast.makeText(this, data.getStringExtra("msg"), Toast.LENGTH_SHORT).show();
+            text = "收到消息了";
+        }
+        Log.e("DATA_BUS", (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
+    }
+}
+```
+
+## 动态权限申请
+
+* 注解@RequestPermission
+    * 放在继承于LororActivity的Activity上，自动进行动态权限申请，可覆写onPermissionsResult方法监听申请结果
+
 其它方法详见LororUtil库
 
 
