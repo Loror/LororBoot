@@ -73,7 +73,7 @@ public class ListItem extends BindAbleItem {
     @Bind(id = R.id.text)
     public String text;
 
-    @Override
+    @Overridesubscribe
     public int viewType() {
         return obtainPosition() % 2;
     }
@@ -148,7 +148,7 @@ new ApiClient()
         }
     })
     .create(ServerApi.class)
-    .getResult("xxxx",1")
+    .getResult("xxxx",1)
     .subscribe(new Observer<Responce>() {
         @Override
         public void success(Responce data) {
