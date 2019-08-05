@@ -101,7 +101,9 @@ public class LororActivity extends AppCompatActivity implements StartDialogAble,
     protected void onDestroy() {
         LaunchModeDialog.destroyDialogs(this);
         bindHolders.clear();
-        decorater.onDestroy();
+        if (decorater != null) {
+            decorater.onDestroy();
+        }
         super.onDestroy();
     }
 
@@ -118,7 +120,9 @@ public class LororActivity extends AppCompatActivity implements StartDialogAble,
             }
         }
         super.finish();
-        decorater.release();
+        if (decorater != null) {
+            decorater.release();
+        }
     }
 
     public void sendDataToBus(String name, Intent data) {

@@ -82,7 +82,9 @@ public class LororDialog extends AlertDialog implements DialogInterface.OnDismis
 
     @Override
     protected void onStop() {
-        decorater.onStop();
+        if (decorater != null) {
+            decorater.onStop();
+        }
         super.onStop();
     }
 
@@ -92,7 +94,9 @@ public class LororDialog extends AlertDialog implements DialogInterface.OnDismis
 
     protected void onDestroy() {
         bindHolders.clear();
-        decorater.onDestroy();
+        if (decorater != null) {
+            decorater.onDestroy();
+        }
     }
 
     @Override
