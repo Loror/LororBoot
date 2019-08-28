@@ -52,7 +52,11 @@ public class RecyclerBindAbleAdapter extends RecyclerView.Adapter<RecyclerBindAb
             throw new IllegalStateException("RecyclerView只支持绑定List<? extends BindAbleItem>类型");
         }
         BindAbleItem bindAbleItem = (BindAbleItem) item;
-        View convertView = inflater.inflate(bindAbleItem.getLayout(viewType), parent, false);
+        int layout = bindAbleItem.getLayout(viewType);
+        if (layout == 0) {
+            throw new IllegalArgumentException(bindAbleItem.getClass().getName() + ":未指定layout");
+        }
+        View convertView = inflater.inflate(layout, parent, false);
         return new ViewHolder(convertView);
     }
 

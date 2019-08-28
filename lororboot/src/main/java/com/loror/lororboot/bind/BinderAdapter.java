@@ -115,7 +115,11 @@ public class BinderAdapter extends BaseAdapter {
             mark.size = list.size();
             bindAbleItem.refreshMark(mark);
             if (convertView == null || convertView instanceof EmptyLayout || (Integer) convertView.getTag(viewTagKey) != bindAbleItem.viewType()) {
-                convertView = inflater.inflate(bindAbleItem.getLayout(bindAbleItem.viewType()), parent, false);
+                int layout = bindAbleItem.getLayout(bindAbleItem.viewType());
+                if (layout == 0) {
+                    throw new IllegalArgumentException(bindAbleItem.getClass().getName() + ":未指定layout");
+                }
+                convertView = inflater.inflate(layout, parent, false);
                 convertView.setTag(viewTagKey, bindAbleItem.viewType());
             }
             bindAbleItem.updateBind(convertView);
