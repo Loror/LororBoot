@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.loror.lororUtil.image.ImageUtil;
+import com.loror.lororUtil.text.TextUtil;
 import com.loror.lororUtil.view.OnItemClickListener;
 
 import java.util.ArrayList;
@@ -20,15 +21,17 @@ public class BindAbleBannerAdapter extends PagerAdapter {
     private List list;
     private int imagePlace;
     private int widthLimit;
+    private String format;
     private List<View> views = new ArrayList<View>();
     private int tagKey = 4 << 24;
     private OnItemClickListener onItemClicklistener;
 
-    public BindAbleBannerAdapter(Context context, List list, int imagePlace, int widthLimit, BindAble bindAble) {
+    public BindAbleBannerAdapter(Context context, List list, int imagePlace, int widthLimit, String format, BindAble bindAble) {
         this.context = context;
         this.bindAble = bindAble;
         this.list = list;
         this.imagePlace = imagePlace;
+        this.format = format;
         this.widthLimit = widthLimit == 0 ? getScreenWidth() : widthLimit;
     }
 
@@ -66,7 +69,7 @@ public class BindAbleBannerAdapter extends PagerAdapter {
     /**
      * 布局切换
      */
-    protected void onViewSwitched(ViewGroup contanier, View view, int position) {
+    protected void onViewSwitched(ViewGroup container, View view, int position) {
         Object item = list.get(position);
         if (item instanceof BindAbleItem) {
             BindAbleItem bindAbleItem = (BindAbleItem) item;
@@ -80,7 +83,11 @@ public class BindAbleBannerAdapter extends PagerAdapter {
             if (volume instanceof Integer) {
                 ((ImageView) view).setImageResource((Integer) volume);
             } else {
-                ImageUtil imageUtil = ImageUtil.with(context).from(String.valueOf(volume)).to((ImageView) view);
+                String path = String.valueOf(volume);
+                if (!TextUtil.isEmpty(format)) {
+                    path = format.replace("%s", path);
+                }
+                ImageUtil imageUtil = ImageUtil.with(context).from(path).to((ImageView) view);
                 int width = widthLimit;
                 if (width == 0) {
                     width = 720;
