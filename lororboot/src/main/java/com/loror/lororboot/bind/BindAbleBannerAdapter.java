@@ -79,7 +79,9 @@ public class BindAbleBannerAdapter extends PagerAdapter {
             mark.bindAble = this.bindAble;
             mark.position = position;
             bindAbleItem.refreshMark(mark);
-            BindAbleItemConnectionUtils.connect(bindAbleItem, bindAble, bindHolder.connections.get());
+            if (bindHolder.connections != null) {
+                BindAbleItemConnectionUtils.connect(bindAbleItem, bindAble, bindHolder.connections.get());
+            }
             bindAbleItem.updateBind(view);
         } else {
             Object volume = list.get(position);
