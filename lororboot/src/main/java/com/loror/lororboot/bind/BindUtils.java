@@ -13,7 +13,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -22,6 +21,7 @@ import com.loror.lororUtil.image.ImageUtil;
 import com.loror.lororboot.LororApplication;
 import com.loror.lororboot.annotation.AppendId;
 import com.loror.lororboot.annotation.Bind;
+import com.loror.lororboot.annotation.BindAbleItemConnection;
 import com.loror.lororboot.annotation.DisableItem;
 import com.loror.lororboot.annotation.Gif;
 import com.loror.lororboot.annotation.Visibility;
@@ -32,8 +32,11 @@ import com.loror.lororboot.views.BindAbleBannerView;
 import com.loror.lororboot.views.BindAblePointView;
 import com.loror.lororboot.views.BindRefreshAble;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 public class BindUtils {
@@ -92,6 +95,7 @@ public class BindUtils {
     public static void findBindHolders(List<BindHolder> bindHolders, final BindAble bindAble, View parent) {
         bindHolders.clear();
         Field[] fields = bindAble.getClass().getDeclaredFields();
+        HashMap<Integer, List<Field>> connections = new HashMap<>();
         if (fields != null) {
             for (int i = 0; i < fields.length; ++i) {
                 final Field field = fields[i];
@@ -142,6 +146,23 @@ public class BindUtils {
                             }
                         }
                     }
+                } else {
+                    BindAbleItemConnection connection = (BindAbleItemConnection) field.getAnnotation(BindAbleItemConnection.class);
+                    if (connection != null) {
+                        if (connections.containsKey(connection.id())) {
+                            connections.get(connection.id()).add(field);
+                        } else {
+                            List<Field> value = new LinkedList<>();
+                            value.add(field);
+                            connections.put(connection.id(), value);
+                        }
+                    }
+                }
+            }
+            for (BindHolder holder : bindHolders) {
+                int id = holder.getView().getId();
+                if (connections.containsKey(id)) {
+                    holder.connections = new WeakReference<>(connections.get(id));
                 }
             }
         }
@@ -259,17 +280,13 @@ public class BindUtils {
                     e.printStackTrace();
                 }
                 if (list != null) {
-                    BinderAdapter adapter = new BinderAdapter(view.getContext(), list, bindAble);
+                    BinderAdapter adapter = new BinderAdapter(view.getContext(), list, bindAble, bindHolder);
                     if (bindHolder.disableItem) {
                         adapter.setItemEnable(false);
                     }
                     ((AbsListView) view).setAdapter(adapter);
                     view.setTag(id, adapter);
                     bindHolder.compareTag = list.size();
-                    if (view instanceof ListView && bindHolder.empty != null) {
-                        adapter.setShowEmpty(true);
-                        adapter.setEmptyString(bindHolder.empty);
-                    }
                 } else {
                     throw new IllegalStateException("AbsListView绑定的List<? extends BindAbleItem>不能为null(" + bindAble.getClass().getName() + "->" + field.getName() + ")");
                 }
@@ -286,7 +303,7 @@ public class BindUtils {
                     e.printStackTrace();
                 }
                 if (list != null) {
-                    RecyclerBindAbleAdapter adapter = new RecyclerBindAbleAdapter(view.getContext(), list, bindAble);
+                    RecyclerBindAbleAdapter adapter = new RecyclerBindAbleAdapter(view.getContext(), list, bindAble, bindHolder);
                     ((RecyclerView) view).setAdapter(adapter);
                     view.setTag(id, adapter);
                     bindHolder.compareTag = list.size();
@@ -321,7 +338,7 @@ public class BindUtils {
                         ((BindAbleBannerView) view).setPointView(pointView);
                     }
                     if (list.size() > 0) {
-                        BindAbleBannerAdapter adapter = new BindAbleBannerAdapter(view.getContext(), list, bindHolder.imagePlace, bindHolder.imageWidth, bindHolder.format, bindAble);
+                        BindAbleBannerAdapter adapter = new BindAbleBannerAdapter(view.getContext(), list, bindAble, bindHolder);
                         ((BindAbleBannerView) view).setAdapter(adapter);
                     }
                     bindHolder.compareTag = list.size();
@@ -447,7 +464,7 @@ public class BindUtils {
                     }
                     List list = (List) volume;
                     if (list.size() > 0) {
-                        BindAbleBannerAdapter adapter = new BindAbleBannerAdapter(bindHolder.view.getContext(), list, bindHolder.imagePlace, bindHolder.imageWidth, bindHolder.format, bindAble);
+                        BindAbleBannerAdapter adapter = new BindAbleBannerAdapter(bindHolder.view.getContext(), list, bindAble, bindHolder);
                         ((BindAbleBannerView) bindHolder.view).setAdapter(adapter);
                     }
                 }

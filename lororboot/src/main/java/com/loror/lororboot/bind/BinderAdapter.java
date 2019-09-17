@@ -19,13 +19,15 @@ public class BinderAdapter extends BaseAdapter {
     private boolean showEmpty;
     private String emptyString = "暂无数据";
     private BindAble bindAble;
+    private BindHolder bindHolder;
     private boolean itemEnable = true;
     private static final int viewTagKey = 3 << 24 + 2;
 
-    public BinderAdapter(Context context, List list, BindAble bindAble) {
+    public BinderAdapter(Context context, List list, BindAble bindAble, BindHolder bindHolder) {
         this.context = context;
         this.list = list;
         this.bindAble = bindAble;
+        this.bindHolder = bindHolder;
         inflater = LayoutInflater.from(context);
     }
 
@@ -122,6 +124,7 @@ public class BinderAdapter extends BaseAdapter {
                 convertView = inflater.inflate(layout, parent, false);
                 convertView.setTag(viewTagKey, bindAbleItem.viewType());
             }
+            BindAbleItemConnectionUtils.connect(bindAbleItem, bindAble, bindHolder.connections.get());
             bindAbleItem.updateBind(convertView);
         }
         return convertView;
@@ -132,15 +135,11 @@ public class BinderAdapter extends BaseAdapter {
     }
 
     private boolean showEmptyView() {
-        return showEmpty;
-    }
-
-    public void setEmptyString(String emptyString) {
-        this.emptyString = emptyString;
+        return bindHolder.empty != null;
     }
 
     public String emptyString() {
-        return emptyString;
+        return bindHolder.empty != null ? bindHolder.empty : emptyString;
     }
 
     static class Mark {

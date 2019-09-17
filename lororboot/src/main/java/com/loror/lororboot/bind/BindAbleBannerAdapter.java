@@ -18,6 +18,7 @@ import java.util.List;
 public class BindAbleBannerAdapter extends PagerAdapter {
     private Context context;
     private BindAble bindAble;
+    private BindHolder bindHolder;
     private List list;
     private int imagePlace;
     private int widthLimit;
@@ -26,13 +27,14 @@ public class BindAbleBannerAdapter extends PagerAdapter {
     private int tagKey = 4 << 24;
     private OnItemClickListener onItemClicklistener;
 
-    public BindAbleBannerAdapter(Context context, List list, int imagePlace, int widthLimit, String format, BindAble bindAble) {
+    public BindAbleBannerAdapter(Context context, List list, BindAble bindAble, BindHolder bindHolder) {
         this.context = context;
         this.bindAble = bindAble;
+        this.bindHolder = bindHolder;
         this.list = list;
-        this.imagePlace = imagePlace;
-        this.format = format;
-        this.widthLimit = widthLimit == 0 ? getScreenWidth() : widthLimit;
+        this.imagePlace = bindHolder.imagePlace;
+        this.format = bindHolder.format;
+        this.widthLimit = bindHolder.imageWidth == 0 ? getScreenWidth() : bindHolder.imageWidth;
     }
 
     protected int getScreenWidth() {
@@ -77,6 +79,7 @@ public class BindAbleBannerAdapter extends PagerAdapter {
             mark.bindAble = this.bindAble;
             mark.position = position;
             bindAbleItem.refreshMark(mark);
+            BindAbleItemConnectionUtils.connect(bindAbleItem, bindAble, bindHolder.connections.get());
             bindAbleItem.updateBind(view);
         } else {
             Object volume = list.get(position);

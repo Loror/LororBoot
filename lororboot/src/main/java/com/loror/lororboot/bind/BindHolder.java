@@ -5,6 +5,7 @@ import android.view.View;
 import com.loror.lororUtil.image.BitmapConverter;
 import com.loror.lororboot.annotation.Visibility;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ public class BindHolder {
     protected Object compareTag;
     private Object tag;
     protected boolean isFirst = true;
+    protected WeakReference<List<Field>> connections;
 
     public View getView() {
         return view;

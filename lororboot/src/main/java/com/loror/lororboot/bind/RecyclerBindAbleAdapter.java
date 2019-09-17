@@ -14,11 +14,13 @@ public class RecyclerBindAbleAdapter extends RecyclerView.Adapter<RecyclerBindAb
     private LayoutInflater inflater;
     private List list;
     private BindAble bindAble;
+    private BindHolder bindHolder;
 
-    public RecyclerBindAbleAdapter(Context context, List list, BindAble bindAble) {
+    public RecyclerBindAbleAdapter(Context context, List list, BindAble bindAble, BindHolder bindHolder) {
         this.context = context;
         this.list = list;
         this.bindAble = bindAble;
+        this.bindHolder = bindHolder;
         inflater = LayoutInflater.from(context);
     }
 
@@ -68,6 +70,7 @@ public class RecyclerBindAbleAdapter extends RecyclerView.Adapter<RecyclerBindAb
         mark.size = list.size();
         mark.position = holder.getAdapterPosition();
         bindAbleItem.refreshMark(mark);
+        BindAbleItemConnectionUtils.connect(bindAbleItem, bindAble, bindHolder.connections.get());
         bindAbleItem.updateBind(holder.itemView);
     }
 
