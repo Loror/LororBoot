@@ -3,6 +3,7 @@ package com.loror.lororboot.bind;
 import com.loror.lororboot.annotation.Connection;
 
 import java.lang.reflect.Field;
+import java.util.LinkedList;
 import java.util.List;
 
 public class BindAbleItemConnectionUtils {
@@ -14,6 +15,7 @@ public class BindAbleItemConnectionUtils {
         if (obj == null || connections == null) {
             return;
         }
+        connections = new LinkedList<>(connections);
         Field[] fields = obj.getClass().getDeclaredFields();
         for (int i = 0; i < fields.length; i++) {
             Field to = fields[i];
