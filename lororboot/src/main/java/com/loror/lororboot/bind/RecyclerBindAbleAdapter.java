@@ -71,7 +71,7 @@ public class RecyclerBindAbleAdapter extends RecyclerView.Adapter<RecyclerBindAb
         mark.position = holder.getAdapterPosition();
         bindAbleItem.refreshMark(mark);
         if (bindHolder.connections != null) {
-            BindAbleItemConnectionUtils.connect(bindAbleItem, bindAble, bindHolder.connections.get());
+            BindAbleItemConnectionUtils.connect(bindAbleItem, bindAble, bindHolder.connections);
         }
         bindAbleItem.updateBind(holder.itemView);
     }

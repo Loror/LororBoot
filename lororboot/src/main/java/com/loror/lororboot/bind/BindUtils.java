@@ -32,7 +32,6 @@ import com.loror.lororboot.views.BindAbleBannerView;
 import com.loror.lororboot.views.BindAblePointView;
 import com.loror.lororboot.views.BindRefreshAble;
 
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -162,7 +161,7 @@ public class BindUtils {
             for (BindHolder holder : bindHolders) {
                 int id = holder.getView().getId();
                 if (connections.containsKey(id)) {
-                    holder.connections = new WeakReference<>(connections.get(id));
+                    holder.connections = connections.get(id);
                 }
             }
         }

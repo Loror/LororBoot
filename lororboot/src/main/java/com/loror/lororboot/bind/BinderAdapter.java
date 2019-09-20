@@ -125,7 +125,7 @@ public class BinderAdapter extends BaseAdapter {
                 convertView.setTag(viewTagKey, bindAbleItem.viewType());
             }
             if (bindHolder.connections != null) {
-                BindAbleItemConnectionUtils.connect(bindAbleItem, bindAble, bindHolder.connections.get());
+                BindAbleItemConnectionUtils.connect(bindAbleItem, bindAble, bindHolder.connections);
             }
             bindAbleItem.updateBind(convertView);
         }
