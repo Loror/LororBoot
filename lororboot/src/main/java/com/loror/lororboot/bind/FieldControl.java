@@ -26,4 +26,18 @@ public class FieldControl {
             }
         }
     }
+
+    public void setFieldAndEvent(Object value) {
+        BindHolder holder = holderWeakReference.get();
+        if (holder != null) {
+            try {
+                holder.field.set(bindAble, value);
+                Object old = holder.compareTag;
+                holder.compareTag = value;
+                bindAble.event(holder, old == null ? null : String.valueOf(old), value == null ? null : String.valueOf(value));
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
