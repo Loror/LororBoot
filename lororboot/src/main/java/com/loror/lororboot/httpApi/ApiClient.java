@@ -202,7 +202,7 @@ public class ApiClient {
      */
     private void result(Responce responce, Class<?> classType, Observer observer) {
         //优先外部筛选器通过尝试解析，否则200系列解析，返回类型Responce通过success返回
-        if (classType == Responce.class || (codeFilter != null ? codeFilter.isSuccessCode() : responce.getCode() / 100 == 2)) {
+        if (classType == Responce.class || (codeFilter != null ? codeFilter.isSuccessCode(responce.getCode()) : responce.getCode() / 100 == 2)) {
             try {
                 Object bean = classType == String.class ? responce.toString() : classType == Responce.class ? responce : parseObject(responce.toString(), classType);
                 observer.success(bean);
