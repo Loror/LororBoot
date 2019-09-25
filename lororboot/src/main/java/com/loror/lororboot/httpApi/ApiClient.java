@@ -25,6 +25,7 @@ public class ApiClient {
 
     protected static JsonParser jsonParser;
     private OnRequestListener onRequestListener;
+    private CodeFilter codeFilter;
 
     public ApiClient setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
@@ -34,6 +35,10 @@ public class ApiClient {
     public ApiClient setOnRequestListener(OnRequestListener onRequestListener) {
         this.onRequestListener = onRequestListener;
         return this;
+    }
+
+    public void setCodeFilter(CodeFilter codeFilter) {
+        this.codeFilter = codeFilter;
     }
 
     public static void setJsonParser(JsonParser jsonParser) {
@@ -195,8 +200,8 @@ public class ApiClient {
      * 处理返回结果
      */
     private void result(Responce responce, Class<?> classType, Observer observer) {
-        //200系列尝试解析，返回类型Responce通过success返回
-        if (responce.getCode() / 100 == 2 || classType == Responce.class) {
+        //优先外部筛选器通过尝试解析，否则200解析，返回类型Responce通过success返回
+        if (classType == Responce.class || (codeFilter != null ? codeFilter.isSuccessCode() : responce.getCode() == 200)) {
             try {
                 Object bean = classType == String.class ? responce.toString() : classType == Responce.class ? responce : parseObject(responce.toString(), classType);
                 observer.success(bean);
