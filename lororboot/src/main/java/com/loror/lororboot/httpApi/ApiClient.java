@@ -37,8 +37,9 @@ public class ApiClient {
         return this;
     }
 
-    public void setCodeFilter(CodeFilter codeFilter) {
+    public ApiClient setCodeFilter(CodeFilter codeFilter) {
         this.codeFilter = codeFilter;
+        return this;
     }
 
     public static void setJsonParser(JsonParser jsonParser) {
