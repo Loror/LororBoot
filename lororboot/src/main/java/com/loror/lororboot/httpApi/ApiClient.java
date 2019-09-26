@@ -18,6 +18,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
+import java.nio.charset.Charset;
 
 public class ApiClient {
 
@@ -26,6 +27,7 @@ public class ApiClient {
     protected static JsonParser jsonParser;
     private OnRequestListener onRequestListener;
     private CodeFilter codeFilter;
+    private Charset charset;
 
     public ApiClient setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
@@ -39,6 +41,11 @@ public class ApiClient {
 
     public ApiClient setCodeFilter(CodeFilter codeFilter) {
         this.codeFilter = codeFilter;
+        return this;
+    }
+
+    public ApiClient setCharset(Charset charset) {
+        this.charset = charset;
         return this;
     }
 
@@ -204,7 +211,9 @@ public class ApiClient {
         //优先外部筛选器通过尝试解析，否则200系列解析，返回类型Responce通过success返回
         if (classType == Responce.class || (codeFilter != null ? codeFilter.isSuccessCode(responce.getCode()) : responce.getCode() / 100 == 2)) {
             try {
-                Object bean = classType == String.class ? responce.toString() : classType == Responce.class ? responce : parseObject(responce.toString(), classType);
+                Object bean = classType == String.class ? (charset == null ? responce.toString() : new String(responce.result, charset)) :
+                        classType == Responce.class ? responce :
+                                parseObject((charset == null ? responce.toString() : new String(responce.result, charset)), classType);
                 observer.success(bean);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -260,7 +269,9 @@ public class ApiClient {
      */
     private Object result(Responce responce, Class<?> classType) {
         try {
-            return classType == String.class ? responce.toString() : classType == Responce.class ? responce : parseObject(responce.toString(), classType);
+            return classType == String.class ? (charset == null ? responce.toString() : new String(responce.result, charset)) :
+                    classType == Responce.class ? responce :
+                            parseObject((charset == null ? responce.toString() : new String(responce.result, charset)), classType);
         } catch (Exception e) {
             e.printStackTrace();
         }

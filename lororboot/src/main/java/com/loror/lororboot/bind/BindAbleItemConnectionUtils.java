@@ -34,14 +34,8 @@ public class BindAbleItemConnectionUtils {
                         find.setAccessible(true);
                         Object data = find.get(bindAble);
                         to.setAccessible(true);
-                        //先正向注入，失败则反向注入
                         if (data != null) {
                             to.set(obj, data);
-                        } else {
-                            data = to.get(obj);
-                            if (data != null) {
-                                find.set(bindAble, data);
-                            }
                         }
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
