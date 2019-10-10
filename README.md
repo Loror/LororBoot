@@ -129,6 +129,9 @@ public class ListItem extends BindAbleItem {
 
 * 注解@UrlEncode
     * 修饰于方法上，对网络访问参数进行url编码
+    
+* 注解@Gzip
+    * 修饰于方法上，上传参数进行gzip压缩
  
 * 示例代码
   
