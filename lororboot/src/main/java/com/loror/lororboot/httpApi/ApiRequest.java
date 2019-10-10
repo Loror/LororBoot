@@ -6,6 +6,7 @@ import com.loror.lororboot.annotation.AsJson;
 import com.loror.lororboot.annotation.DefaultHeaders;
 import com.loror.lororboot.annotation.DefaultParams;
 import com.loror.lororboot.annotation.ForceForm;
+import com.loror.lororboot.annotation.Gzip;
 import com.loror.lororboot.annotation.Header;
 import com.loror.lororboot.annotation.Param;
 import com.loror.lororboot.annotation.ParamJson;
@@ -99,6 +100,10 @@ public class ApiRequest {
         UrlEnCode urlEnCode = method.getAnnotation(UrlEnCode.class);
         if (urlEnCode != null) {
             params.setUseDefaultConverterInPost(true);
+        }
+        Gzip gzip = method.getAnnotation(Gzip.class);
+        if (gzip != null) {
+            params.setGzip(true);
         }
         Annotation[][] annotations = method.getParameterAnnotations();
         Class<?>[] types = method.getParameterTypes();
