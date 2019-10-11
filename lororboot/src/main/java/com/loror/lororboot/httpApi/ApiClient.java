@@ -19,6 +19,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
+import java.util.List;
 
 public class ApiClient {
 
@@ -154,13 +155,25 @@ public class ApiClient {
                 @Override
                 public void callBack(Responce responce) {
                     ApiResult result = null;
+                    Class<?>[] types = getTClass(observer);
+                    Class<?> type = null;
+                    boolean array = false;
+                    if (types != null) {
+                        if (types.length == 1) {
+                            type = types[0];
+                        } else if (types.length == 2) {
+                            array = isList(types[0]);
+                            type = array ? types[1] : types[0];
+                        }
+                    }
                     if (onRequestListener != null) {
                         result = new ApiResult();
                         result.url = url;
                         result.params = params;
                         result.responce = responce;
                         result.observer = observer;
-                        result.classType = getTClass(observer);
+                        result.array = array;
+                        result.classType = type;
                         result.type = 1;
                         result.request = apiRequest;
                         result.client = ApiClient.this;
@@ -169,7 +182,7 @@ public class ApiClient {
                     if (result != null && result.accept) {
                         //已被处理拦截
                     } else {
-                        result(responce, getTClass(observer), observer);
+                        result(responce, type, array, observer);
                     }
                 }
             };
@@ -191,15 +204,51 @@ public class ApiClient {
     }
 
     /**
+     * Class是否为List或者List子类
+     */
+    private boolean isList(Class<?> c) {
+        if (c == null) {
+            return false;
+        }
+        do {
+            if (c == List.class) {
+                return true;
+            }
+            c = c.getSuperclass();
+        } while (c != null);
+        return false;
+    }
+
+    /**
      * 动态获取泛型
      */
-    private Class<?> getTClass(Object observer) {
+    private Class<?>[] getTClass(Object observer) {
         Type[] superClass = observer.getClass().getGenericInterfaces();
-        if (superClass[0] instanceof ParameterizedType) {
-            Type type = ((ParameterizedType) superClass[0]).getActualTypeArguments()[0];
-            return (Class<?>) type;
-        } else {
-            System.out.println("Not ParameterizedType");
+        Type observerType = null;
+        for (int i = 0; i < superClass.length; i++) {
+            Type type = superClass[i];
+            try {
+                String name = type.toString();
+                if (name.contains("Observer")) {
+                    observerType = type;
+                    break;
+                }
+            } catch (Throwable e) {
+                e.printStackTrace();
+                observerType = superClass[0];
+                break;
+            }
+        }
+        if (observerType == null && superClass.length > 0) {
+            observerType = superClass[0];
+        }
+        if (observerType instanceof ParameterizedType) {
+            Type type = ((ParameterizedType) observerType).getActualTypeArguments()[0];
+            if (type instanceof ParameterizedType) {
+                Type typeIn = ((ParameterizedType) type).getActualTypeArguments()[0];
+                return new Class<?>[]{(Class<?>) ((ParameterizedType) type).getRawType(), (Class<?>) typeIn};
+            }
+            return new Class<?>[]{(Class<?>) type};
         }
         return null;
     }
@@ -207,13 +256,13 @@ public class ApiClient {
     /**
      * 处理返回结果
      */
-    private void result(Responce responce, Class<?> classType, Observer observer) {
+    private void result(Responce responce, Class<?> classType, boolean array, Observer observer) {
         //优先外部筛选器通过尝试解析，否则200系列解析，返回类型Responce通过success返回
         if (classType == Responce.class || (codeFilter != null ? codeFilter.isSuccessCode(responce.getCode()) : responce.getCode() / 100 == 2)) {
             try {
                 Object bean = classType == String.class ? (charset == null ? responce.toString() : new String(responce.result, charset)) :
                         classType == Responce.class ? responce :
-                                parseObject((charset == null ? responce.toString() : new String(responce.result, charset)), classType);
+                                parseObject((charset == null ? responce.toString() : new String(responce.result, charset)), classType, array);
                 observer.success(bean);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -260,18 +309,21 @@ public class ApiClient {
         if (result != null && result.accept) {
             return result.responceObject;
         } else {
-            return responce == null ? null : result(responce, classType);
+            if (responce != null) {
+                return result(responce, classType, false);//同步方式不支持返回集合
+            }
+            return null;
         }
     }
 
     /**
      * 处理返回结果
      */
-    private Object result(Responce responce, Class<?> classType) {
+    private Object result(Responce responce, Class<?> classType, boolean array) {
         try {
             return classType == String.class ? (charset == null ? responce.toString() : new String(responce.result, charset)) :
                     classType == Responce.class ? responce :
-                            parseObject((charset == null ? responce.toString() : new String(responce.result, charset)), classType);
+                            parseObject((charset == null ? responce.toString() : new String(responce.result, charset)), classType, array);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -281,8 +333,8 @@ public class ApiClient {
     /**
      * json转对象
      */
-    protected Object parseObject(String json, Class<?> classType) {
-        return jsonParser == null ? null : jsonParser.jsonToObject(json, classType);
+    protected Object parseObject(String json, Class<?> classType, boolean array) {
+        return jsonParser == null ? null : jsonParser.jsonToObject(json, classType, array);
     }
 
 }

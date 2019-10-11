@@ -12,8 +12,8 @@ public class App extends LororApplication {
         //如要使用注解形式网络访问，必须实现Json解释器
         ApiClient.setJsonParser(new JsonParser() {
             @Override
-            public Object jsonToObject(String json, Class<?> classType) {
-                return JSON.parseObject(json, classType);
+            public Object jsonToObject(String json, Class<?> classType, boolean array) {
+                return array ? JSON.parseArray(json, classType) : JSON.parseObject(json, classType);
             }
 
             @Override

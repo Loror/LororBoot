@@ -16,6 +16,7 @@ public class ApiResult {
     //框架需使用的参数及拦截所需参数
     protected ApiRequest request;
     protected ApiClient client;
+    protected boolean array;
     protected Class<?> classType;
     protected Observer observer;
     protected Object responceObject;
@@ -48,6 +49,10 @@ public class ApiResult {
         return client;
     }
 
+    public boolean isArray() {
+        return array;
+    }
+
     public Class<?> getClassType() {
         return classType;
     }
@@ -63,8 +68,8 @@ public class ApiResult {
     /**
      * json转对象
      */
-    public Object parseObject(String json, Class<?> classType) {
-        return client.parseObject(json, classType);
+    public Object parseObject(String json, Class<?> classType, boolean array) {
+        return client.parseObject(json, classType, array);
     }
 
     //通知重新请求，结束后请求将接收到新的结果
