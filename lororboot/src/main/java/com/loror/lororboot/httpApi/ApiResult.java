@@ -16,8 +16,7 @@ public class ApiResult {
     //框架需使用的参数及拦截所需参数
     protected ApiRequest request;
     protected ApiClient client;
-    protected boolean array;
-    protected Class<?> classType;
+    protected TypeInfo typeInfo;
     protected Observer observer;
     protected Object responceObject;
 
@@ -49,12 +48,8 @@ public class ApiResult {
         return client;
     }
 
-    public boolean isArray() {
-        return array;
-    }
-
-    public Class<?> getClassType() {
-        return classType;
+    public TypeInfo getTypeInfo() {
+        return typeInfo;
     }
 
     public void setResponceObject(Object responce) {
@@ -68,15 +63,15 @@ public class ApiResult {
     /**
      * json转对象
      */
-    public Object parseObject(String json, Class<?> classType, boolean array) {
-        return client.parseObject(json, classType, array);
+    public Object parseObject(String json, TypeInfo typeInfo) {
+        return client.parseObject(json, typeInfo);
     }
 
     //通知重新请求，结束后请求将接收到新的结果
     public void requestAgain() {
         if (type == 0) {
             accept = true;
-            responceObject = client.connect(request, classType);
+            responceObject = client.connect(request, typeInfo.getType());
         } else if (type == 1) {
             accept = true;
             client.asyncConnect(request, observer);

@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.loror.lororUtil.http.HttpClient;
 import com.loror.lororUtil.http.RequestParams;
 import com.loror.lororUtil.http.Responce;
@@ -79,16 +80,16 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
                     public void onRequestEnd(HttpClient client, ApiResult result) {
                         result.setAccept(true);//该设置用于拦截请求返回
                         Responce responce = new Responce();
-                        responce.result = "被我拦截修改啦".getBytes();
-                        result.getObserver().success(responce);
+                        responce.result = "[{\"id\":1,\"name\":\"test\"}]".getBytes();
+                        result.getObserver().success(result.parseObject(responce.toString(),result.getTypeInfo()));
                     }
                 })
                 .create(ServerApi.class)
                 .getResult("1")
-                .subscribe(new Observer<Responce>() {
+                .subscribe(new Observer<List<Result>>() {
                     @Override
-                    public void success(Responce data) {
-                        Log.e("RESULT_", data.toString() + " ");
+                    public void success(List<Result> data) {
+                        Log.e("RESULT_", JSON.toJSONString(data) + " ");
                     }
 
                     @Override
