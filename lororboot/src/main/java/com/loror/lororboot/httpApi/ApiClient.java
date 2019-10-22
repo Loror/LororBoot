@@ -239,7 +239,6 @@ public class ApiClient {
         }
         ApiResult result = null;
         TypeInfo typeInfo = new TypeInfo(typeClass);
-        ;
         if (onRequestListener != null) {
             result = new ApiResult();
             result.url = url;
