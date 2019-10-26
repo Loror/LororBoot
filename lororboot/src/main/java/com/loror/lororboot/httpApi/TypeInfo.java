@@ -4,24 +4,30 @@ import android.support.annotation.NonNull;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TypeInfo {
 
-    private String filter = "Observer";
     private Object typeObject;
-    private Type observerType;
+    private Type type;
 
     public TypeInfo(@NonNull Object typeObject) {
         this.typeObject = typeObject;
     }
 
-    public TypeInfo(@NonNull Type observerType) {
-        this.observerType = observerType;
+    public TypeInfo(@NonNull Type type) {
+        this.type = type;
     }
 
-    public void setFilter(@NonNull String filter) {
-        this.filter = filter;
+    /**
+     * 动态获取所有类型
+     */
+    public Class<?>[] getAllClass() {
+        getType();
+        List<Class<?>> classes = new ArrayList<>();
+        getAllClass(type, classes, true);
+        return classes.toArray(new Class<?>[0]);
     }
 
     /**
@@ -29,34 +35,45 @@ public class TypeInfo {
      */
     public Class<?>[] getTClass() {
         getType();
-        if (observerType instanceof ParameterizedType) {
-            Type type = ((ParameterizedType) observerType).getActualTypeArguments()[0];
-            if (type instanceof ParameterizedType) {
-                Type typeIn = ((ParameterizedType) type).getActualTypeArguments()[0];
-                return new Class<?>[]{(Class<?>) ((ParameterizedType) type).getRawType(), (Class<?>) typeIn};
-            }
-            return new Class<?>[]{(Class<?>) type};
-        }
-        return new Class<?>[]{(Class<?>) observerType};
+        List<Class<?>> classes = new ArrayList<>();
+        getAllClass(type, classes, false);
+        return classes.toArray(new Class<?>[0]);
     }
 
+    /**
+     * 递归获取所有类型
+     */
+    private void getAllClass(Type type, List<Class<?>> classes, boolean containRaw) {
+        if (type instanceof ParameterizedType) {
+            if (containRaw) {
+                classes.add((Class<?>) ((ParameterizedType) type).getRawType());
+            }
+            Type[] types = ((ParameterizedType) type).getActualTypeArguments();
+            for (int i = 0; i < types.length; i++) {
+                getAllClass(types[i], classes, containRaw);
+            }
+        } else if (type instanceof Class) {
+            classes.add((Class<?>) type);
+        }
+    }
+
+    /**
+     * 获取最后一个类型
+     */
     public Class<?> getTypeClass() {
-        Class<?>[] types = getTClass();
-        return types.length == 1 ? types[0] : types[1];
+        Class<?>[] types = getAllClass();
+        return types == null || types.length == 0 ? null : types[types.length - 1];
     }
 
     /**
      * Class是否为List或者List子类
      */
     public boolean isList() {
-        Class<?> c = null;
-        Class<?>[] types = getTClass();
-        if (types.length == 2) {
-            c = types[0];
-        }
-        if (c == null) {
+        Class<?>[] types = getAllClass();
+        if (types.length == 1) {
             return false;
         }
+        Class<?> c = types[0];
         do {
             if (c == List.class) {
                 return true;
@@ -70,26 +87,20 @@ public class TypeInfo {
      * 获取范型
      */
     public Type getType() {
-        if (observerType == null) {
+        if (type == null) {
             Type[] superClass = typeObject.getClass().getGenericInterfaces();
             for (int i = 0; i < superClass.length; i++) {
-                Type type = superClass[i];
-                try {
-                    String name = type.toString();
-                    if (name.contains(filter)) {
-                        observerType = type;
+                Type c = superClass[i];
+                if (c instanceof ParameterizedType) {
+                    Type that = ((ParameterizedType) c).getRawType();
+                    //找到Observer
+                    if (that == Observer.class) {
+                        type = ((ParameterizedType) c).getActualTypeArguments()[0];
                         break;
                     }
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                    observerType = superClass[0];
-                    break;
                 }
             }
-            if (observerType == null && superClass.length > 0) {
-                observerType = superClass[0];
-            }
         }
-        return observerType;
+        return type;
     }
 }
