@@ -194,7 +194,7 @@ public class ApiClient {
      * 处理返回结果
      */
     private void result(Responce responce, TypeInfo typeInfo, Observer observer) {
-        Class<?>[] types = typeInfo.getTClass();
+        Class<?>[] types = typeInfo.getAllClass();
         Class<?> classType = null;
         if (types.length == 1) {
             classType = types[0];
@@ -264,7 +264,7 @@ public class ApiClient {
      */
     private Object result(Responce responce, TypeInfo typeInfo) {
         try {
-            Class<?>[] types = typeInfo.getTClass();
+            Class<?>[] types = typeInfo.getAllClass();
             Class<?> classType = null;
             if (types.length == 1) {
                 classType = types[0];
