@@ -146,10 +146,11 @@ public class ApiClient {
      */
     protected void asyncConnect(final ApiRequest apiRequest, final Observer observer) {
         ++apiRequest.useTimes;
+        final TypeInfo typeInfo = new TypeInfo(observer);
         final HttpClient client = new HttpClient();
         final RequestParams params = apiRequest.getParams();
         final String url = apiRequest.getUrl();
-        if (apiRequest.isKeepStream()) {
+        if (apiRequest.isKeepStream() && getClassType(typeInfo) == Responce.class) {
             client.setKeepStream(true);
         }
         if (onRequestListener != null) {
@@ -161,7 +162,6 @@ public class ApiClient {
                 @Override
                 public void callBack(Responce responce) {
                     ApiResult result = null;
-                    TypeInfo typeInfo = new TypeInfo(observer);
                     if (onRequestListener != null) {
                         result = new ApiResult();
                         result.url = url;
@@ -199,14 +199,22 @@ public class ApiClient {
     }
 
     /**
-     * 处理返回结果
+     * 获取无泛型类型
      */
-    private void result(Responce responce, TypeInfo typeInfo, Observer observer) {
+    private Class<?> getClassType(TypeInfo typeInfo) {
         Class<?>[] types = typeInfo.getAllClass();
         Class<?> classType = null;
         if (types.length == 1) {
             classType = types[0];
         }
+        return classType;
+    }
+
+    /**
+     * 处理返回结果
+     */
+    private void result(Responce responce, TypeInfo typeInfo, Observer observer) {
+        Class<?> classType = getClassType(typeInfo);
         //优先外部筛选器通过尝试解析，否则200系列解析，返回类型Responce通过success返回
         if (classType == Responce.class || (codeFilter != null ? codeFilter.isSuccessCode(responce.getCode()) : responce.getCode() / 100 == 2)) {
             try {
@@ -228,10 +236,11 @@ public class ApiClient {
      */
     protected Object connect(ApiRequest apiRequest, Type typeClass) {
         ++apiRequest.useTimes;
+        TypeInfo typeInfo = new TypeInfo(typeClass);
         final HttpClient client = new HttpClient();
         final RequestParams params = apiRequest.getParams();
         final String url = apiRequest.getUrl();
-        if (apiRequest.isKeepStream()) {
+        if (apiRequest.isKeepStream() && getClassType(typeInfo) == Responce.class) {
             client.setKeepStream(true);
         }
         if (onRequestListener != null) {
@@ -249,7 +258,6 @@ public class ApiClient {
             responce = client.put(url, params);
         }
         ApiResult result = null;
-        TypeInfo typeInfo = new TypeInfo(typeClass);
         if (onRequestListener != null) {
             result = new ApiResult();
             result.url = url;
