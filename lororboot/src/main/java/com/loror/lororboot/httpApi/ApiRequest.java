@@ -25,6 +25,7 @@ public class ApiRequest {
     private RequestParams params;
     private int type;//1,get;2,post;3,delete;4,put
     private String url;
+    private boolean keepStream;
     protected int useTimes;//计数Request使用次数
 
     public void setBaseUrl(String baseUrl) {
@@ -60,6 +61,14 @@ public class ApiRequest {
                 (anoBaseUrl + url) : baseUrl != null && baseUrl.length() != 0 ?
                 (baseUrl + url) :
                 url;
+    }
+
+    public void setKeepStream(boolean keepStream) {
+        this.keepStream = keepStream;
+    }
+
+    public boolean isKeepStream() {
+        return keepStream;
     }
 
     public int getUseTimes() {

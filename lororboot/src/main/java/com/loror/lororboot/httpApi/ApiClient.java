@@ -10,6 +10,7 @@ import com.loror.lororUtil.http.Responce;
 import com.loror.lororboot.annotation.BaseUrl;
 import com.loror.lororboot.annotation.DELETE;
 import com.loror.lororboot.annotation.GET;
+import com.loror.lororboot.annotation.KeepStream;
 import com.loror.lororboot.annotation.POST;
 import com.loror.lororboot.annotation.PUT;
 
@@ -133,6 +134,10 @@ public class ApiClient {
                 }
             }
         }
+        KeepStream stream = method.getAnnotation(KeepStream.class);
+        if (stream != null) {
+            apiRequest.setKeepStream(true);
+        }
         return apiRequest;
     }
 
@@ -144,6 +149,9 @@ public class ApiClient {
         final HttpClient client = new HttpClient();
         final RequestParams params = apiRequest.getParams();
         final String url = apiRequest.getUrl();
+        if (apiRequest.isKeepStream()) {
+            client.setKeepStream(true);
+        }
         if (onRequestListener != null) {
             onRequestListener.onRequestBegin(client, apiRequest);
         }
@@ -223,6 +231,9 @@ public class ApiClient {
         final HttpClient client = new HttpClient();
         final RequestParams params = apiRequest.getParams();
         final String url = apiRequest.getUrl();
+        if (apiRequest.isKeepStream()) {
+            client.setKeepStream(true);
+        }
         if (onRequestListener != null) {
             onRequestListener.onRequestBegin(client, apiRequest);
         }
