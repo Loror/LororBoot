@@ -202,12 +202,7 @@ public class ApiClient {
      * 获取无泛型类型
      */
     private Class<?> getClassType(TypeInfo typeInfo) {
-        Class<?>[] types = typeInfo.getAllClass();
-        Class<?> classType = null;
-        if (types.length == 1) {
-            classType = types[0];
-        }
-        return classType;
+        return typeInfo.getType() instanceof Class ? (Class<?>) typeInfo.getType() : null;
     }
 
     /**
@@ -227,7 +222,7 @@ public class ApiClient {
                 observer.failed(responce.getCode(), e);
             }
         } else {
-            observer.failed(responce.getCode(), responce.getThrowable());
+            observer.failed(responce.getCode(), new ResultException(responce));
         }
     }
 
@@ -283,11 +278,7 @@ public class ApiClient {
      */
     private Object result(Responce responce, TypeInfo typeInfo) {
         try {
-            Class<?>[] types = typeInfo.getAllClass();
-            Class<?> classType = null;
-            if (types.length == 1) {
-                classType = types[0];
-            }
+            Type classType = getClassType(typeInfo);
             return classType == String.class ? (charset == null ? responce.toString() : new String(responce.result, charset)) :
                     classType == Responce.class ? responce :
                             parseObject((charset == null ? responce.toString() : new String(responce.result, charset)), typeInfo);
