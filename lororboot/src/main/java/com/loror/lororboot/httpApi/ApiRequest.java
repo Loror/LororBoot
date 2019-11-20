@@ -5,7 +5,7 @@ import com.loror.lororUtil.http.RequestParams;
 import com.loror.lororboot.annotation.AsJson;
 import com.loror.lororboot.annotation.DefaultHeaders;
 import com.loror.lororboot.annotation.DefaultParams;
-import com.loror.lororboot.annotation.ForceForm;
+import com.loror.lororboot.annotation.Multipart;
 import com.loror.lororboot.annotation.Gzip;
 import com.loror.lororboot.annotation.Header;
 import com.loror.lororboot.annotation.Param;
@@ -98,8 +98,8 @@ public class ApiRequest {
                 params.addHeader(defaultHeaders.keys()[i], defaultHeaders.values()[i]);
             }
         }
-        ForceForm forceForm = method.getAnnotation(ForceForm.class);
-        if (forceForm != null) {
+        Multipart multipart = method.getAnnotation(Multipart.class);
+        if (multipart != null) {
             params.setUserFormForPost(true);
         }
         AsJson asJson = method.getAnnotation(AsJson.class);
