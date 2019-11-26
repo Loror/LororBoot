@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class TypeInfo {
@@ -88,13 +89,21 @@ public class TypeInfo {
      */
     public Type getType() {
         if (type == null) {
-            Type[] superClass = typeObject.getClass().getGenericInterfaces();
-            for (int i = 0; i < superClass.length; i++) {
-                Type c = superClass[i];
+            Type[] superInterface = typeObject.getClass().getGenericInterfaces();
+            Type superclass = typeObject.getClass().getGenericSuperclass();
+            List<Type> supers = new ArrayList<>();
+            if (superInterface != null) {
+                supers.addAll(Arrays.asList(superInterface));
+            }
+            if (superclass != null) {
+                supers.add(superclass);
+            }
+            for (int i = 0; i < supers.size(); i++) {
+                Type c = supers.get(i);
                 if (c instanceof ParameterizedType) {
                     Type that = ((ParameterizedType) c).getRawType();
                     //找到Observer
-                    if (that == Observer.class) {
+                    if (that instanceof Class && isObserver((Class) that)) {
                         type = ((ParameterizedType) c).getActualTypeArguments()[0];
                         break;
                     }
@@ -102,5 +111,27 @@ public class TypeInfo {
             }
         }
         return type;
+    }
+
+    /**
+     * 是否为Observer或者实现了Observer
+     */
+    private boolean isObserver(Class type) {
+        Class<?> c = type;
+        do {
+            if (c == Observer.class) {
+                return true;
+            }
+            Class<?>[] interfaces = c.getInterfaces();
+            if (interfaces != null) {
+                for (int i = 0; i < interfaces.length; i++) {
+                    if (interfaces[i] == Observer.class) {
+                        return true;
+                    }
+                }
+            }
+            c = c.getSuperclass();
+        } while (c != null);
+        return false;
     }
 }
