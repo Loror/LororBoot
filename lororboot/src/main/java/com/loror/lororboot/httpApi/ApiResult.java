@@ -74,7 +74,7 @@ public class ApiResult {
             responceObject = client.connect(request, typeInfo.getType());
         } else if (type == 1) {
             accept = true;
-            client.asyncConnect(request, observer);
+            client.asyncConnect(request, typeInfo.getType(), observer);
         }
     }
 }

@@ -85,6 +85,7 @@ public class ApiClient {
                             if (method.getReturnType() == Observable.class) {
                                 Observable observable = generateObservable(method, args);
                                 observable.setApiRequest(apiRequest);
+                                observable.setReturnType(method.getGenericReturnType());
                                 return observable;
                             } else {
                                 return connect(apiRequest, method.getGenericReturnType());
@@ -144,9 +145,9 @@ public class ApiClient {
     /**
      * 异步请求
      */
-    protected void asyncConnect(final ApiRequest apiRequest, final Observer observer) {
+    protected void asyncConnect(final ApiRequest apiRequest, final Type returnType, final Observer observer) {
         ++apiRequest.useTimes;
-        final TypeInfo typeInfo = new TypeInfo(observer);
+        final TypeInfo typeInfo = new TypeInfo(returnType);
         final HttpClient client = new HttpClient();
         final RequestParams params = apiRequest.getParams();
         final String url = apiRequest.getUrl();
