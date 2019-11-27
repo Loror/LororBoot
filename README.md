@@ -31,7 +31,7 @@ compile('com.github.Loror:LororBoot:v1.0.66release') {
 
 ```
 dependencies {
-    compile 'com.github.Loror:LororBootX:v1.0.2'
+    compile 'com.github.Loror:LororBootX:v1.0.3'
 }
 ```
 
