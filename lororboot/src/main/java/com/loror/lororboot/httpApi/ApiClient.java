@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import com.loror.lororUtil.http.AsyncClient;
 import com.loror.lororUtil.http.DefaultAsyncClient;
 import com.loror.lororUtil.http.HttpClient;
+import com.loror.lororUtil.http.ProgressListener;
 import com.loror.lororUtil.http.RequestParams;
 import com.loror.lororUtil.http.Responce;
 import com.loror.lororboot.annotation.BaseUrl;
@@ -157,6 +158,8 @@ public class ApiClient {
         if (onRequestListener != null) {
             onRequestListener.onRequestBegin(client, apiRequest);
         }
+        ProgressListener listener = apiRequest.getProgressListener();
+        client.setProgressListener(listener);
         int type = apiRequest.getType();
         if (type != 0) {
             AsyncClient<Responce> asyncClient = new DefaultAsyncClient() {

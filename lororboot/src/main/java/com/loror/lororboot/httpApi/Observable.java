@@ -1,5 +1,7 @@
 package com.loror.lororboot.httpApi;
 
+import com.loror.lororUtil.http.ProgressListener;
+
 import java.lang.reflect.Type;
 
 public class Observable<T> {
@@ -26,6 +28,12 @@ public class Observable<T> {
 
     public Type getReturnType() {
         return returnType;
+    }
+
+    public void listen(ProgressListener listener) {
+        if (apiRequest != null) {
+            apiRequest.setProgressListener(listener);
+        }
     }
 
     public void subscribe(final Observer<T> observer) {
