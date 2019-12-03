@@ -30,7 +30,7 @@ public class Observable<T> {
         return returnType;
     }
 
-    public Observable listen(ProgressListener listener) {
+    public Observable<T> listen(ProgressListener listener) {
         if (apiRequest != null) {
             apiRequest.setProgressListener(listener);
         }
