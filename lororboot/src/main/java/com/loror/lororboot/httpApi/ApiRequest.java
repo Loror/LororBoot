@@ -19,6 +19,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ApiRequest {
 
@@ -198,7 +199,25 @@ public class ApiRequest {
                 break;
             } else if (annotations[i].annotationType() == ParamObject.class) {
                 if (arg != null) {
-                    params.fromObject(arg);
+                    if (arg instanceof Map) {
+                        Map map = (Map) arg;
+                        for (Object key : map.keySet()) {
+                            if (key == null) {
+                                continue;
+                            }
+                            String name = key.toString();
+                            Object value = map.get(name);
+                            if (value instanceof File) {
+                                params.addParams(name, new FileBody(((File) value).getAbsolutePath()));
+                            } else if (value instanceof FileBody) {
+                                params.addParams(name, (FileBody) value);
+                            } else {
+                                params.getParams().put(name, value);
+                            }
+                        }
+                    } else {
+                        params.fromObject(arg);
+                    }
                 }
                 break;
             } else if (annotations[i].annotationType() == ParamJson.class) {
