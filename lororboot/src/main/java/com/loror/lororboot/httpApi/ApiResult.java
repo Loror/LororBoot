@@ -7,7 +7,6 @@ public class ApiResult {
 
     //基本信息
     protected String url;
-    protected RequestParams params;
     protected Responce responce;
 
     protected int type;//0，同步，1，异步
@@ -25,7 +24,7 @@ public class ApiResult {
     }
 
     public RequestParams getParams() {
-        return params;
+        return request == null ? null : request.getParams();
     }
 
     public Responce getResponce() {

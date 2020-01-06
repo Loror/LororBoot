@@ -11,6 +11,7 @@ import com.loror.lororboot.annotation.Gzip;
 import com.loror.lororboot.annotation.Header;
 import com.loror.lororboot.annotation.Param;
 import com.loror.lororboot.annotation.ParamJson;
+import com.loror.lororboot.annotation.ParamKeyValue;
 import com.loror.lororboot.annotation.ParamObject;
 import com.loror.lororboot.annotation.UrlEnCode;
 
@@ -199,25 +200,12 @@ public class ApiRequest {
                 break;
             } else if (annotations[i].annotationType() == ParamObject.class) {
                 if (arg != null) {
-                    if (arg instanceof Map) {
-                        Map map = (Map) arg;
-                        for (Object key : map.keySet()) {
-                            if (key == null) {
-                                continue;
-                            }
-                            String name = key.toString();
-                            Object value = map.get(name);
-                            if (value instanceof File) {
-                                params.addParams(name, new FileBody(((File) value).getAbsolutePath()));
-                            } else if (value instanceof FileBody) {
-                                params.addParams(name, (FileBody) value);
-                            } else {
-                                params.getParams().put(name, value);
-                            }
-                        }
-                    } else {
-                        params.fromObject(arg);
-                    }
+                    params.fromObject(arg);
+                }
+                break;
+            } else if (annotations[i].annotationType() == ParamKeyValue.class) {
+                if (arg != null) {
+                    params.fromKeyValue(arg.toString());
                 }
                 break;
             } else if (annotations[i].annotationType() == ParamJson.class) {

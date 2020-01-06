@@ -169,7 +169,6 @@ public class ApiClient {
                     if (onRequestListener != null) {
                         result = new ApiResult();
                         result.url = url;
-                        result.params = params;
                         result.responce = responce;
                         result.observer = observer;
                         result.typeInfo = typeInfo;
@@ -260,7 +259,6 @@ public class ApiClient {
         if (onRequestListener != null) {
             result = new ApiResult();
             result.url = url;
-            result.params = params;
             result.responce = responce;
             result.typeInfo = typeInfo;
             result.request = apiRequest;
