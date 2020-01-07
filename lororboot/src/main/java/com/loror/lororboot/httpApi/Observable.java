@@ -9,6 +9,8 @@ public class Observable<T> {
     private ApiClient apiClient;
     private ApiRequest apiRequest;
     private Type returnType;
+    private Observer<T> observer;
+    protected ObservableManager observableManager;
 
     protected void setApiClient(ApiClient apiClient) {
         this.apiClient = apiClient;
@@ -30,14 +32,51 @@ public class Observable<T> {
         return returnType;
     }
 
+    public Observer<T> getObserver() {
+        return observer;
+    }
+
+    /**
+     * 监听进度，上传文件时有效
+     */
     public Observable<T> listen(ProgressListener listener) {
         if (apiRequest != null) {
-            apiRequest.setProgressListener(listener);
+            apiRequest.progressListener = listener;
         }
         return this;
     }
 
-    public void subscribe(final Observer<T> observer) {
-        apiClient.asyncConnect(apiRequest, returnType, observer);
+    /**
+     * 开始任务并提交监听
+     */
+    public Observable<T> subscribe(Observer<T> observer) {
+        this.observer = observer;
+        apiClient.asyncConnect(apiRequest, returnType, this);
+        return this;
+    }
+
+    /**
+     * 注册管理
+     */
+    public Observable<T> manage(ObservableManager observableManager) {
+        this.observableManager = observableManager;
+        return this;
+    }
+
+    /**
+     * 注销监听
+     */
+    public void unSubscribe() {
+        this.observer = null;
+    }
+
+    /**
+     * 注销监听并关闭连接
+     */
+    public void cancel() {
+        unSubscribe();
+        if (apiRequest != null) {
+            apiRequest.client.cancel();
+        }
     }
 }

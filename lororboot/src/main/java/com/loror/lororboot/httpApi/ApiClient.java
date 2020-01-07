@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import com.loror.lororUtil.http.AsyncClient;
 import com.loror.lororUtil.http.DefaultAsyncClient;
 import com.loror.lororUtil.http.HttpClient;
-import com.loror.lororUtil.http.ProgressListener;
 import com.loror.lororUtil.http.RequestParams;
 import com.loror.lororUtil.http.Responce;
 import com.loror.lororboot.annotation.BaseUrl;
@@ -146,7 +145,7 @@ public class ApiClient {
     /**
      * 异步请求
      */
-    protected void asyncConnect(final ApiRequest apiRequest, final Type returnType, final Observer observer) {
+    protected void asyncConnect(final ApiRequest apiRequest, final Type returnType, final Observable observable) {
         ++apiRequest.useTimes;
         final TypeInfo typeInfo = new TypeInfo(returnType);
         final HttpClient client = new HttpClient();
@@ -155,32 +154,39 @@ public class ApiClient {
         if (apiRequest.isKeepStream() && getClassType(typeInfo) == Responce.class) {
             client.setKeepStream(true);
         }
+        apiRequest.client = client;
+        client.setProgressListener(apiRequest.progressListener);
         if (onRequestListener != null) {
             onRequestListener.onRequestBegin(client, apiRequest);
         }
-        ProgressListener listener = apiRequest.getProgressListener();
-        client.setProgressListener(listener);
         int type = apiRequest.getType();
         if (type != 0) {
+            if (observable.observableManager != null) {
+                observable.observableManager.registerObservable(observable);
+            }
             AsyncClient<Responce> asyncClient = new DefaultAsyncClient() {
                 @Override
                 public void callBack(Responce responce) {
+                    if (observable.observableManager != null) {
+                        observable.observableManager.unRegisterObservable(observable);
+                    }
                     ApiResult result = null;
                     if (onRequestListener != null) {
                         result = new ApiResult();
                         result.url = url;
+                        result.params = params;
                         result.responce = responce;
-                        result.observer = observer;
                         result.typeInfo = typeInfo;
+                        result.observable = observable;
                         result.type = 1;
                         result.request = apiRequest;
-                        result.client = ApiClient.this;
+                        result.apiClient = ApiClient.this;
                         onRequestListener.onRequestEnd(client, result);
                     }
                     if (result != null && result.accept) {
                         //已被处理拦截
                     } else {
-                        result(responce, typeInfo, observer);
+                        result(responce, typeInfo, observable.getObserver());
                     }
                 }
             };
@@ -212,6 +218,9 @@ public class ApiClient {
      * 处理返回结果
      */
     private void result(Responce responce, TypeInfo typeInfo, Observer observer) {
+        if (observer == null) {
+            return;
+        }
         Class<?> classType = getClassType(typeInfo);
         //优先外部筛选器通过尝试解析，否则200系列解析，返回类型Responce通过success返回
         if (classType == Responce.class || (codeFilter != null ? codeFilter.isSuccessCode(responce.getCode()) : responce.getCode() / 100 == 2)) {
@@ -241,6 +250,8 @@ public class ApiClient {
         if (apiRequest.isKeepStream() && getClassType(typeInfo) == Responce.class) {
             client.setKeepStream(true);
         }
+        apiRequest.client = client;
+        client.setProgressListener(apiRequest.progressListener);
         if (onRequestListener != null) {
             onRequestListener.onRequestBegin(client, apiRequest);
         }
@@ -259,10 +270,12 @@ public class ApiClient {
         if (onRequestListener != null) {
             result = new ApiResult();
             result.url = url;
+            result.params = params;
             result.responce = responce;
             result.typeInfo = typeInfo;
+            result.type = 0;
             result.request = apiRequest;
-            result.client = ApiClient.this;
+            result.apiClient = ApiClient.this;
             onRequestListener.onRequestEnd(client, result);
         }
         if (result != null && result.accept) {

@@ -81,7 +81,7 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
                         result.setAccept(true);//该设置用于拦截请求返回
                         Responce responce = new Responce();
                         responce.result = "[{\"id\":1,\"name\":\"test\"}]".getBytes();
-                        result.getObserver().success(result.parseObject(responce.toString(),result.getTypeInfo()));
+                        result.getObserver().success(JSON.parseObject(responce.toString(),result.getTypeInfo().getType()));
                     }
                 })
                 .create(ServerApi.class)

@@ -1,6 +1,7 @@
 package com.loror.lororboot.httpApi;
 
 import com.loror.lororUtil.http.FileBody;
+import com.loror.lororUtil.http.HttpClient;
 import com.loror.lororUtil.http.ProgressListener;
 import com.loror.lororUtil.http.RequestParams;
 import com.loror.lororboot.annotation.AsJson;
@@ -26,9 +27,10 @@ public class ApiRequest {
 
     private String baseUrl, anoBaseUrl;
     private RequestParams params;
+    protected HttpClient client;
     private int type;//1,get;2,post;3,delete;4,put
     private String url;
-    private ProgressListener progressListener;
+    protected ProgressListener progressListener;
     private boolean keepStream;
     protected int useTimes;//计数Request使用次数
 
@@ -75,10 +77,6 @@ public class ApiRequest {
         return keepStream;
     }
 
-    public void setProgressListener(ProgressListener progressListener) {
-        this.progressListener = progressListener;
-    }
-
     public ProgressListener getProgressListener() {
         return progressListener;
     }
@@ -89,6 +87,10 @@ public class ApiRequest {
 
     public RequestParams getParams() {
         return params;
+    }
+
+    public HttpClient getClient() {
+        return client;
     }
 
     /**
