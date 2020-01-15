@@ -127,6 +127,33 @@ public class BindUtils {
                                 e.printStackTrace();
                             }
                         }
+                        if (view instanceof TextView) {
+                            if (bindHolder.format != null) {
+                                int index = 0;
+                                do {
+                                    int start = bindHolder.format.indexOf("${", index);
+                                    if (start == -1) {
+                                        break;
+                                    }
+                                    int end = bindHolder.format.indexOf("}");
+                                    if (end == -1) {
+                                        break;
+                                    }
+                                    index = end;
+                                    String fieldName = bindHolder.format.substring(start + 2, end);
+                                    try {
+                                        Field find = bindAble.getClass().getDeclaredField(fieldName);
+                                        if (bindHolder.unions == null) {
+                                            bindHolder.unions = new LinkedList<>();
+                                        }
+                                        bindHolder.unions.add(find);
+                                    } catch (NoSuchFieldException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                } while (true);
+                            }
+                        }
                         bindHolders.add(bindHolder);
                         AppendId appendId = field.getAnnotation(AppendId.class);
                         if (appendId != null) {
@@ -195,6 +222,7 @@ public class BindUtils {
         if (view instanceof BindRefreshAble) {
             ((BindRefreshAble) view).find(new FieldControl(bindAble, bindHolder));
         } else if (view instanceof EditText) {
+            bindHolder.unions = null;
             if (!bindHolder.onlyEvent) {
                 Class<?> type = field.getType();
                 if (type != String.class && type != CharSequence.class) {
@@ -420,10 +448,10 @@ public class BindUtils {
                             if (bindHolder.format == null) {
                                 ((TextView) bindHolder.view).setText("");
                             } else {
-                                ((TextView) bindHolder.view).setText(bindHolder.format.replace("%s", ""));
+                                ((TextView) bindHolder.view).setText(bindHolder.union(bindAble, bindHolder.format.replace("%s", "")));
                             }
                         } else {
-                            ((TextView) bindHolder.view).setText(vol);
+                            ((TextView) bindHolder.view).setText(bindHolder.union(bindAble, vol));
                         }
                     }
                 } else if (bindHolder.view instanceof ImageView) {

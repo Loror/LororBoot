@@ -34,7 +34,7 @@ public class DataChangeUtils {
     public static void notifyListDataChangeById(@IdRes int id, Object tag, List<BindHolder> bindHolders, DataChangeAble changeAble) {
         BindHolder bindHolder = BindUtils.findHolderById(bindHolders, id);
         if (bindHolder != null) {
-            bindHolder.resetListCompareTag();
+            bindHolder.resetCompareTag();
             if (tag == null || tag.equals(bindHolder.getTag())) {
                 changeAble.changeState(null);
             }

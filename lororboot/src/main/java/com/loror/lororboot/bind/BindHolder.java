@@ -28,6 +28,7 @@ public class BindHolder {
     private Object tag;
     protected boolean isFirst = true;
     protected List<Field> connections;
+    protected List<Field> unions;
 
     public View getView() {
         return view;
@@ -73,10 +74,32 @@ public class BindHolder {
         return tag;
     }
 
-    public void resetListCompareTag() {
+    public void resetCompareTag() {
         if (field.getType() == List.class || field.getType() == ArrayList.class) {
             compareTag = -1;
+        } else {
+            compareTag = null;
         }
+    }
+
+    protected String union(BindAble bindAble, String vol) {
+        if (unions != null) {
+            for (Field field : unions) {
+                String name = field.getName();
+                try {
+                    field.setAccessible(true);
+                    Object value = field.get(bindAble);
+                    if (value == null) {
+                        vol = vol.replace("${" + name + "}", "");
+                    } else {
+                        vol = vol.replace("${" + name + "}", value.toString());
+                    }
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return vol;
     }
 
     protected BindHolder cloneOne() {
@@ -90,9 +113,12 @@ public class BindHolder {
         clone.imagePlace = imagePlace;
         clone.errorPlace = errorPlace;
         clone.imageWidth = imageWidth;
-        clone.onlyEvent = onlyEvent;
-        clone.disableItem = disableItem;
         clone.gif = gif;
+        clone.bitmapConverter = bitmapConverter;
+        clone.disableItem = disableItem;
+        clone.onlyEvent = onlyEvent;
+        clone.isFirst = true;
+        clone.unions = unions;
         return clone;
     }
 }
