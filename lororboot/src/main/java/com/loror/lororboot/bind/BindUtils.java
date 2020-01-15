@@ -132,11 +132,11 @@ public class BindUtils {
                                 int index = 0;
                                 do {
                                     int start = bindHolder.format.indexOf("${", index);
-                                    if (start == -1) {
+                                    if (start < 0) {
                                         break;
                                     }
                                     int end = bindHolder.format.indexOf("}");
-                                    if (end == -1) {
+                                    if (end < 0) {
                                         break;
                                     }
                                     index = end;
