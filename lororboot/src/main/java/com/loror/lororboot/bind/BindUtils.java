@@ -135,7 +135,7 @@ public class BindUtils {
                                     if (start < 0) {
                                         break;
                                     }
-                                    int end = bindHolder.format.indexOf("}");
+                                    int end = bindHolder.format.indexOf("}", start);
                                     if (end < 0) {
                                         break;
                                     }
