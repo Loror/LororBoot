@@ -218,8 +218,24 @@ public class BindUtils {
 
                 @Override
                 public void afterTextChanged(Editable s) {
-                    String value = bindHolder.format == null ?
-                            s.toString() : s.toString().replace(bindHolder.format.replace("%s", ""), "");
+                    String value = s.toString();
+                    if (bindHolder.format != null) {
+                        int index = bindHolder.format.indexOf("%s");
+                        if (index == -1) {
+                            value = value.replace(bindHolder.format, "");
+                        } else if (index == 0 || index == bindHolder.format.length() - 2) {
+                            value = value.replace(bindHolder.format.replace("%s", ""), "");
+                        } else {
+                            String left = bindHolder.format.substring(0, index);
+                            String right = bindHolder.format.substring(index + 2);
+                            if (value.startsWith(left)) {
+                                value = value.substring(left.length());
+                            }
+                            if (value.endsWith(right)) {
+                                value = value.substring(0, value.length() - right.length());
+                            }
+                        }
+                    }
                     Object old = bindHolder.compareTag;
                     if (!bindHolder.onlyEvent) {
                         try {
