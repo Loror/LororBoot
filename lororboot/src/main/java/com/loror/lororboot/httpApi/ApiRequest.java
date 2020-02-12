@@ -33,6 +33,7 @@ public class ApiRequest {
     protected ProgressListener progressListener;
     private boolean keepStream;
     protected int useTimes;//计数Request使用次数
+    protected String apiName;
 
     public void setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
@@ -83,6 +84,10 @@ public class ApiRequest {
 
     public int getUseTimes() {
         return useTimes;
+    }
+
+    public String getApiName() {
+        return apiName;
     }
 
     public RequestParams getParams() {

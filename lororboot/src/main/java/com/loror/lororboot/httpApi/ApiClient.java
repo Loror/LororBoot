@@ -60,7 +60,7 @@ public class ApiClient {
     /**
      * 创建Api对象
      */
-    public <T> T create(Class<T> service) {
+    public <T> T create(final Class<T> service) {
         BaseUrl baseUrl = service.getAnnotation(BaseUrl.class);
         final String anoBaseUrl;
         if (baseUrl != null) {
@@ -75,13 +75,16 @@ public class ApiClient {
                     public Object invoke(Object proxy, Method method, @Nullable Object[] args)
                             throws Throwable {
                         // If the method is a method from Object then defer to normal invocation.
-                        if (method.getDeclaringClass() == Object.class) {
+                        Class<?> declaringClass = method.getDeclaringClass();
+                        if (declaringClass == Object.class) {
                             return method.invoke(this, args);
                         }
                         ApiRequest apiRequest = getApiRequest(method);
                         if (apiRequest.getType() != 0) {
                             apiRequest.setAnoBaseUrl(anoBaseUrl);
                             apiRequest.generateParams(method, args);
+                            apiRequest.apiName = (declaringClass != null ? declaringClass.getName() : service.getName())
+                                    + "." + method.getName();
                             if (method.getReturnType() == Observable.class) {
                                 Observable observable = generateObservable(method, args);
                                 observable.setApiRequest(apiRequest);
