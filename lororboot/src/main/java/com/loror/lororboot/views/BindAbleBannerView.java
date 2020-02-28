@@ -121,6 +121,12 @@ public class BindAbleBannerView extends ViewPager implements ItemClickAble {
     }
 
     @Override
+    protected void onDetachedFromWindow() {
+        stopScrol();
+        super.onDetachedFromWindow();
+    }
+
+    @Override
     public void setOnItemClickListener(OnItemClickListener onItemClicklistener) {
         this.onItemClicklistener = onItemClicklistener;
         if (adapter instanceof BindAbleBannerAdapter) {
