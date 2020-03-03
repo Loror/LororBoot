@@ -120,7 +120,8 @@ public class BindUtils {
                         bindHolder.onlyEvent = bind.onlyEvent();
                         bindHolder.disableItem = field.getAnnotation(DisableItem.class) != null;
                         bindHolder.gif = field.getAnnotation(Gif.class) != null;
-                        if (bind.bitmapConverter() != BitmapConverter.class && view instanceof ImageView) {
+                        if (bind.bitmapConverter() != BitmapConverter.class && (view instanceof ImageView
+                                || view instanceof BindAbleBannerView)) {
                             try {
                                 bindHolder.bitmapConverter = bind.bitmapConverter().newInstance();
                             } catch (Exception e) {
@@ -439,7 +440,7 @@ public class BindUtils {
             }
             if (!bindHolder.onlyEvent) {
                 if (bindHolder.view instanceof BindRefreshAble) {
-                    ((BindRefreshAble) bindHolder.view).refresh(new Value(bindHolder.format, bindHolder.empty, volume));
+                    ((BindRefreshAble) bindHolder.view).refresh(new Value(bindHolder, volume));
                 } else if (bindHolder.view instanceof CheckBox) {
                     ((CheckBox) bindHolder.view).setChecked(!(volume == null || !(Boolean) volume));
                 } else if (bindHolder.view instanceof TextView) {

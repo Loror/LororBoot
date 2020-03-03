@@ -5,9 +5,9 @@ public class Value {
     public String empty;
     public Object value;
 
-    public Value(String format, String empty, Object value) {
-        this.format = format;
-        this.empty = empty;
+    public Value(BindHolder holder, Object value) {
+        this.format = holder.format;
+        this.empty = holder.empty;
         this.value = value;
     }
 }
