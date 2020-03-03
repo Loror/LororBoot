@@ -176,7 +176,10 @@ public class BindUtils {
                     BindAbleItemConnection connection = (BindAbleItemConnection) field.getAnnotation(BindAbleItemConnection.class);
                     if (connection != null) {
                         if (connections.containsKey(connection.id())) {
-                            connections.get(connection.id()).add(field);
+                            List<Field> value = connections.get(connection.id());
+                            if (!value.contains(field)) {
+                                value.add(field);
+                            }
                         } else {
                             List<Field> value = new LinkedList<>();
                             value.add(field);

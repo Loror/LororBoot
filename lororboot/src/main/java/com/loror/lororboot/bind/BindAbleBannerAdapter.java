@@ -20,9 +20,7 @@ public class BindAbleBannerAdapter extends PagerAdapter {
     private BindAble bindAble;
     private BindHolder bindHolder;
     private List list;
-    private int imagePlace;
     private int widthLimit;
-    private String format;
     private List<View> views = new ArrayList<View>();
     private int tagKey = 4 << 24;
     private OnItemClickListener onItemClicklistener;
@@ -32,8 +30,6 @@ public class BindAbleBannerAdapter extends PagerAdapter {
         this.bindAble = bindAble;
         this.bindHolder = bindHolder;
         this.list = list;
-        this.imagePlace = bindHolder.imagePlace;
-        this.format = bindHolder.format;
         this.widthLimit = bindHolder.imageWidth == 0 ? getScreenWidth() : bindHolder.imageWidth;
     }
 
@@ -89,6 +85,7 @@ public class BindAbleBannerAdapter extends PagerAdapter {
                 ((ImageView) view).setImageResource((Integer) volume);
             } else {
                 String path = String.valueOf(volume);
+                String format = bindHolder.format;
                 if (!TextUtil.isEmpty(format)) {
                     path = format.replace("%s", path);
                 }
@@ -98,9 +95,13 @@ public class BindAbleBannerAdapter extends PagerAdapter {
                     width = 720;
                 }
                 imageUtil.setWidthLimit(width);
-                if (imagePlace != 0) {
-                    imageUtil.setDefaultImage(imagePlace);
+                if (bindHolder.imagePlace != 0) {
+                    imageUtil.setDefaultImage(bindHolder.imagePlace);
                 }
+                if (bindHolder.errorPlace != 0) {
+                    imageUtil.setDefaultImage(bindHolder.errorPlace);
+                }
+                imageUtil.setBitmapConverter(bindHolder.bitmapConverter);
                 imageUtil.loadImage();
             }
         }
