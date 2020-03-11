@@ -9,4 +9,5 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 public @interface Connection {
 
+    boolean checkName() default false;//是否检查变量名一致
 }

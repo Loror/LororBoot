@@ -24,6 +24,9 @@ public class BindAbleItemConnectionUtils {
                 Field find = null;
                 for (Field from : connections) {
                     if (from.getType() == to.getType()) {
+                        if (connection.checkName() && !from.getName().equals(to.getName())) {
+                            continue;
+                        }
                         find = from;
                         break;
                     }
