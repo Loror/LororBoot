@@ -18,6 +18,7 @@ import com.loror.lororUtil.view.ItemLongClick;
 import com.loror.lororUtil.view.LongClick;
 import com.loror.lororboot.annotation.AutoRun;
 import com.loror.lororboot.annotation.Bind;
+import com.loror.lororboot.annotation.BindAbleItemConnection;
 import com.loror.lororboot.annotation.RequestPermission;
 import com.loror.lororboot.annotation.RunThread;
 import com.loror.lororboot.annotation.RunTime;
@@ -51,6 +52,13 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
     String image;
     @Bind(id = R.id.listView)
     List<ListItem> listItems = new ArrayList<>();
+    @BindAbleItemConnection(id = R.id.listView)
+    OnItemClickConnect onItemClickConnect = new OnItemClickConnect() {
+        @Override
+        public void onItemClick(int type, int position) {
+            Toast.makeText(context, "我点击了传入的接口，获得参数" + position, Toast.LENGTH_SHORT).show();
+        }
+    };
     @Bind(id = R.id.banner, imagePlace = R.mipmap.ic_launcher)
     List<Banner> listBanners = new ArrayList<>();
 
@@ -81,7 +89,7 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
                         result.setAccept(true);//该设置用于拦截请求返回
                         Responce responce = new Responce();
                         responce.result = "[{\"id\":1,\"name\":\"test\"}]".getBytes();
-                        result.getObserver().success(JSON.parseObject(responce.toString(),result.getTypeInfo().getType()));
+                        result.getObserver().success(JSON.parseObject(responce.toString(), result.getTypeInfo().getType()));
                     }
                 })
                 .create(ServerApi.class)
