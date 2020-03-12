@@ -103,6 +103,8 @@ public class ListItem extends BindAbleItem {
 
 继承BindAbleItem后可实现上述方法，指定layout等。内置方法obtainPosition()可获取当前item所处位置。obtainOutBindAble()可获取通过@Bind绑定该BindAbleItem的对象。
 </br>
+可通过@BindAbleItemConnection向BindAbleItem传递数据，@BindAbleItemConnection为发送方，@Connection为接收方
+</br>
 注：默认bind为自动刷新模式，可定义BaseActivity继承于LororActivity，在onCreate中使用方法setBindAbleAutoRefresh(false)关闭自动刷新，
 若关闭自动刷新，请在修改bind的参数后手动调用changeState(null)刷新控件显示
 
