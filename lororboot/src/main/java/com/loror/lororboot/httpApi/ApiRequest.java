@@ -34,6 +34,8 @@ public class ApiRequest {
     private boolean keepStream;
     protected int useTimes;//计数Request使用次数
     protected String apiName;
+    protected int mockType;
+    protected String mockData;
 
     public void setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;

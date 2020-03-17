@@ -11,9 +11,11 @@ import com.loror.lororboot.annotation.BaseUrl;
 import com.loror.lororboot.annotation.DELETE;
 import com.loror.lororboot.annotation.GET;
 import com.loror.lororboot.annotation.KeepStream;
+import com.loror.lororboot.annotation.MOCK;
 import com.loror.lororboot.annotation.POST;
 import com.loror.lororboot.annotation.PUT;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -22,6 +24,7 @@ import java.nio.charset.Charset;
 
 public class ApiClient {
 
+    private boolean mockEnable = true;
     private String baseUrl;
 
     protected static JsonParser jsonParser;
@@ -29,6 +32,16 @@ public class ApiClient {
     private CodeFilter codeFilter;
     private Charset charset;
 
+    /**
+     * 设置是否开启mock功能
+     */
+    public void setMockEnable(boolean mockEnable) {
+        this.mockEnable = mockEnable;
+    }
+
+    /**
+     * 设置baseUrl
+     */
     public ApiClient setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
         return this;
@@ -142,6 +155,11 @@ public class ApiClient {
         if (stream != null) {
             apiRequest.setKeepStream(true);
         }
+        MOCK mock = method.getAnnotation(MOCK.class);
+        if (mock != null && mock.enable()) {
+            apiRequest.mockType = mock.type();
+            apiRequest.mockData = mock.value();
+        }
         return apiRequest;
     }
 
@@ -149,12 +167,42 @@ public class ApiClient {
      * 异步请求
      */
     protected void asyncConnect(final ApiRequest apiRequest, final Type returnType, final Observable observable) {
-        ++apiRequest.useTimes;
         final TypeInfo typeInfo = new TypeInfo(returnType);
+        //使用mock数据
+        if (mockEnable && apiRequest.mockData != null) {
+            new MockData(apiRequest, onRequestListener, charset).getResult(new MockData.OnResult() {
+                @Override
+                public void result(String data, Responce responce) {
+                    final Observer observer = observable.getObserver();
+                    if (observer == null) {
+                        return;
+                    }
+                    if (typeInfo.getType() == Responce.class) {
+                        if (responce == null) {
+                            responce = new Responce();
+                            try {
+                                Field field = Responce.class.getDeclaredField("code");
+                                field.setAccessible(true);
+                                field.set(responce, 200);
+                            } catch (Exception ignore) {
+                            }
+                            responce.result = data == null ? null : data.getBytes();
+                        }
+                        observer.success(responce);
+                    } else if (typeInfo.getType() == String.class) {
+                        observer.success(data);
+                    } else {
+                        parseObject(data, typeInfo);
+                    }
+                }
+            });
+            return;
+        }
+        ++apiRequest.useTimes;
         final HttpClient client = new HttpClient();
         final RequestParams params = apiRequest.getParams();
         final String url = apiRequest.getUrl();
-        if (apiRequest.isKeepStream() && getClassType(typeInfo) == Responce.class) {
+        if (apiRequest.isKeepStream() && typeInfo.getType() == Responce.class) {
             client.setKeepStream(true);
         }
         apiRequest.client = client;
@@ -211,20 +259,13 @@ public class ApiClient {
     }
 
     /**
-     * 获取无泛型类型
-     */
-    private Class<?> getClassType(TypeInfo typeInfo) {
-        return typeInfo.getType() instanceof Class ? (Class<?>) typeInfo.getType() : null;
-    }
-
-    /**
      * 处理返回结果
      */
     private void result(Responce responce, TypeInfo typeInfo, Observer observer) {
         if (observer == null) {
             return;
         }
-        Class<?> classType = getClassType(typeInfo);
+        Type classType = typeInfo.getType();
         //优先外部筛选器通过尝试解析，否则200系列解析，返回类型Responce通过success返回
         if (classType == Responce.class || (codeFilter != null ? codeFilter.isSuccessCode(responce.getCode()) : responce.getCode() / 100 == 2)) {
             try {
@@ -245,12 +286,35 @@ public class ApiClient {
      * 同步请求
      */
     protected Object connect(ApiRequest apiRequest, Type typeClass) {
-        ++apiRequest.useTimes;
         TypeInfo typeInfo = new TypeInfo(typeClass);
+        //使用mock数据
+        if (mockEnable && apiRequest.mockData != null) {
+            MockData mockData = new MockData(apiRequest, onRequestListener, charset);
+            String result = mockData.getResult();
+            if (typeInfo.getType() == Responce.class) {
+                Responce responce = mockData.getResponce();
+                if (responce == null) {
+                    responce = new Responce();
+                    try {
+                        Field field = Responce.class.getDeclaredField("code");
+                        field.setAccessible(true);
+                        field.set(responce, 200);
+                    } catch (Exception ignore) {
+                    }
+                    responce.result = result == null ? null : result.getBytes();
+                }
+                return responce;
+            } else if (typeInfo.getType() == String.class) {
+                return result;
+            } else {
+                return parseObject(result, typeInfo);
+            }
+        }
+        ++apiRequest.useTimes;
         final HttpClient client = new HttpClient();
         final RequestParams params = apiRequest.getParams();
         final String url = apiRequest.getUrl();
-        if (apiRequest.isKeepStream() && getClassType(typeInfo) == Responce.class) {
+        if (apiRequest.isKeepStream() && typeInfo.getType() == Responce.class) {
             client.setKeepStream(true);
         }
         apiRequest.client = client;
@@ -296,7 +360,7 @@ public class ApiClient {
      */
     private Object result(Responce responce, TypeInfo typeInfo) {
         try {
-            Type classType = getClassType(typeInfo);
+            Type classType = typeInfo.getType();
             return classType == String.class ? (charset == null ? responce.toString() : new String(responce.result, charset)) :
                     classType == Responce.class ? responce :
                             parseObject((charset == null ? responce.toString() : new String(responce.result, charset)), typeInfo);
