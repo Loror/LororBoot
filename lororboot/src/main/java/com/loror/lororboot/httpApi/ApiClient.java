@@ -35,8 +35,9 @@ public class ApiClient {
     /**
      * 设置是否开启mock功能
      */
-    public void setMockEnable(boolean mockEnable) {
+    public ApiClient setMockEnable(boolean mockEnable) {
         this.mockEnable = mockEnable;
+        return this;
     }
 
     /**
