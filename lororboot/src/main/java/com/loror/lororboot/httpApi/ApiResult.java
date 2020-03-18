@@ -12,6 +12,7 @@ public class ApiResult {
 
     protected int type;//0，同步，1，异步
     protected boolean accept;//是否已经重新请求
+    protected boolean isMock;//是否为mock数据
 
     //框架需使用的参数及拦截所需参数
     protected TypeInfo typeInfo;
@@ -40,6 +41,10 @@ public class ApiResult {
 
     public void setAccept(boolean accept) {
         this.accept = accept;
+    }
+
+    public boolean isMock() {
+        return isMock;
     }
 
     public void setResponceObject(Object responce) {

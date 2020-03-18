@@ -193,7 +193,7 @@ public class ApiClient {
                     } else if (typeInfo.getType() == String.class) {
                         observer.success(data);
                     } else {
-                        parseObject(data, typeInfo);
+                        observer.success(parseObject(data, typeInfo));
                     }
                 }
             });

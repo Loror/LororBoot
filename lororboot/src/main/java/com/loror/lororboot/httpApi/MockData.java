@@ -65,6 +65,7 @@ public class MockData {
                     apiResult.typeInfo = null;
                     apiResult.type = 0;
                     apiResult.request = apiRequest;
+                    apiResult.isMock = true;
                     onRequestListener.onRequestEnd(client, apiResult);
                 }
                 if (apiResult != null && apiResult.accept) {
@@ -156,6 +157,7 @@ public class MockData {
                 apiResult.typeInfo = null;
                 apiResult.type = 0;
                 apiResult.request = apiRequest;
+                apiResult.isMock = true;
                 onRequestListener.onRequestEnd(client, apiResult);
             }
         }
