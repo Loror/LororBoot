@@ -4,6 +4,7 @@ import com.loror.lororUtil.http.FileBody;
 import com.loror.lororUtil.http.HttpClient;
 import com.loror.lororUtil.http.ProgressListener;
 import com.loror.lororUtil.http.RequestParams;
+import com.loror.lororUtil.text.TextUtil;
 import com.loror.lororboot.annotation.AsJson;
 import com.loror.lororboot.annotation.DefaultHeaders;
 import com.loror.lororboot.annotation.DefaultParams;
@@ -14,6 +15,7 @@ import com.loror.lororboot.annotation.Param;
 import com.loror.lororboot.annotation.ParamJson;
 import com.loror.lororboot.annotation.ParamKeyValue;
 import com.loror.lororboot.annotation.ParamObject;
+import com.loror.lororboot.annotation.Query;
 import com.loror.lororboot.annotation.UrlEnCode;
 
 import java.io.File;
@@ -36,6 +38,7 @@ public class ApiRequest {
     protected String apiName;
     protected int mockType;
     protected String mockData;
+    private HashMap<String, String> querys;
 
     public void setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
@@ -66,10 +69,24 @@ public class ApiRequest {
     }
 
     public String getUrl() {
-        return anoBaseUrl != null && anoBaseUrl.length() != 0 ?
-                (anoBaseUrl + url) : baseUrl != null && baseUrl.length() != 0 ?
-                (baseUrl + url) :
-                url;
+        String finalUrl = !TextUtil.isEmpty(anoBaseUrl) ? (anoBaseUrl + url)
+                : !TextUtil.isEmpty(baseUrl) ? (baseUrl + url)
+                : url;
+        if (querys != null) {
+            StringBuilder builder = new StringBuilder();
+            for (String key : querys.keySet()) {
+                builder.append(key)
+                        .append(params != null ? params.getSplicing(null, 1) : "=")
+                        .append(querys.get(key))
+                        .append(params != null ? params.getSplicing(null, 2) : "&");
+            }
+            if (builder.length() > 0) {
+                builder.deleteCharAt(builder.length() - 1);
+                finalUrl += params != null ? params.getSplicing(finalUrl, 0) : (finalUrl.contains("?") ? "&" : "?");
+                finalUrl += builder.toString();
+            }
+        }
+        return finalUrl;
     }
 
     public void setKeepStream(boolean keepStream) {
@@ -121,7 +138,7 @@ public class ApiRequest {
         }
         Multipart multipart = method.getAnnotation(Multipart.class);
         if (multipart != null) {
-            params.setUserFormForPost(true);
+            params.setUserMultiForPost(true);
         }
         AsJson asJson = method.getAnnotation(AsJson.class);
         if (asJson != null) {
@@ -137,7 +154,7 @@ public class ApiRequest {
         }
         Annotation[][] annotations = method.getParameterAnnotations();
         Class<?>[] types = method.getParameterTypes();
-        for (int i = 0; i < annotations.length; i++) {
+        for (int i = 0; i < types.length; i++) {
             if (types[i] == RequestParams.class) {
                 HashMap<String, Object> old = params.getParams();
                 List<FileBody> oldFile = params.getFiles();
@@ -181,6 +198,9 @@ public class ApiRequest {
      * 添加Field
      */
     private void addField(RequestParams params, Annotation[] annotations, Class<?> type, Object arg) {
+        if (annotations == null) {
+            return;
+        }
         for (int i = 0; i < annotations.length; i++) {
             if (annotations[i].annotationType() == Param.class) {
                 String name = ((Param) annotations[i]).value();
@@ -231,6 +251,13 @@ public class ApiRequest {
             } else if (annotations[i].annotationType() == Header.class) {
                 String name = ((Header) annotations[i]).value();
                 params.addHeader(name, arg == null ? "" : String.valueOf(arg));
+                break;
+            } else if (annotations[i].annotationType() == Query.class) {
+                String name = ((Query) annotations[i]).value();
+                if (querys == null) {
+                    querys = new HashMap<>();
+                }
+                querys.put(name, arg == null ? "" : String.valueOf(arg));
                 break;
             }
         }
