@@ -1,5 +1,6 @@
 package com.loror.lororboot.httpApi;
 
+import com.loror.lororUtil.convert.UrlUtf8Util;
 import com.loror.lororUtil.http.FileBody;
 import com.loror.lororUtil.http.HttpClient;
 import com.loror.lororUtil.http.ProgressListener;
@@ -77,7 +78,7 @@ public class ApiRequest {
             for (String key : querys.keySet()) {
                 builder.append(key)
                         .append(params != null ? params.getSplicing(null, 1) : "=")
-                        .append(querys.get(key))
+                        .append(UrlUtf8Util.toUrlString(querys.get(key)))
                         .append(params != null ? params.getSplicing(null, 2) : "&");
             }
             if (builder.length() > 0) {
