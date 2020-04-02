@@ -9,5 +9,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target(PARAMETER)
 @Retention(RUNTIME)
 public @interface Url {
-    boolean useBaseUrl() default false;
+    boolean useValueUrl() default false;
 }

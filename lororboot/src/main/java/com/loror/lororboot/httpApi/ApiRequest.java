@@ -45,7 +45,7 @@ public class ApiRequest {
     private HashMap<String, String> querys;//Query注解指定的参数
     private List<com.loror.lororboot.httpApi.Path> paths;//Path注解指定的参数
     private String anoUrl;//Url指定的url地址
-    private boolean anoUseBaseUrl;
+    private boolean anoUseValueUrl;
 
     public void setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
@@ -76,14 +76,16 @@ public class ApiRequest {
     }
 
     public String getUrl() {
-        String finalUrl;
         String finalBaseUrl = !TextUtil.isEmpty(anoBaseUrl) ? anoBaseUrl
                 : !TextUtil.isEmpty(baseUrl) ? baseUrl :
                 "";
-        if (TextUtil.isEmpty(anoUrl)) {
-            finalUrl = finalBaseUrl + url;
-        } else {
-            finalUrl = anoUseBaseUrl ? (finalBaseUrl + anoUrl) : anoUrl;
+        String finalUrl = finalBaseUrl + url;
+        if (!TextUtil.isEmpty(anoUrl)) {
+            if (anoUseValueUrl) {
+                finalUrl += anoUrl;
+            } else {
+                finalUrl = anoUrl;
+            }
         }
         if (paths != null) {
             for (com.loror.lororboot.httpApi.Path path : paths) {
@@ -290,7 +292,7 @@ public class ApiRequest {
                 if (!TextUtil.isEmpty(anoUrl)) {
                     throw new IllegalArgumentException("只能指定一个Url注解");
                 }
-                anoUseBaseUrl = ((Url) annotations[i]).useBaseUrl();
+                anoUseValueUrl = ((Url) annotations[i]).useValueUrl();
                 anoUrl = arg == null ? "" : String.valueOf(arg);
                 break;
             }
