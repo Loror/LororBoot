@@ -55,6 +55,10 @@ public class ApiResult {
         return typeInfo;
     }
 
+    public ApiRequest getRequest() {
+        return request;
+    }
+
     public Observer getObserver() {
         return observable == null ? null : observable.getObserver();
     }

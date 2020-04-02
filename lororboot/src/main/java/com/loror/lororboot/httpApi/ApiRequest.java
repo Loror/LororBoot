@@ -16,12 +16,15 @@ import com.loror.lororboot.annotation.Param;
 import com.loror.lororboot.annotation.ParamJson;
 import com.loror.lororboot.annotation.ParamKeyValue;
 import com.loror.lororboot.annotation.ParamObject;
+import com.loror.lororboot.annotation.Path;
 import com.loror.lororboot.annotation.Query;
+import com.loror.lororboot.annotation.Url;
 import com.loror.lororboot.annotation.UrlEnCode;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +42,10 @@ public class ApiRequest {
     protected String apiName;
     protected int mockType;
     protected String mockData;
-    private HashMap<String, String> querys;
+    private HashMap<String, String> querys;//Query注解指定的参数
+    private List<com.loror.lororboot.httpApi.Path> paths;//Path注解指定的参数
+    private String anoUrl;//Url指定的url地址
+    private boolean anoUseBaseUrl;
 
     public void setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
@@ -70,9 +76,20 @@ public class ApiRequest {
     }
 
     public String getUrl() {
-        String finalUrl = !TextUtil.isEmpty(anoBaseUrl) ? (anoBaseUrl + url)
-                : !TextUtil.isEmpty(baseUrl) ? (baseUrl + url)
-                : url;
+        String finalUrl;
+        String finalBaseUrl = !TextUtil.isEmpty(anoBaseUrl) ? anoBaseUrl
+                : !TextUtil.isEmpty(baseUrl) ? baseUrl :
+                "";
+        if (TextUtil.isEmpty(anoUrl)) {
+            finalUrl = finalBaseUrl + url;
+        } else {
+            finalUrl = anoUseBaseUrl ? (finalBaseUrl + anoUrl) : anoUrl;
+        }
+        if (paths != null) {
+            for (com.loror.lororboot.httpApi.Path path : paths) {
+                finalUrl = finalUrl.replace("{" + path.name + "}", path.value);
+            }
+        }
         if (querys != null) {
             StringBuilder builder = new StringBuilder();
             for (String key : querys.keySet()) {
@@ -259,6 +276,22 @@ public class ApiRequest {
                     querys = new HashMap<>();
                 }
                 querys.put(name, arg == null ? "" : String.valueOf(arg));
+                break;
+            } else if (annotations[i].annotationType() == Path.class) {
+                String name = ((Path) annotations[i]).value();
+                String value = arg == null ? "" : String.valueOf(arg);
+                if (paths == null) {
+                    paths = new ArrayList<>();
+                }
+                com.loror.lororboot.httpApi.Path path = new com.loror.lororboot.httpApi.Path(name, value);
+                paths.add(path);
+                break;
+            } else if (annotations[i].annotationType() == Url.class) {
+                if (!TextUtil.isEmpty(anoUrl)) {
+                    throw new IllegalArgumentException("只能指定一个Url注解");
+                }
+                anoUseBaseUrl = ((Url) annotations[i]).useBaseUrl();
+                anoUrl = arg == null ? "" : String.valueOf(arg);
                 break;
             }
         }
