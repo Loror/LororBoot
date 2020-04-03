@@ -70,14 +70,7 @@ public class TypeInfo {
         if (types.length == 1) {
             return false;
         }
-        Class<?> c = types[0];
-        do {
-            if (c == List.class) {
-                return true;
-            }
-            c = c.getSuperclass();
-        } while (c != null);
-        return false;
+        return ClassUtil.instanceOf(types[0], List.class);
     }
 
     /**

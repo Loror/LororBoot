@@ -1,6 +1,5 @@
 package com.loror.lororboot.httpApi;
 
-import com.loror.lororUtil.convert.UrlUtf8Util;
 import com.loror.lororUtil.http.FileBody;
 import com.loror.lororUtil.http.HttpClient;
 import com.loror.lororUtil.http.ProgressListener;
@@ -9,9 +8,9 @@ import com.loror.lororUtil.text.TextUtil;
 import com.loror.lororboot.annotation.AsJson;
 import com.loror.lororboot.annotation.DefaultHeaders;
 import com.loror.lororboot.annotation.DefaultParams;
-import com.loror.lororboot.annotation.Multipart;
 import com.loror.lororboot.annotation.Gzip;
 import com.loror.lororboot.annotation.Header;
+import com.loror.lororboot.annotation.Multipart;
 import com.loror.lororboot.annotation.Param;
 import com.loror.lororboot.annotation.ParamJson;
 import com.loror.lororboot.annotation.ParamKeyValue;
@@ -24,10 +23,9 @@ import com.loror.lororboot.annotation.UrlEnCode;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 public class ApiRequest {
 
@@ -42,8 +40,8 @@ public class ApiRequest {
     protected String apiName;
     protected int mockType;
     protected String mockData;
-    private HashMap<String, String> querys;//Query注解指定的参数
-    private List<com.loror.lororboot.httpApi.Path> paths;//Path注解指定的参数
+    private List<UrlPath> querys;//Query注解指定的参数
+    private List<UrlPath> paths;//Path注解指定的参数
     private String anoUrl;//Url指定的url地址
     private boolean anoUseValueUrl;
 
@@ -75,6 +73,9 @@ public class ApiRequest {
         this.url = url;
     }
 
+    /**
+     * 获取最终url
+     */
     public String getUrl() {
         String finalBaseUrl = !TextUtil.isEmpty(anoBaseUrl) ? anoBaseUrl
                 : !TextUtil.isEmpty(baseUrl) ? baseUrl :
@@ -88,16 +89,16 @@ public class ApiRequest {
             }
         }
         if (paths != null) {
-            for (com.loror.lororboot.httpApi.Path path : paths) {
+            for (UrlPath path : paths) {
                 finalUrl = finalUrl.replace("{" + path.name + "}", path.value);
             }
         }
         if (querys != null) {
             StringBuilder builder = new StringBuilder();
-            for (String key : querys.keySet()) {
-                builder.append(key)
+            for (UrlPath query : querys) {
+                builder.append(query.name)
                         .append(params != null ? params.getSplicing(null, 1) : "=")
-                        .append(UrlUtf8Util.toUrlString(querys.get(key)))
+                        .append(query.value)
                         .append(params != null ? params.getSplicing(null, 2) : "&");
             }
             if (builder.length() > 0) {
@@ -231,17 +232,25 @@ public class ApiRequest {
                 } else if (type.isArray()) {
                     if (arg != null) {
                         Object[] array = (Object[]) arg;
-                        if (type.getComponentType() == FileBody.class) {
-                            for (int j = 0; j < array.length; j++) {
-                                params.addParams(name, (FileBody) array[j]);
+                        addArray(params, name, array, type.getComponentType());
+                    }
+                } else if (arg instanceof List) {
+                    List list = (List) arg;
+                    if (list.size() > 0) {
+                        Object[] array = list.toArray(new Object[0]);
+                        Class componentType = null;
+                        for (int j = 0; j < array.length; j++) {
+                            Object o = array[j];
+                            if (o != null) {
+                                if (componentType == null) {
+                                    componentType = o.getClass();
+                                } else if (!ClassUtil.instanceOf(o.getClass(), componentType) &&
+                                        !ClassUtil.instanceOf(componentType, o.getClass())) {
+                                    throw new IllegalArgumentException("List中只能包含一种类型数据");
+                                }
                             }
-                        } else if (type.getComponentType() == File.class) {
-                            for (int j = 0; j < array.length; j++) {
-                                params.addParams(name, new FileBody(array[j] == null ? null : ((File) array[j]).getAbsolutePath()));
-                            }
-                        } else {
-                            params.addParams(name, array);
                         }
+                        addArray(params, name, array, componentType);
                     }
                 } else {
                     params.addParams(name, arg == null ? null : String.valueOf(arg));
@@ -275,17 +284,36 @@ public class ApiRequest {
             } else if (annotations[i].annotationType() == Query.class) {
                 String name = ((Query) annotations[i]).value();
                 if (querys == null) {
-                    querys = new HashMap<>();
+                    querys = new LinkedList<>();
                 }
-                querys.put(name, arg == null ? "" : String.valueOf(arg));
+                if (type.isArray()) {
+                    if (arg != null) {
+                        Object[] array = (Object[]) arg;
+                        for (int j = 0; j < array.length; j++) {
+                            UrlPath path = new UrlPath(name, array[j]);
+                            querys.add(path);
+                        }
+                    }
+                } else if (arg instanceof List) {
+                    List list = (List) arg;
+                    if (list.size() > 0) {
+                        Object[] array = list.toArray(new Object[0]);
+                        for (int j = 0; j < array.length; j++) {
+                            UrlPath path = new UrlPath(name, array[j]);
+                            querys.add(path);
+                        }
+                    }
+                } else {
+                    UrlPath path = new UrlPath(name, arg);
+                    querys.add(path);
+                }
                 break;
             } else if (annotations[i].annotationType() == Path.class) {
                 String name = ((Path) annotations[i]).value();
-                String value = arg == null ? "" : String.valueOf(arg);
                 if (paths == null) {
-                    paths = new ArrayList<>();
+                    paths = new LinkedList<>();
                 }
-                com.loror.lororboot.httpApi.Path path = new com.loror.lororboot.httpApi.Path(name, value);
+                UrlPath path = new UrlPath(name, arg);
                 paths.add(path);
                 break;
             } else if (annotations[i].annotationType() == Url.class) {
@@ -296,6 +324,23 @@ public class ApiRequest {
                 anoUrl = arg == null ? "" : String.valueOf(arg);
                 break;
             }
+        }
+    }
+
+    /**
+     * 添加数组形参数到param
+     */
+    private void addArray(RequestParams params, String name, Object[] array, Class componentType) {
+        if (componentType == FileBody.class) {
+            for (int j = 0; j < array.length; j++) {
+                params.addParams(name, (FileBody) array[j]);
+            }
+        } else if (componentType == File.class) {
+            for (int j = 0; j < array.length; j++) {
+                params.addParams(name, new FileBody(array[j] == null ? null : ((File) array[j]).getAbsolutePath()));
+            }
+        } else {
+            params.addParams(name, array);
         }
     }
 }

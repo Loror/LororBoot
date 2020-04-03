@@ -1,12 +1,14 @@
 package com.loror.lororboot.httpApi;
 
-public class Path {
+import com.loror.lororUtil.convert.UrlUtf8Util;
+
+public class UrlPath {
     protected String name;
     protected String value;
 
-    public Path(String name, String value) {
+    public UrlPath(String name, Object value) {
         this.name = name;
-        this.value = value;
+        this.value = value == null ? "" : UrlUtf8Util.toUrlString(String.valueOf(value));
     }
 
     public String getName() {
