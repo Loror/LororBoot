@@ -8,4 +8,18 @@
         <attr name="backColor" format="color" />
         <attr name="foreColor" format="color" />
     </declare-styleable>
+
+    <declare-styleable name="CutImageView">
+        <attr name="borderPadding" format="dimension" />
+        <attr name="cutButtonWidth" format="dimension" />
+        <attr name="cutScale" format="float" />
+        <attr name="cutDragEnable" format="boolean" />
+        <attr name="cutButtonColor" format="color" />
+        <attr name="borderShadowColor" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="DrawImageView">
+        <attr name="drawWidth" format="dimension" />
+    </declare-styleable>
+
 </resources>
