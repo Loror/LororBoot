@@ -16,9 +16,9 @@ public class BindAblePointView extends View {
 
     private int index, count;
     private int height, width;
-    private Paint p1, p2;
-    private int backColor;
-    private int foreColor;
+    private Paint paint;
+    private int backColor = Color.GRAY;
+    private int foreColor = Color.BLUE;
 
     public BindAblePointView(Context context) {
         this(context, null);
@@ -26,18 +26,14 @@ public class BindAblePointView extends View {
 
     public BindAblePointView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.BindAblePointView);
-        backColor = array != null ? array.getColor(R.styleable.BindAblePointView_backColor, Color.GRAY) : Color.GRAY;
-        foreColor = array != null ? array.getColor(R.styleable.BindAblePointView_foreColor, Color.BLUE) : Color.BLUE;
-        if (array != null) {
+        if (attrs != null) {
+            TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.BindAblePointView);
+            backColor = array.getColor(R.styleable.BindAblePointView_backColor, Color.GRAY);
+            foreColor = array.getColor(R.styleable.BindAblePointView_foreColor, Color.BLUE);
             array.recycle();
         }
-        p1 = new Paint();
-        p2 = new Paint();
-        p1.setColor(backColor);
-        p2.setColor(foreColor);
-        p1.setAntiAlias(true);
-        p2.setAntiAlias(true);
+        paint = new Paint();
+        paint.setAntiAlias(true);
     }
 
     public void setIndex(int index) {
@@ -60,13 +56,11 @@ public class BindAblePointView extends View {
 
     public void setBackColor(int backColor) {
         this.backColor = backColor;
-        p1.setColor(backColor);
         invalidate();
     }
 
     public void setForeColor(int foreColor) {
         this.foreColor = foreColor;
-        p2.setColor(foreColor);
         invalidate();
     }
 
@@ -75,9 +69,11 @@ public class BindAblePointView extends View {
         height = getHeight();
         width = getWidth();
         int max = count * 3 - 1;
+        paint.setColor(backColor);
         for (int i = 0; i < count; i++) {
-            canvas.drawCircle(width * (1 + (3 * i)) / max, height / 2, height / 2, p1);
+            canvas.drawCircle(width * (1 + (3 * i)) / max, height / 2, height / 2, paint);
         }
-        canvas.drawCircle(width * (1 + (3 * index)) / max, height / 2, height / 2, p2);
+        paint.setColor(foreColor);
+        canvas.drawCircle(width * (1 + (3 * index)) / max, height / 2, height / 2, paint);
     }
 }

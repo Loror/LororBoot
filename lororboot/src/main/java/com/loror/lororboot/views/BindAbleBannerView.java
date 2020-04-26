@@ -35,9 +35,9 @@ public class BindAbleBannerView extends ViewPager implements ItemClickAble {
     public BindAbleBannerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.activity = context instanceof Activity ? (Activity) context : null;
-        TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.BindAbleBannerView);
-        peroid = array != null ? array.getInt(R.styleable.BindAbleBannerView_changePeroid, 5000) : 5000;
-        if (array != null) {
+        if (attrs != null) {
+            TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.BindAbleBannerView);
+            peroid = array.getInt(R.styleable.BindAbleBannerView_changePeroid, 5000);
             array.recycle();
         }
     }

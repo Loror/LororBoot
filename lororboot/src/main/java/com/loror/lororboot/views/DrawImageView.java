@@ -61,6 +61,15 @@ public class DrawImageView extends View {
     }
 
     /**
+     * DrawImageView构造函数
+     *
+     * @param context
+     */
+    public DrawImageView(Context context) {
+        this(context, null);
+    }
+
+    /**
      * DrawImageView构造函数，将当前操作状态设为STATUS_INIT。
      *
      * @param context
@@ -69,11 +78,15 @@ public class DrawImageView extends View {
     public DrawImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         paint.setAntiAlias(true);
-        paint.setStyle(Paint.Style.FILL_AND_STROKE);//设置画圆弧的画笔
+        paint.setStyle(Paint.Style.FILL_AND_STROKE);
         paint.setColor(drawColor);
-        TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.DrawImageView);
-        drawWidth = array.getDimensionPixelSize(R.styleable.DrawImageView_drawWidth, 6);
-        array.recycle();
+        if (attrs != null) {
+            TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.DrawImageView);
+            drawWidth = array.getDimensionPixelSize(R.styleable.DrawImageView_drawWidth, 6);
+            array.recycle();
+        } else {
+            drawWidth = 6;
+        }
     }
 
     /*将待展示的图片设置进来。

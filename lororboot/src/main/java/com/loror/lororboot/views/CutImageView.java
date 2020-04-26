@@ -58,20 +58,39 @@ public class CutImageView extends View {
      * CutImageView构造函数，将当前操作状态设为STATUS_INIT。
      *
      * @param context
+     */
+    public CutImageView(Context context) {
+        this(context, null);
+    }
+
+    /**
+     * CutImageView构造函数
+     *
+     * @param context
      * @param attrs
      */
     public CutImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         currentStatus = STATUS_INIT;
-        TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.CutImageView);
-        scale = array.getFloat(R.styleable.CutImageView_cutScale, 1.0f);
-        cutDragEnable = array.getBoolean(R.styleable.CutImageView_cutDragEnable, true);
-        border = array.getDimensionPixelSize(R.styleable.CutImageView_borderPadding, 6);
-        cutButtonWidth = array.getDimensionPixelSize(R.styleable.CutImageView_cutButtonWidth, 80);
-        cutButtonColor = array.getColor(R.styleable.CutImageView_cutButtonColor, 0xCC33AA00);
-        borderShadowColor = array.getColor(R.styleable.CutImageView_borderShadowColor, 0x88000000);
-        paint.setStyle(Paint.Style.FILL);//设置画圆弧的画笔
-        array.recycle();
+        if (attrs != null) {
+            TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.CutImageView);
+            scale = array.getFloat(R.styleable.CutImageView_cutScale, 1.0f);
+            cutDragEnable = array.getBoolean(R.styleable.CutImageView_cutDragEnable, true);
+            border = array.getDimensionPixelSize(R.styleable.CutImageView_borderPadding, 6);
+            cutButtonWidth = array.getDimensionPixelSize(R.styleable.CutImageView_cutButtonWidth, 80);
+            cutButtonColor = array.getColor(R.styleable.CutImageView_cutButtonColor, 0xCC33AA00);
+            borderShadowColor = array.getColor(R.styleable.CutImageView_borderShadowColor, 0x88000000);
+            array.recycle();
+        } else {
+            scale = 1.0f;
+            cutDragEnable = true;
+            border = 6;
+            cutButtonWidth = 80;
+            cutButtonColor = 0xCC33AA00;
+            borderShadowColor = 0x88000000;
+        }
+        paint.setAntiAlias(true);
+        paint.setStyle(Paint.Style.FILL);
     }
 
     /*将待展示的图片设置进来。
