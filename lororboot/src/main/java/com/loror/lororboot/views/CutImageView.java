@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.support.annotation.ColorInt;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -101,6 +102,33 @@ public class CutImageView extends View {
         sourceBitmap = bitmap;
         currentStatus = STATUS_INIT;
         invalidate();
+    }
+
+    public void setCutButtonColor(@ColorInt int cutButtonColor) {
+        this.cutButtonColor = cutButtonColor;
+    }
+
+    public void setCurrentBitmapWidth(float currentBitmapWidth) {
+        this.currentBitmapWidth = currentBitmapWidth;
+    }
+
+    public void setBorderShadowColor(int borderShadowColor) {
+        this.borderShadowColor = borderShadowColor;
+        invalidate();
+    }
+
+    public void setBorder(int border) {
+        this.border = border;
+        currentStatus = STATUS_INIT;
+        invalidate();
+    }
+
+    public void setScale(float scale) {
+        this.scale = scale;
+    }
+
+    public void setCutDragEnable(boolean cutDragEnable) {
+        this.cutDragEnable = cutDragEnable;
     }
 
     public Bitmap getSourceBitmap() {
