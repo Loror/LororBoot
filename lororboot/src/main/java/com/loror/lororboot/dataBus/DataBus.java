@@ -8,10 +8,20 @@ import com.loror.lororUtil.flyweight.ObjectPool;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DataBus {
+
+    private static int stickCount = 10;
     private static List<ThreadModeReceiver> receivers = new ArrayList<>();
-    private static StickEvent stickEvent;//粘性事件，仅保留一个
+    private static List<StickEvent> stickEvents = new CopyOnWriteArrayList<>();//粘性事件，仅保留stickCount个
+
+    /**
+     * 设置粘性事件个数
+     */
+    public static void setStickCount(int stickCount) {
+        DataBus.stickCount = stickCount;
+    }
 
     /**
      * 添加接收者
@@ -20,11 +30,13 @@ public class DataBus {
         final ThreadModeReceiver threadModeReceiver = new ThreadModeReceiver(receiver);
         if (!receivers.contains(threadModeReceiver)) {
             receivers.add(threadModeReceiver);
-            if (DataBus.stickEvent != null && threadModeReceiver.isSticky()) {
+            if (DataBus.stickEvents.size() > 0 && threadModeReceiver.isSticky()) {
                 ObjectPool.getInstance().getHandler().post(new Runnable() {
                     @Override
                     public void run() {
-                        threadModeReceiver.receiveData(DataBus.stickEvent.name, DataBus.stickEvent.data);
+                        for (StickEvent stickEvent : stickEvents) {
+                            threadModeReceiver.receiveData(stickEvent.name, stickEvent.data);
+                        }
                     }
                 });
             }
@@ -45,7 +57,8 @@ public class DataBus {
         for (int i = 0; i < receivers.size(); i++) {
             receivers.get(i).receiveData(name, data);
         }
-        DataBus.stickEvent = new StickEvent(name, data);
+
+        addStickEvent(new StickEvent(name, data));
         try {
             if (data == null) {
                 data = new Intent();
@@ -77,10 +90,20 @@ public class DataBus {
                         intent.removeExtra("loror.RemoteDataBusReceiver.name");
                         intent.removeExtra("loror.RemoteDataBusReceiver.tag");
                     }
-                    DataBus.stickEvent = new StickEvent(name, isNullData ? null : intent);
+                    addStickEvent(new StickEvent(name, isNullData ? null : intent));
                     threadModeReceiver.receiveData(name, isNullData ? null : intent);
                 }
             }
         };
+    }
+
+    /**
+     * 添加粘性事件
+     */
+    private static synchronized void addStickEvent(StickEvent stickEvent) {
+        DataBus.stickEvents.add(stickEvent);
+        while (DataBus.stickEvents.size() > stickCount) {
+            DataBus.stickEvents.remove(DataBus.stickEvents.size() - 1);
+        }
     }
 }
