@@ -104,33 +104,47 @@ public class CutImageView extends View {
         invalidate();
     }
 
+    /**
+     * 设置拖动按钮颜色
+     **/
     public void setCutButtonColor(@ColorInt int cutButtonColor) {
         this.cutButtonColor = cutButtonColor;
     }
 
-    public void setCurrentBitmapWidth(float currentBitmapWidth) {
-        this.currentBitmapWidth = currentBitmapWidth;
-    }
-
+    /**
+     * 设置边框颜色
+     **/
     public void setBorderShadowColor(int borderShadowColor) {
         this.borderShadowColor = borderShadowColor;
         invalidate();
     }
 
+    /**
+     * 设置边框宽度
+     **/
     public void setBorder(int border) {
         this.border = border;
         currentStatus = STATUS_INIT;
         invalidate();
     }
 
+    /**
+     * 设置宽高比
+     **/
     public void setScale(float scale) {
         this.scale = scale;
     }
 
+    /**
+     * 设置是否允许拖动
+     **/
     public void setCutDragEnable(boolean cutDragEnable) {
         this.cutDragEnable = cutDragEnable;
     }
 
+    /**
+     * 获取源图片
+     **/
     public Bitmap getSourceBitmap() {
         return sourceBitmap;
     }

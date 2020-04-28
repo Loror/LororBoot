@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.os.Looper;
 import android.support.annotation.ColorInt;
 import android.support.annotation.IntDef;
@@ -46,12 +47,45 @@ public class DrawImageView extends View {
     private Paint paint = new Paint();
     private List<List<Point>> pointsGroup = new LinkedList<>();
 
+    /**
+     * 截屏
+     */
     public Bitmap viewShort() {
         setDrawingCacheEnabled(true);
         Bitmap drawingCache = getDrawingCache();
         drawingCache = Bitmap.createBitmap(drawingCache);
         setDrawingCacheEnabled(false);
         return drawingCache;
+    }
+
+    /**
+     * 获取绘制后的图片
+     */
+    public Bitmap getDrawBitmap() {
+        Bitmap bitmap = viewShort();
+        if (bitmap.getWidth() > currentBitmapWidth) {
+            bitmap = Bitmap.createBitmap(bitmap, (int) totalTranslateX + (totalTranslateX > (int) totalTranslateX ? 1 : 0), 0,
+                    (int) currentBitmapWidth, bitmap.getHeight());
+        }
+        if (bitmap.getHeight() > currentBitmapHeight) {
+            bitmap = Bitmap.createBitmap(bitmap, 0, (int) totalTranslateY + (totalTranslateY > (int) totalTranslateY ? 1 : 0)
+                    , bitmap.getWidth(), (int) currentBitmapHeight);
+        }
+        return bitmap;
+    }
+
+    /**
+     * 获取绘制范围
+     */
+    public RectF getDrawRect() {
+        return new RectF(totalTranslateX, totalTranslateY, currentBitmapWidth, currentBitmapHeight);
+    }
+
+    /**
+     * 获取源图片
+     * */
+    public Bitmap getSourceBitmap() {
+        return sourceBitmap;
     }
 
     private class Point {
