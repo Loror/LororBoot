@@ -115,6 +115,9 @@ public class ListItem extends BindAbleItem {
     * 支持返回类型原生responce（Responce），字符串（String），对象（将使用Json解释器生成对象）
     * 返回Observable对象时为异步请求，直接返回所需对象将同步请求
     * 内部未内置json解析框架，请在Application中指定Json解释器
+
+* 注解@Url @Path
+    * 重新指定url地址/url通配替换
     
 * 注解@BaseUrl
     * 网络访问注解封装，修饰于接口上
