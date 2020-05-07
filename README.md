@@ -235,6 +235,8 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
 内部已引入库LororUtil(https://github.com/Loror/LororUtil)  
 </br>
 推荐图片压缩框架Luban(https://github.com/Curzibn/Luban)
+</br>
+推荐下拉刷新框架SmartRefreshLayout(https://github.com/scwang90/SmartRefreshLayout)
 
 License
 -------
