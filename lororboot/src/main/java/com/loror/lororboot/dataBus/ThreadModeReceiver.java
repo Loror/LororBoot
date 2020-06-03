@@ -19,13 +19,11 @@ public class ThreadModeReceiver {
         this.receiver = receiver;
         if (receiver != null) {
             try {
-                Method method = receiver.getClass().getDeclaredMethod("receiveData", String.class, Intent.class);
-                if (method != null) {
-                    DataRun dataRun = method.getAnnotation(DataRun.class);
-                    if (dataRun != null) {
-                        this.thread = dataRun.thread();
-                        this.sticky = dataRun.sticky();
-                    }
+                Method method = receiver.getClass().getMethod("receiveData", String.class, Intent.class);
+                DataRun dataRun = method.getAnnotation(DataRun.class);
+                if (dataRun != null) {
+                    this.thread = dataRun.thread();
+                    this.sticky = dataRun.sticky();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
