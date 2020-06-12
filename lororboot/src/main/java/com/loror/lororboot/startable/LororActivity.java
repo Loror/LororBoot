@@ -18,13 +18,12 @@ import android.widget.Toast;
 import com.loror.lororUtil.view.ViewUtil;
 import com.loror.lororboot.annotation.RequestPermission;
 import com.loror.lororboot.annotation.RequestTime;
-import com.loror.lororboot.annotation.RunThread;
-import com.loror.lororboot.autoRun.AutoRunAble;
 import com.loror.lororboot.bind.BindAble;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.bind.BindUtils;
 import com.loror.lororboot.bind.DataChangeAble;
 import com.loror.lororboot.dataBus.DataBus;
+import com.loror.lororboot.dataBus.DataBusUtil;
 import com.loror.lororboot.dataChange.DataChangeUtils;
 import com.loror.lororboot.views.BindAbleBannerView;
 
@@ -33,7 +32,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class LororActivity extends AppCompatActivity implements StartDialogAble, DataChangeAble, AutoRunAble {
+public class LororActivity extends AppCompatActivity implements StartDialogAble, DataChangeAble{
 
     protected Context context = this;
 
@@ -46,7 +45,7 @@ public class LororActivity extends AppCompatActivity implements StartDialogAble,
     private boolean paused;
 
     private int requestCode;
-    private Decorater decorater;
+    private DataBusUtil dataBusUtil;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,8 +54,8 @@ public class LororActivity extends AppCompatActivity implements StartDialogAble,
         if (permission != null && permission.when() == RequestTime.ONCREATE) {
             requestPermissions(permission);
         }
-        decorater = new Decorater(this, this);
-        decorater.onCreate();
+        dataBusUtil = new DataBusUtil(this, this);
+        dataBusUtil.register();
     }
 
     @Override
@@ -73,7 +72,6 @@ public class LororActivity extends AppCompatActivity implements StartDialogAble,
         if (permission != null && permission.when() == RequestTime.ONRESUME) {
             requestPermissions(permission);
         }
-        decorater.onResumeOrStart();
         super.onResume();
         //banner恢复滚动
         if (!isFinishing()) {
@@ -101,9 +99,6 @@ public class LororActivity extends AppCompatActivity implements StartDialogAble,
     protected void onDestroy() {
         LaunchModeDialog.destroyDialogs(this);
         bindHolders.clear();
-        if (decorater != null) {
-            decorater.onDestroy();
-        }
         super.onDestroy();
     }
 
@@ -120,8 +115,8 @@ public class LororActivity extends AppCompatActivity implements StartDialogAble,
             }
         }
         super.finish();
-        if (decorater != null) {
-            decorater.release();
+        if (dataBusUtil != null) {
+            dataBusUtil.unRegister();
         }
     }
 
@@ -358,12 +353,4 @@ public class LororActivity extends AppCompatActivity implements StartDialogAble,
 
     }
 
-    public void runAutoRunByPenetration(String methodName) {
-        decorater.runAutoRunByPenetration(methodName);
-    }
-
-    @Override
-    public void run(@RunThread int thread, int delay, Runnable runnable) {
-        decorater.run(thread, delay, runnable);
-    }
 }

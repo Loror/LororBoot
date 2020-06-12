@@ -7,9 +7,9 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
-public @interface AutoRun {
+public @interface Aop {
 
-    @RunTime int when();//执行时机
+    @RunTime int when() default RunTime.TOP;//执行时机
 
     String relationMethod() default "";//指定BEFOREMETHOD或AFTERMETHOD关联的方法
 

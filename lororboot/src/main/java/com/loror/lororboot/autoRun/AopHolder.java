@@ -2,7 +2,7 @@ package com.loror.lororboot.autoRun;
 
 import java.lang.reflect.Method;
 
-public class AutoRunHolder {
+public class AopHolder {
 
     protected int when;
     protected String methodName;
@@ -10,11 +10,11 @@ public class AutoRunHolder {
     protected int thread;
     protected int delay;
     protected Method method;
-    protected AutoRunHolder previous;
-    protected AutoRunHolder next;
+    protected AopHolder previous;
+    protected AopHolder next;
 
-    public AutoRunHolder getLinkHead() {
-        AutoRunHolder holder = this;
+    public AopHolder getLinkHead() {
+        AopHolder holder = this;
         while (holder.previous != null) {
             holder = holder.previous;
         }
@@ -22,8 +22,8 @@ public class AutoRunHolder {
     }
 
     //添加到链表头
-    protected void addPrevious(AutoRunHolder previous) {
-        AutoRunHolder holder = this;
+    protected void addPrevious(AopHolder previous) {
+        AopHolder holder = this;
         while (holder.previous != null) {
             holder.previous.next = holder;
             holder = holder.previous;
@@ -33,16 +33,16 @@ public class AutoRunHolder {
     }
 
     //插入到链表当前位置与前一位置之间
-    protected void insetPrevious(AutoRunHolder previous) {
-        AutoRunHolder previousTemp = this.previous;
+    protected void insetPrevious(AopHolder previous) {
+        AopHolder previousTemp = this.previous;
         this.previous = previous;
         this.previous.previous = previousTemp;
         previous.next = this;
     }
 
     //添加到链表尾
-    protected void addNext(AutoRunHolder next) {
-        AutoRunHolder holder = this;
+    protected void addNext(AopHolder next) {
+        AopHolder holder = this;
         while (holder.next != null) {
             holder.next.previous = holder;
             holder = holder.next;
@@ -52,18 +52,18 @@ public class AutoRunHolder {
     }
 
     //插入到链表当前位置与下一位置之间
-    protected void insetNext(AutoRunHolder next) {
-        AutoRunHolder nextTemp = this.next;
+    protected void insetNext(AopHolder next) {
+        AopHolder nextTemp = this.next;
         this.next = next;
         this.next.next = nextTemp;
         next.previous = this;
     }
 
-    public AutoRunHolder getPrevious() {
+    public AopHolder getPrevious() {
         return previous;
     }
 
-    public AutoRunHolder getNext() {
+    public AopHolder getNext() {
         return next;
     }
 

@@ -10,19 +10,19 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.loror.lororUtil.http.HttpClient;
-import com.loror.lororUtil.http.RequestParams;
 import com.loror.lororUtil.http.Responce;
 import com.loror.lororUtil.view.Click;
 import com.loror.lororUtil.view.ItemClick;
 import com.loror.lororUtil.view.ItemLongClick;
 import com.loror.lororUtil.view.LongClick;
-import com.loror.lororboot.annotation.AutoRun;
+import com.loror.lororboot.annotation.Aop;
 import com.loror.lororboot.annotation.Bind;
 import com.loror.lororboot.annotation.BindAbleItemConnection;
 import com.loror.lororboot.annotation.RequestPermission;
 import com.loror.lororboot.annotation.RunThread;
 import com.loror.lororboot.annotation.RunTime;
 import com.loror.lororboot.annotation.DataRun;
+import com.loror.lororboot.autoRun.AopClient;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.dataBus.RemoteDataBusReceiver;
 import com.loror.lororboot.httpApi.ApiClient;
@@ -73,6 +73,8 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
         }
         notifyListDataChangeById(R.id.listView);//若list的size发生变化，不调用该方法也会自动刷新，如仅修改了list中对象属性而size未改变应主动调用该方法通知刷新
         initData();
+        AopClient aopClient = new AopClient(this);
+        aopClient.runByPenetration("initData");
     }
 
     private void initData() {
@@ -178,21 +180,21 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
         Toast.makeText(this, "第" + position + "行长按", Toast.LENGTH_SHORT).show();
     }
 
-    //RunTime.AFTERONCREATE,oncreate后自动执行;RunTime.BEFOREONDESTROY,ondestroy前自动执行;RunTime.USERCALL,用户主动通过切入点方法名调用
-    @AutoRun(when = RunTime.AFTERONCREATE)
+    //运行起点
+    @Aop
     public void initData(String result) {
         Log.e("AUTO_RUN", result + " ");
         Log.e("AUTO_RUN", "initData" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
     }
 
-    @AutoRun(when = RunTime.BEFOREMETHOD, relationMethod = "initData", thread = RunThread.NEWTHREAD)
-    public String beforeCreate() {
+    @Aop(when = RunTime.BEFOREMETHOD, relationMethod = "initData", thread = RunThread.NEWTHREAD)
+    public String beforeInitData() {
         Log.e("AUTO_RUN", "beforeCreate" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
         return "传递参数，需和下一执行方法形参类型相同";
     }
 
-    @AutoRun(when = RunTime.AFTERMETHOD, relationMethod = "initData", thread = RunThread.MAINTHREAD)
-    public void afterCreate() {
+    @Aop(when = RunTime.AFTERMETHOD, relationMethod = "initData", thread = RunThread.MAINTHREAD)
+    public void afterInitData() {
         Log.e("AUTO_RUN", "afterCreate" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
     }
 

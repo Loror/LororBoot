@@ -14,19 +14,18 @@ import android.view.Window;
 import android.widget.Toast;
 
 import com.loror.lororUtil.view.ViewUtil;
-import com.loror.lororboot.annotation.RunThread;
-import com.loror.lororboot.autoRun.AutoRunAble;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.bind.BindUtils;
 import com.loror.lororboot.bind.DataChangeAble;
 import com.loror.lororboot.dataBus.DataBus;
+import com.loror.lororboot.dataBus.DataBusUtil;
 import com.loror.lororboot.dataChange.DataChangeUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.List;
 
-public class LororDialog extends AlertDialog implements DialogInterface.OnDismissListener, StartDialogAble, DataChangeAble, AutoRunAble {
+public class LororDialog extends AlertDialog implements DialogInterface.OnDismissListener, StartDialogAble, DataChangeAble {
 
     protected static final int RESULT_OK = -1;
     protected static final int RESULT_CANCEL = 0;
@@ -40,7 +39,7 @@ public class LororDialog extends AlertDialog implements DialogInterface.OnDismis
 
     private List<BindHolder> bindHolders = new LinkedList<>();
     private WeakReference<LororActivity> weakReference;
-    private Decorater decorater;
+    private DataBusUtil dataBusUtil;
     private OnDismissListener listener;
 
     public LororDialog(@NonNull Context context) {
@@ -61,8 +60,8 @@ public class LororDialog extends AlertDialog implements DialogInterface.OnDismis
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
-        decorater = new Decorater(context, this);
-        decorater.onCreate();
+        dataBusUtil = new DataBusUtil(context, this);
+        dataBusUtil.register();
         super.setOnDismissListener(this);
     }
 
@@ -75,15 +74,15 @@ public class LororDialog extends AlertDialog implements DialogInterface.OnDismis
 
     @Override
     protected void onStart() {
-        decorater.onResumeOrStart();
+        dataBusUtil.register();
         registerToParent();
         super.onStart();
     }
 
     @Override
     protected void onStop() {
-        if (decorater != null) {
-            decorater.onStop();
+        if (dataBusUtil != null) {
+            dataBusUtil.unRegister();
         }
         super.onStop();
     }
@@ -94,8 +93,8 @@ public class LororDialog extends AlertDialog implements DialogInterface.OnDismis
 
     protected void onDestroy() {
         bindHolders.clear();
-        if (decorater != null) {
-            decorater.onDestroy();
+        if (dataBusUtil != null) {
+            dataBusUtil.unRegister();
         }
     }
 
@@ -264,12 +263,4 @@ public class LororDialog extends AlertDialog implements DialogInterface.OnDismis
         void result(int requestCode, int resultCode, Intent data);
     }
 
-    public void runAutoRunByPenetration(String methodName) {
-        decorater.runAutoRunByPenetration(methodName);
-    }
-
-    @Override
-    public void run(@RunThread int thread, int delay, Runnable runnable) {
-        decorater.run(thread, delay, runnable);
-    }
 }

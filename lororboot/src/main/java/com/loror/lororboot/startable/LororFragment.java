@@ -11,11 +11,11 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.loror.lororUtil.view.ViewUtil;
-import com.loror.lororboot.autoRun.AutoRunAble;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.bind.BindUtils;
 import com.loror.lororboot.bind.DataChangeAble;
 import com.loror.lororboot.dataBus.DataBus;
+import com.loror.lororboot.dataBus.DataBusUtil;
 import com.loror.lororboot.dataChange.DataChangeUtils;
 import com.loror.lororboot.views.BindAbleBannerView;
 
@@ -23,11 +23,11 @@ import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.List;
 
-public class LororFragment extends Fragment implements StartDialogAble, DataChangeAble, AutoRunAble {
+public class LororFragment extends Fragment implements StartDialogAble, DataChangeAble {
 
     private List<BindHolder> bindHolders = new LinkedList<>();
     private WeakReference<LororActivity> weakReference;
-    private Decorater decorater;
+    private DataBusUtil dataBusUtil;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -39,13 +39,12 @@ public class LororFragment extends Fragment implements StartDialogAble, DataChan
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        decorater = new Decorater(getActivity(), this);
-        decorater.onCreate();
+        dataBusUtil = new DataBusUtil(getActivity(), this);
+        dataBusUtil.register();
     }
 
     @Override
     public void onResume() {
-        decorater.onResumeOrStart();
         super.onResume();
         //banner恢复滚动
         LororActivity activity = weakReference == null ? null : weakReference.get();
@@ -87,15 +86,15 @@ public class LororFragment extends Fragment implements StartDialogAble, DataChan
     @Override
     public void onDestroy() {
         bindHolders.clear();
-        if (decorater != null) {
-            decorater.onDestroy();
+        if (dataBusUtil != null) {
+            dataBusUtil.unRegister();
         }
         super.onDestroy();
     }
 
     public void release() {
-        if (decorater != null) {
-            decorater.release();
+        if (dataBusUtil != null) {
+            dataBusUtil.unRegister();
         }
     }
 
@@ -213,14 +212,5 @@ public class LororFragment extends Fragment implements StartDialogAble, DataChan
 
     protected void onDialogResult(int requestCode, int resultCode, Intent data) {
 
-    }
-
-    public void runAutoRunByPenetration(String methodName) {
-        decorater.runAutoRunByPenetration(methodName);
-    }
-
-    @Override
-    public void run(int thread, int delay, Runnable runnable) {
-        decorater.run(thread, delay, runnable);
     }
 }
