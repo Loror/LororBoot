@@ -22,7 +22,7 @@ import com.loror.lororboot.annotation.RequestPermission;
 import com.loror.lororboot.annotation.RunThread;
 import com.loror.lororboot.annotation.RunTime;
 import com.loror.lororboot.annotation.DataRun;
-import com.loror.lororboot.autoRun.AopClient;
+import com.loror.lororboot.aop.AopClient;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.dataBus.RemoteDataBusReceiver;
 import com.loror.lororboot.httpApi.ApiClient;
@@ -183,19 +183,19 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
     //运行起点
     @Aop
     public void initData(String result) {
-        Log.e("AUTO_RUN", result + " ");
-        Log.e("AUTO_RUN", "initData" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
+        Log.e("AOP_RUN", result + " ");
+        Log.e("AOP_RUN", "initData" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
     }
 
     @Aop(when = RunTime.BEFOREMETHOD, relationMethod = "initData", thread = RunThread.NEWTHREAD)
     public String beforeInitData() {
-        Log.e("AUTO_RUN", "beforeCreate" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
+        Log.e("AOP_RUN", "beforeCreate" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
         return "传递参数，需和下一执行方法形参类型相同";
     }
 
     @Aop(when = RunTime.AFTERMETHOD, relationMethod = "initData", thread = RunThread.MAINTHREAD)
     public void afterInitData() {
-        Log.e("AUTO_RUN", "afterCreate" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
+        Log.e("AOP_RUN", "afterCreate" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
     }
 
     @Override

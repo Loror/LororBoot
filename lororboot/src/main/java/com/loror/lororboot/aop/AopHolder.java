@@ -1,4 +1,4 @@
-package com.loror.lororboot.autoRun;
+package com.loror.lororboot.aop;
 
 import java.lang.reflect.Method;
 
