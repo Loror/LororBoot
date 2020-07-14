@@ -22,7 +22,9 @@ import com.loror.lororboot.annotation.RequestPermission;
 import com.loror.lororboot.annotation.RunThread;
 import com.loror.lororboot.annotation.RunTime;
 import com.loror.lororboot.annotation.DataRun;
+import com.loror.lororboot.aop.AopAgent;
 import com.loror.lororboot.aop.AopClient;
+import com.loror.lororboot.aop.AopHolder;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.dataBus.RemoteDataBusReceiver;
 import com.loror.lororboot.httpApi.ApiClient;
@@ -32,6 +34,7 @@ import com.loror.lororboot.httpApi.Observer;
 import com.loror.lororboot.httpApi.OnRequestListener;
 import com.loror.lororboot.startable.LororActivity;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,6 +77,22 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
         notifyListDataChangeById(R.id.listView);//若list的size发生变化，不调用该方法也会自动刷新，如仅修改了list中对象属性而size未改变应主动调用该方法通知刷新
         initData();
         AopClient aopClient = new AopClient(this);
+        aopClient.setAopAgent(new AopAgent() {
+            @Override
+            public void onAgent(AopHolder aopHolder, AopAgentCall aopAgentCall) {
+                Annotation[] annotations = aopHolder.getAnnotations();
+                if (annotations != null) {
+                    for (int i = 0; i < annotations.length; i++) {
+                        Annotation annotation = annotations[i];
+                        if (annotation instanceof Print) {
+                            Log.e("AOP_RUN", aopHolder.getMethodName() + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
+                            break;
+                        }
+                    }
+                }
+                aopAgentCall.callOn();
+            }
+        });
         aopClient.runByPenetration("initData");
     }
 
@@ -181,21 +200,29 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
     }
 
     //运行起点
+    @Print
     @Aop
     public void initData(String result) {
         Log.e("AOP_RUN", result + " ");
-        Log.e("AOP_RUN", "initData" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
     }
 
+    @Print
     @Aop(when = RunTime.BEFOREMETHOD, relationMethod = "initData", thread = RunThread.NEWTHREAD)
     public String beforeInitData() {
-        Log.e("AOP_RUN", "beforeCreate" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
         return "传递参数，需和下一执行方法形参类型相同";
     }
 
+    @Print
+    @Aop(when = RunTime.BEFOREMETHOD, relationMethod = "initData", thread = RunThread.MAINTHREAD)
+    public String branch(String result) {
+        Log.e("AOP_RUN", result + " ");
+        return result;
+    }
+
+    @Print
     @Aop(when = RunTime.AFTERMETHOD, relationMethod = "initData", thread = RunThread.MAINTHREAD)
     public void afterInitData() {
-        Log.e("AOP_RUN", "afterCreate" + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
+
     }
 
     @Override

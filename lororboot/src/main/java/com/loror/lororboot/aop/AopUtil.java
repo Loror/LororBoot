@@ -5,6 +5,7 @@ import com.loror.lororboot.annotation.RunTime;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class AopUtil {
@@ -67,22 +68,28 @@ public class AopUtil {
                 AopHolder holder = all.get(i);
                 int penetrationsSize = penetrations.size();
                 for (int j = 0; j < penetrationsSize; j++) {
-                    AopHolder head = penetrations.get(j).getLinkHead();//链表头
-                    do {
-                        if (head.methodName.equals(holder.relationMethod)) {
-                            remove.add(holder);
-                            if (holder.getWhen() == RunTime.BEFOREMETHOD) {
-                                head.insetPrevious(holder);
-                            } else if (holder.getWhen() == RunTime.AFTERMETHOD) {
-                                head.addNext(holder);
-                            }//建立切入点链表
-                        }
-                    } while ((head = head.next) != null);
+                    link(penetrations.get(j).getLinkHead(), holder, remove);
                 }
             }
             all.removeAll(remove);
         }
         return penetrations;
+    }
+
+    private static void link(AopHolder source, AopHolder holder, List<AopHolder> remove) {
+        if (source.methodName.equals(holder.relationMethod)) {
+            remove.add(holder);
+            if (holder.when == RunTime.BEFOREMETHOD) {
+                source.insetPrevious(holder);
+            } else if (holder.when == RunTime.AFTERMETHOD) {
+                source.addNext(holder);
+            }//建立切入点链表
+        }
+        if (source.next != null) {
+            for (AopHolder aopHolder : source.next) {
+                link(aopHolder, holder, remove);
+            }
+        }
     }
 
     /**

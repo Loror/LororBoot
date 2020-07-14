@@ -6,7 +6,6 @@ import android.os.Looper;
 import com.loror.lororUtil.flyweight.ObjectPool;
 import com.loror.lororboot.annotation.RunThread;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,10 +13,18 @@ public class AopClient {
 
     private Object aop;
     private List<AopHolder> aopHolders = new ArrayList<>();
+    private AopAgent aopAgent;
 
     public AopClient(Object aop) {
         this.aop = aop;
         aopHolders.addAll(AopUtil.findAutoRunHolders(aop));
+    }
+
+    /**
+     * 设置aop代理执行
+     */
+    public void setAopAgent(AopAgent aopAgent) {
+        this.aopAgent = aopAgent;
     }
 
     /**
@@ -41,49 +48,54 @@ public class AopClient {
         if (penetration == null) {
             return;
         }
-        final Object[] result = new Object[1];
-        final AopHolder[] head = new AopHolder[]{penetration.getLinkHead()};
-        call(head[0].thread, head[0].delay, new Runnable() {
+
+        AopHolder aopHolder = penetration.getLinkHead();
+        call(aopHolder.thread, aopHolder.delay, new AopRunner() {
             @Override
             public void run() {
-                head[0].getMethod().setAccessible(true);
-                try {
-                    Class<?>[] params = head[0].method.getParameterTypes();
-                    if (params == null || params.length == 0) {
-                        result[0] = head[0].method.invoke(aop);
-                    } else if (params.length == 1) {
-                        try {
-                            result[0] = head[0].method.invoke(aop, result[0]);
-                        } catch (IllegalArgumentException e) {
-                            throw new IllegalArgumentException(head[0].methodName + "方法所需参数与其绑定的前一个方法"
-                                    + (head[0].previous != null ? head[0].previous.methodName : "") + "返回参数不匹配");
+                AopHolder aopHolder = getSource().getAopHolder();
+                final Object[] result = new Object[1];
+                if (aopAgent != null) {
+                    aopAgent.onAgent(aopHolder, new AopAgent.AopAgentCall() {
+                        @Override
+                        protected Object run() {
+                            return result[0] = call();
                         }
-                    } else {
-                        throw new IllegalArgumentException("不允许方法包含两个及以上参数");
-                    }
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
+                    }.setParam(getSource().getParam()));
+                } else {
+                    result[0] = call();
                 }
-                if (head[0].next != null) {
-                    head[0] = head[0].next;
-                    call(head[0].thread, head[0].delay, this);
+                if (aopHolder.next != null) {
+                    for (AopHolder holder : aopHolder.next) {
+                        AopClient.this.call(holder.thread, holder.delay, this, new AopRunnerSource()
+                                .setAop(aop)
+                                .setAopHolder(holder)
+                                .setParam(result[0]));
+                    }
                 }
             }
-        });
+        }, new AopRunner.AopRunnerSource()
+                .setAop(aop)
+                .setAopHolder(penetration.getLinkHead()));
     }
 
-    private void call(@RunThread int thread, final int delay, final Runnable runnable) {
+    private void call(@RunThread int thread, final int delay, final AopRunner runnable, final AopRunner.AopRunnerSource source) {
         Handler handler = ObjectPool.getInstance().getHandler();
+        final Runnable finalRunnable = new Runnable() {
+            @Override
+            public void run() {
+                runnable.setSource(source);
+                runnable.run();
+            }
+        };
         if (thread == RunThread.MAINTHREAD) {
             if (delay > 0) {
-                handler.postDelayed(runnable, delay);
+                handler.postDelayed(finalRunnable, delay);
             } else {
                 if (Looper.getMainLooper() == Looper.myLooper()) {
-                    runnable.run();
+                    finalRunnable.run();
                 } else {
-                    handler.post(runnable);
+                    handler.post(finalRunnable);
                 }
             }
         } else if (thread == RunThread.NEWTHREAD) {
@@ -96,26 +108,26 @@ public class AopClient {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        runnable.run();
+                        finalRunnable.run();
                     }
                 }.start();
             } else {
-                new Thread(runnable).start();
+                new Thread(finalRunnable).start();
             }
         } else {
             if (delay > 0) {
                 if (Looper.getMainLooper() == Looper.myLooper()) {
-                    handler.postDelayed(runnable, delay);
+                    handler.postDelayed(finalRunnable, delay);
                 } else {
                     try {
                         Thread.sleep(delay);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    runnable.run();
+                    finalRunnable.run();
                 }
             } else {
-                runnable.run();
+                finalRunnable.run();
             }
         }
     }

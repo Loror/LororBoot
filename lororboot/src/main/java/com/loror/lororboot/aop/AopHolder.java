@@ -1,6 +1,9 @@
 package com.loror.lororboot.aop;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.LinkedList;
+import java.util.List;
 
 public class AopHolder {
 
@@ -11,7 +14,7 @@ public class AopHolder {
     protected int delay;
     protected Method method;
     protected AopHolder previous;
-    protected AopHolder next;
+    protected List<AopHolder> next;
 
     public AopHolder getLinkHead() {
         AopHolder holder = this;
@@ -21,77 +24,55 @@ public class AopHolder {
         return holder;
     }
 
-    //添加到链表头
-    protected void addPrevious(AopHolder previous) {
-        AopHolder holder = this;
-        while (holder.previous != null) {
-            holder.previous.next = holder;
-            holder = holder.previous;
-        }
-        previous.next = holder;
-        holder.previous = previous;
-    }
-
-    //插入到链表当前位置与前一位置之间
+    //插入到链当前位置与前一位置之间
     protected void insetPrevious(AopHolder previous) {
-        AopHolder previousTemp = this.previous;
-        this.previous = previous;
-        this.previous.previous = previousTemp;
-        previous.next = this;
-    }
-
-    //添加到链表尾
-    protected void addNext(AopHolder next) {
-        AopHolder holder = this;
-        while (holder.next != null) {
-            holder.next.previous = holder;
-            holder = holder.next;
+        if (this.previous != null) {
+            AopHolder previousTemp = this.previous;
+            previousTemp.next.remove(this);
+            previousTemp.next.add(previous);
+            previous.previous = previousTemp;
         }
-        next.previous = holder;
-        holder.next = next;
+        this.previous = previous;
+        if (previous.next == null) {
+            previous.next = new LinkedList<>();
+        }
+        if (!previous.next.contains(this)) {
+            previous.next.add(this);
+        }
     }
 
-    //插入到链表当前位置与下一位置之间
-    protected void insetNext(AopHolder next) {
-        AopHolder nextTemp = this.next;
-        this.next = next;
-        this.next.next = nextTemp;
+    //添加到链尾
+    protected void addNext(AopHolder next) {
         next.previous = this;
-    }
-
-    public AopHolder getPrevious() {
-        return previous;
-    }
-
-    public AopHolder getNext() {
-        return next;
-    }
-
-    public int getWhen() {
-        return when;
+        if (this.next == null) {
+            this.next = new LinkedList<>();
+        }
+        if (!this.next.contains(next)) {
+            this.next.add(next);
+        }
     }
 
     public String getMethodName() {
         return methodName;
     }
 
-    public String getRelationMethod() {
-        return relationMethod;
+    public Method getMethod() {
+        return method;
+    }
+
+    public int getWhen() {
+        return when;
     }
 
     public int getThread() {
         return thread;
     }
 
-    public Method getMethod() {
-        return method;
-    }
-
-    public void setDelay(int delay) {
-        this.delay = delay;
-    }
-
     public int getDelay() {
         return delay;
+    }
+
+    public Annotation[] getAnnotations() {
+        return method == null ? null : method.getAnnotations();
     }
 }
