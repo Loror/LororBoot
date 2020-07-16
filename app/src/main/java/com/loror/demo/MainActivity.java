@@ -80,15 +80,13 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
         aopClient.setAopAgent(new AopAgent() {
             @Override
             public void onAgent(AopHolder aopHolder, AopAgentCall aopAgentCall) {
-                Annotation[] annotations = aopHolder.getAnnotations();
-                if (annotations != null) {
-                    for (int i = 0; i < annotations.length; i++) {
-                        Annotation annotation = annotations[i];
-                        if (annotation instanceof Print) {
-                            Log.e("AOP_RUN", aopHolder.getMethodName() + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
-                            break;
-                        }
-                    }
+                Print print = aopHolder.getAnnotation(Print.class);
+                if (print != null) {
+                    Log.e("AOP_RUN", aopHolder.getMethodName() + (Looper.getMainLooper() == Looper.myLooper() ? "-主线程" : "-子线程"));
+                }
+                AutoSign autoSign = aopHolder.getAnnotation(AutoSign.class);
+                if (autoSign != null && aopHolder.paramType() == String.class) {
+                    aopAgentCall.setParam("自动赋值");
                 }
                 aopAgentCall.callOn();
             }
@@ -207,8 +205,10 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
     }
 
     @Print
+    @AutoSign
     @Aop(when = RunTime.BEFOREMETHOD, relationMethod = "initData", thread = RunThread.NEWTHREAD)
-    public String beforeInitData() {
+    public String beforeInitData(String sign) {
+        Log.e("AOP_RUN", "AutoSign - " + sign);
         return "传递参数，需和下一执行方法形参类型相同";
     }
 

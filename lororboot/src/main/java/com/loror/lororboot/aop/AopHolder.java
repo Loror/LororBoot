@@ -1,5 +1,8 @@
 package com.loror.lororboot.aop;
 
+import android.os.Looper;
+import android.util.Log;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
@@ -74,5 +77,30 @@ public class AopHolder {
 
     public Annotation[] getAnnotations() {
         return method == null ? null : method.getAnnotations();
+    }
+
+    public <T extends Annotation> T getAnnotation(Class<T> type) {
+        Annotation[] annotations = getAnnotations();
+        if (annotations != null) {
+            for (int i = 0; i < annotations.length; i++) {
+                Annotation annotation = annotations[i];
+                if (annotation.annotationType() == type) {
+                    return (T) annotation;
+                }
+            }
+        }
+        return null;
+    }
+
+    public Class<?> paramType() {
+        Class<?>[] types = method.getParameterTypes();
+        if (types.length == 1) {
+            return types[0];
+        }
+        return null;
+    }
+
+    public Class<?>[] paramTypes() {
+        return method.getParameterTypes();
     }
 }

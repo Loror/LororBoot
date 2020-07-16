@@ -10,8 +10,13 @@ public interface AopAgent {
 
         private Object param, result;
 
-        protected AopAgentCall setParam(Object param) {
+        public AopAgentCall setParam(Object param) {
             this.param = param;
+            return this;
+        }
+
+        public AopAgentCall setResult(Object result) {
+            this.result = result;
             return this;
         }
 
@@ -25,9 +30,12 @@ public interface AopAgent {
 
         @CallSuper
         public void callOn() {
-            result = run();
+            call();
+            next();
         }
 
-        protected abstract Object run();
+        public abstract void call();
+
+        public abstract void next() ;
     }
 }

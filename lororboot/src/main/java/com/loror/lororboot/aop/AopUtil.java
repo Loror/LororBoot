@@ -1,6 +1,11 @@
 package com.loror.lororboot.aop;
 
+import android.os.Handler;
+import android.os.Looper;
+
+import com.loror.lororUtil.flyweight.ObjectPool;
 import com.loror.lororboot.annotation.Aop;
+import com.loror.lororboot.annotation.RunThread;
 import com.loror.lororboot.annotation.RunTime;
 
 import java.lang.reflect.Method;
@@ -104,5 +109,68 @@ public class AopUtil {
             }
         }
         return aopHolder;
+    }
+
+    static abstract class AopHolderRunnable implements Runnable {
+
+        protected AopHolder aopHolder;
+
+        public AopHolderRunnable(AopHolder aopHolder) {
+            this.aopHolder = aopHolder;
+        }
+    }
+
+    /**
+     * 执行
+     */
+    protected static void run(final AopHolderRunnable runnable) {
+        if (runnable == null || runnable.aopHolder == null) {
+            return;
+        }
+        int thread = runnable.aopHolder.thread;
+        final int delay = runnable.aopHolder.delay;
+        Handler handler = ObjectPool.getInstance().getHandler();
+        if (thread == RunThread.MAINTHREAD) {
+            if (delay > 0) {
+                handler.postDelayed(runnable, delay);
+            } else {
+                if (Looper.getMainLooper() == Looper.myLooper()) {
+                    runnable.run();
+                } else {
+                    handler.post(runnable);
+                }
+            }
+        } else if (thread == RunThread.NEWTHREAD) {
+            if (delay > 0) {
+                new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(delay);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        runnable.run();
+                    }
+                }.start();
+            } else {
+                new Thread(runnable).start();
+            }
+        } else {
+            if (delay > 0) {
+                if (Looper.getMainLooper() == Looper.myLooper()) {
+                    handler.postDelayed(runnable, delay);
+                } else {
+                    try {
+                        Thread.sleep(delay);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    runnable.run();
+                }
+            } else {
+                runnable.run();
+            }
+        }
     }
 }
