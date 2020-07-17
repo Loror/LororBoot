@@ -26,25 +26,32 @@ public class AopClient {
      */
     public void runAll() {
         for (AopHolder penetration : aopHolders) {
-            run(penetration);
+            run(penetration, null);
         }
     }
 
     /**
      * 通过节点名称执行
      */
-    public void runByPenetration(String methodName) {
-        AopHolder penetration = AopUtil.findHolderByName(methodName, aopHolders);
-        run(penetration);
+    public void runByName(String methodName) {
+        runByName(methodName, null);
     }
 
-    private void run(AopHolder penetration) {
+    /**
+     * 通过节点名称执行
+     */
+    public void runByName(String methodName, Object param) {
+        AopHolder penetration = AopUtil.findHolderByName(methodName, aopHolders);
+        run(penetration, param);
+    }
+
+    private void run(AopHolder penetration, Object param) {
         if (penetration == null) {
             return;
         }
 
         final AopRunner aopRunner = new AopRunner().setAop(aop);
-        aopRunner.call(penetration.getLinkHead(), null, aopAgent);
+        aopRunner.call(penetration.getLinkHead(), param, aopAgent, aopAgent == null ? null : new AopRunner.GlobalData());
     }
 
 }

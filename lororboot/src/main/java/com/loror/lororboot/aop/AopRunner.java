@@ -1,13 +1,30 @@
 package com.loror.lororboot.aop;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 
 public class AopRunner {
 
-    public interface OnAopRun {
-        void before(Object result);
+    /**
+     * 同一执行链条上共用数据
+     */
+    public static class GlobalData {
+        public int arg1, arg2;
+        private HashMap<String, Object> data;
 
-        void after(Object result);
+        public void put(String key, Object value) {
+            if (data == null) {
+                data = new HashMap<>();
+            }
+            data.put(key, value);
+        }
+
+        public Object get(String key) {
+            if (data == null) {
+                return null;
+            }
+            return data.get(key);
+        }
     }
 
     private Object aop;
@@ -53,7 +70,7 @@ public class AopRunner {
         return result;
     }
 
-    public void call(final AopHolder aopHolder, final Object param, final AopAgent aopAgent) {
+    public void call(final AopHolder aopHolder, final Object param, final AopAgent aopAgent, final GlobalData globalData) {
         AopUtil.run(new AopUtil.AopHolderRunnable(aopHolder) {
 
             @Override
@@ -70,16 +87,16 @@ public class AopRunner {
                         public void next() {
                             if (aopHolder.next != null) {
                                 for (AopHolder aopHolder : aopHolder.next) {
-                                    AopRunner.this.call(aopHolder, getResult(), aopAgent);
+                                    AopRunner.this.call(aopHolder, getResult(), aopAgent, globalData);
                                 }
                             }
                         }
-                    }.setParam(param));
+                    }.setParam(param).setGlobalData(globalData));
                 } else {
                     Object result = AopRunner.this.run(aopHolder, param);
                     if (aopHolder.next != null) {
                         for (AopHolder aopHolder : aopHolder.next) {
-                            call(aopHolder, result, aopAgent);
+                            call(aopHolder, result, aopAgent, globalData);
                         }
                     }
                 }

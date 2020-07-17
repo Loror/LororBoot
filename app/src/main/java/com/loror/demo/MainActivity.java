@@ -34,7 +34,6 @@ import com.loror.lororboot.httpApi.Observer;
 import com.loror.lororboot.httpApi.OnRequestListener;
 import com.loror.lororboot.startable.LororActivity;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,7 +90,7 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
                 aopAgentCall.callOn();
             }
         });
-        aopClient.runByPenetration("initData");
+        aopClient.runByName("data");
     }
 
     private void initData() {
@@ -199,7 +198,7 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
 
     //运行起点
     @Print
-    @Aop
+    @Aop(as = "data")
     public void initData(String result) {
         Log.e("AOP_RUN", result + " ");
     }

@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import com.loror.lororUtil.flyweight.ObjectPool;
+import com.loror.lororUtil.text.TextUtil;
 import com.loror.lororboot.annotation.Aop;
 import com.loror.lororboot.annotation.RunThread;
 import com.loror.lororboot.annotation.RunTime;
@@ -28,6 +29,7 @@ public class AopUtil {
             Aop run = (Aop) method.getAnnotation(Aop.class);
             if (run != null) {
                 AopHolder holder = new AopHolder();
+                holder.as = run.as();
                 holder.when = run.when();
                 holder.methodName = method.getName();
                 holder.relationMethod = run.relationMethod().length() == 0 ? null : run.relationMethod();
@@ -103,6 +105,10 @@ public class AopUtil {
     public static AopHolder findHolderByName(String methodName, List<AopHolder> aopHolders) {
         AopHolder aopHolder = null;
         for (AopHolder holder : aopHolders) {
+            if (!TextUtil.isEmpty(holder.as) && holder.as.equals(methodName)) {
+                aopHolder = holder;
+                break;
+            }
             if (holder.methodName.equals(methodName)) {
                 aopHolder = holder;
                 break;

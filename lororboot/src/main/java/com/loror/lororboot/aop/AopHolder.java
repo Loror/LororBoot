@@ -1,8 +1,5 @@
 package com.loror.lororboot.aop;
 
-import android.os.Looper;
-import android.util.Log;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
@@ -11,6 +8,7 @@ import java.util.List;
 public class AopHolder {
 
     protected int when;
+    protected String as;
     protected String methodName;
     protected String relationMethod;
     protected int thread;
@@ -53,6 +51,10 @@ public class AopHolder {
         if (!this.next.contains(next)) {
             this.next.add(next);
         }
+    }
+
+    public String getAsName() {
+        return as;
     }
 
     public String getMethodName() {

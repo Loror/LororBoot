@@ -16,4 +16,6 @@ public @interface Aop {
     @RunThread int thread() default RunThread.LASTTHREAD;//运行线程
 
     int delay() default 0;//延时
+
+    String as() default "";//重命名
 }
