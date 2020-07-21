@@ -86,9 +86,7 @@ public class LororFragment extends Fragment implements StartDialogAble, DataChan
     @Override
     public void onDestroy() {
         bindHolders.clear();
-        if (dataBusUtil != null) {
-            dataBusUtil.unRegister();
-        }
+        release();
         super.onDestroy();
     }
 

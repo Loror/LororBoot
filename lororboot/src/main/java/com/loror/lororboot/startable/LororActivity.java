@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class LororActivity extends AppCompatActivity implements StartDialogAble, DataChangeAble{
+public class LororActivity extends AppCompatActivity implements StartDialogAble, DataChangeAble {
 
     protected Context context = this;
 
@@ -42,7 +42,7 @@ public class LororActivity extends AppCompatActivity implements StartDialogAble,
     private boolean bindAbleAutoRefresh = true;
     private List<BindHolder> bindHolders = new LinkedList<>();
     private List<BindAble> registedBinders = new ArrayList<>();
-    private boolean paused;
+    private boolean paused, released;
 
     private int requestCode;
     private DataBusUtil dataBusUtil;
@@ -97,14 +97,20 @@ public class LororActivity extends AppCompatActivity implements StartDialogAble,
 
     @Override
     protected void onDestroy() {
-        LaunchModeDialog.destroyDialogs(this);
         bindHolders.clear();
+        release();
         super.onDestroy();
     }
 
     //用于适配部分oppo手机finish后不调用onDestroy生命周期的问题
     @Override
     public void finish() {
+        release();
+        super.finish();
+    }
+
+    protected void release() {
+        released = true;
         LaunchModeDialog.destroyDialogs(this);
         List<Fragment> fragments = getSupportFragmentManager().getFragments();
         if (fragments != null) {
@@ -114,7 +120,6 @@ public class LororActivity extends AppCompatActivity implements StartDialogAble,
                 }
             }
         }
-        super.finish();
         if (dataBusUtil != null) {
             dataBusUtil.unRegister();
         }
@@ -162,26 +167,28 @@ public class LororActivity extends AppCompatActivity implements StartDialogAble,
                 public void run() {
                     LororActivity activity = weakReference == null ? null : weakReference.get();
                     if (activity != null) {
-                        if (bindHolders.size() == 0 && registedBinders.size() == 0) {
-                            bindRunnable = null;
+                        if (activity.released) {
+                            activity.bindRunnable = null;
+                            return;
+                        }
+                        if (activity.bindHolders.size() == 0 && activity.registedBinders.size() == 0) {
+                            activity.bindRunnable = null;
                             return;
                         } // 无需开启刷新
                         if (!activity.isFinishing()) {
-                            changeState(null);
-                            changChildBinderState();
-                            if (bindAbleAutoRefresh) {
-                                handler.postDelayed(bindRunnable, paused ? 500 : 30);
+                            activity.changeState(null);
+                            activity.changChildBinderState();
+                            if (activity.bindAbleAutoRefresh) {
+                                handler.postDelayed(activity.bindRunnable, activity.paused ? 500 : 30);
                             } else {
-                                bindRunnable = null;
+                                activity.bindRunnable = null;
                             }
                         } else {
-                            handler.removeCallbacks(bindRunnable);
-                            bindRunnable = null;
-                            bindHolders.clear();
-                            registedBinders.clear();
+                            handler.removeCallbacks(activity.bindRunnable);
+                            activity.bindRunnable = null;
+                            activity.bindHolders.clear();
+                            activity.registedBinders.clear();
                         }
-                    } else {
-                        bindRunnable = null;
                     }
                 }
             };
