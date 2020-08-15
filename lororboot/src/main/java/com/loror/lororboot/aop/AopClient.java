@@ -40,18 +40,19 @@ public class AopClient {
     /**
      * 通过节点名称执行
      */
-    public void runByName(String methodName, Object param) {
+    public boolean runByName(String methodName, Object param) {
         AopHolder penetration = AopUtil.findHolderByName(methodName, aopHolders);
-        run(penetration, param);
+        return run(penetration, param);
     }
 
-    private void run(AopHolder penetration, Object param) {
+    private boolean run(AopHolder penetration, Object param) {
         if (penetration == null) {
-            return;
+            return false;
         }
 
         final AopRunner aopRunner = new AopRunner().setAop(aop);
         aopRunner.call(penetration.getLinkHead(), param, aopAgent, aopAgent == null ? null : new AopRunner.GlobalData());
+        return true;
     }
 
 }
