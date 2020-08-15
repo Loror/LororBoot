@@ -33,8 +33,8 @@ public class AopClient {
     /**
      * 通过节点名称执行
      */
-    public void runByName(String methodName) {
-        runByName(methodName, null);
+    public boolean runByName(String methodName) {
+        return runByName(methodName, null);
     }
 
     /**
