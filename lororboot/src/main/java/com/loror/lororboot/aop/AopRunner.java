@@ -52,7 +52,7 @@ public class AopRunner {
                     }
                 } else if (param != null && param.getClass().isArray()) {
                     try {
-                        result = aopHolder.method.invoke(aop, param);
+                        result = aopHolder.method.invoke(aop, (Object[]) param);
                     } catch (IllegalArgumentException e) {
                         throw new IllegalArgumentException(aopHolder.previous != null ? (aopHolder.methodName + "方法所需参数与其绑定的前一个方法"
                                 + aopHolder.previous.methodName + "返回参数不匹配") :
