@@ -1,11 +1,13 @@
 package com.loror.lororboot.httpApi;
 
+import com.loror.lororUtil.http.Cookies;
 import com.loror.lororUtil.http.FileBody;
 import com.loror.lororUtil.http.HttpClient;
 import com.loror.lororUtil.http.ProgressListener;
 import com.loror.lororUtil.http.RequestParams;
 import com.loror.lororUtil.text.TextUtil;
 import com.loror.lororboot.annotation.AsJson;
+import com.loror.lororboot.annotation.Cookie;
 import com.loror.lororboot.annotation.DefaultHeaders;
 import com.loror.lororboot.annotation.DefaultParams;
 import com.loror.lororboot.annotation.Gzip;
@@ -255,6 +257,10 @@ public class ApiRequest {
                 } else {
                     params.addParams(name, arg == null ? null : String.valueOf(arg));
                 }
+                break;
+            } else if (annotations[i].annotationType() == Cookie.class) {
+                String name = ((Cookie) annotations[i]).value();
+                params.addCookies(new Cookies().putCookie(name, arg == null ? null : String.valueOf(arg)));
                 break;
             } else if (annotations[i].annotationType() == ParamObject.class) {
                 if (arg != null) {
