@@ -260,7 +260,7 @@ public class ApiRequest {
                 break;
             } else if (annotations[i].annotationType() == Cookie.class) {
                 String name = ((Cookie) annotations[i]).value();
-                params.addCookies(new Cookies().putCookie(name, arg == null ? null : String.valueOf(arg)));
+                params.addCookies(new Cookies().addCookie(name, arg == null ? null : String.valueOf(arg)));
                 break;
             } else if (annotations[i].annotationType() == ParamObject.class) {
                 if (arg != null) {
