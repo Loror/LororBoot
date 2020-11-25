@@ -5,9 +5,9 @@ import android.content.Intent;
 import android.support.annotation.LayoutRes;
 import android.view.View;
 
+import com.loror.lororUtil.dataBus.DataBus;
 import com.loror.lororUtil.view.ViewUtil;
 import com.loror.lororboot.annotation.FrameCall;
-import com.loror.lororboot.dataBus.DataBus;
 import com.loror.lororboot.dataChange.DataChangeUtils;
 
 import java.util.LinkedList;

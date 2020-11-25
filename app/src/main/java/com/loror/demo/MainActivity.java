@@ -9,8 +9,15 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.loror.lororUtil.annotation.RunThread;
+import com.loror.lororUtil.dataBus.DataBusReceiver;
 import com.loror.lororUtil.http.HttpClient;
 import com.loror.lororUtil.http.Responce;
+import com.loror.lororUtil.http.api.ApiClient;
+import com.loror.lororUtil.http.api.ApiRequest;
+import com.loror.lororUtil.http.api.ApiResult;
+import com.loror.lororUtil.http.api.Observer;
+import com.loror.lororUtil.http.api.OnRequestListener;
 import com.loror.lororUtil.view.Click;
 import com.loror.lororUtil.view.ItemClick;
 import com.loror.lororUtil.view.ItemLongClick;
@@ -19,19 +26,11 @@ import com.loror.lororboot.annotation.Aop;
 import com.loror.lororboot.annotation.Bind;
 import com.loror.lororboot.annotation.BindAbleItemConnection;
 import com.loror.lororboot.annotation.RequestPermission;
-import com.loror.lororboot.annotation.RunThread;
 import com.loror.lororboot.annotation.RunTime;
-import com.loror.lororboot.annotation.DataRun;
 import com.loror.lororboot.aop.AopAgent;
 import com.loror.lororboot.aop.AopClient;
 import com.loror.lororboot.aop.AopHolder;
 import com.loror.lororboot.bind.BindHolder;
-import com.loror.lororboot.dataBus.RemoteDataBusReceiver;
-import com.loror.lororboot.httpApi.ApiClient;
-import com.loror.lororboot.httpApi.ApiRequest;
-import com.loror.lororboot.httpApi.ApiResult;
-import com.loror.lororboot.httpApi.Observer;
-import com.loror.lororboot.httpApi.OnRequestListener;
 import com.loror.lororboot.startable.LororActivity;
 
 import java.util.ArrayList;
@@ -39,7 +38,7 @@ import java.util.List;
 
 //继承DataBusReceiver只能接收到同一进程发送的数据，继承RemoteDataBusReceiver可接收到同一进程和其他进程发送的消息，可根据需要选择
 @RequestPermission(value = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE}, requestAnyway = true)
-public class MainActivity extends LororActivity implements RemoteDataBusReceiver {
+public class MainActivity extends LororActivity implements DataBusReceiver {
 
     /**
      * 修改变量值会自动重新显示内容
@@ -225,7 +224,6 @@ public class MainActivity extends LororActivity implements RemoteDataBusReceiver
     }
 
     @Override
-    @DataRun(thread = RunThread.MAINTHREAD)
     public void receiveData(String name, Intent data) {
         if ("toast".equals(name)) {
             Toast.makeText(this, data.getStringExtra("msg"), Toast.LENGTH_SHORT).show();

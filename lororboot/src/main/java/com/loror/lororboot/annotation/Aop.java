@@ -1,5 +1,7 @@
 package com.loror.lororboot.annotation;
 
+import com.loror.lororUtil.annotation.RunThread;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

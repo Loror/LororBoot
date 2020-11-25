@@ -15,6 +15,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.loror.lororUtil.dataBus.DataBus;
 import com.loror.lororUtil.view.ViewUtil;
 import com.loror.lororboot.annotation.RequestPermission;
 import com.loror.lororboot.annotation.RequestTime;
@@ -22,7 +23,6 @@ import com.loror.lororboot.bind.BindAble;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.bind.BindUtils;
 import com.loror.lororboot.bind.DataChangeAble;
-import com.loror.lororboot.dataBus.DataBus;
 import com.loror.lororboot.dataBus.DataBusUtil;
 import com.loror.lororboot.dataChange.DataChangeUtils;
 import com.loror.lororboot.views.BindAbleBannerView;
@@ -40,8 +40,8 @@ public class LororActivity extends AppCompatActivity implements StartDialogAble,
     private WeakReference<LororActivity> weakReference;
     private Runnable bindRunnable;
     private boolean bindAbleAutoRefresh = true;
-    private List<BindHolder> bindHolders = new LinkedList<>();
-    private List<BindAble> registedBinders = new ArrayList<>();
+    private final List<BindHolder> bindHolders = new LinkedList<>();
+    private final List<BindAble> registedBinders = new ArrayList<>();
     private boolean paused, released;
 
     private int requestCode;

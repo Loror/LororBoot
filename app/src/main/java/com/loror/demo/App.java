@@ -1,10 +1,10 @@
 package com.loror.demo;
 
 import com.alibaba.fastjson.JSON;
+import com.loror.lororUtil.http.api.ApiClient;
+import com.loror.lororUtil.http.api.JsonParser;
+import com.loror.lororUtil.http.api.TypeInfo;
 import com.loror.lororboot.LororApplication;
-import com.loror.lororboot.httpApi.ApiClient;
-import com.loror.lororboot.httpApi.JsonParser;
-import com.loror.lororboot.httpApi.TypeInfo;
 
 public class App extends LororApplication {
     @Override

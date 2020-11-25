@@ -3,15 +3,14 @@ package com.loror.lororboot.aop;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.loror.lororUtil.annotation.RunThread;
 import com.loror.lororUtil.flyweight.ObjectPool;
 import com.loror.lororUtil.text.TextUtil;
 import com.loror.lororboot.annotation.Aop;
-import com.loror.lororboot.annotation.RunThread;
 import com.loror.lororboot.annotation.RunTime;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class AopUtil {

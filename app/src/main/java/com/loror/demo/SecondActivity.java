@@ -5,15 +5,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.loror.lororUtil.dataBus.DataBusReceiver;
 import com.loror.lororUtil.view.Click;
 import com.loror.lororUtil.view.Find;
 import com.loror.lororUtil.view.ViewUtil;
-import com.loror.lororboot.annotation.DataRun;
-import com.loror.lororboot.annotation.RunThread;
-import com.loror.lororboot.dataBus.RemoteDataBusReceiver;
 import com.loror.lororboot.startable.LororActivity;
 
-public class SecondActivity extends LororActivity implements RemoteDataBusReceiver {
+public class SecondActivity extends LororActivity implements DataBusReceiver {
 
     @Find
     TextView text;
@@ -33,7 +31,7 @@ public class SecondActivity extends LororActivity implements RemoteDataBusReceiv
     }
 
     @Override
-    @DataRun(thread = RunThread.MAINTHREAD, sticky = true)//sticky暂不支持跨进程
+    //sticky暂不支持跨进程
     public void receiveData(String name, Intent data) {
         if ("SecondActivity.sticky".equals(name)) {
             text.setText(data.getStringExtra("data"));

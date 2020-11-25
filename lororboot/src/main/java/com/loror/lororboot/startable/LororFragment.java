@@ -10,11 +10,11 @@ import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.Toast;
 
+import com.loror.lororUtil.dataBus.DataBus;
 import com.loror.lororUtil.view.ViewUtil;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.bind.BindUtils;
 import com.loror.lororboot.bind.DataChangeAble;
-import com.loror.lororboot.dataBus.DataBus;
 import com.loror.lororboot.dataBus.DataBusUtil;
 import com.loror.lororboot.dataChange.DataChangeUtils;
 import com.loror.lororboot.views.BindAbleBannerView;
@@ -25,7 +25,7 @@ import java.util.List;
 
 public class LororFragment extends Fragment implements StartDialogAble, DataChangeAble {
 
-    private List<BindHolder> bindHolders = new LinkedList<>();
+    private final List<BindHolder> bindHolders = new LinkedList<>();
     private WeakReference<LororActivity> weakReference;
     private DataBusUtil dataBusUtil;
 

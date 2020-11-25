@@ -4,11 +4,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
 
+import com.loror.lororUtil.dataBus.DataBus;
+import com.loror.lororUtil.dataBus.DataBusReceiver;
+import com.loror.lororUtil.dataBus.RemoteDataBusReceiver;
 import com.loror.lororboot.bind.BindAble;
 
 public class DataBusUtil {
-    private Context context;
-    private BindAble bindAble;
+    private final Context context;
+    private final BindAble bindAble;
 
     private BroadcastReceiver receiver;
 

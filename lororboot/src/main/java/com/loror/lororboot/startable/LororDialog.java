@@ -13,11 +13,11 @@ import android.support.annotation.StyleRes;
 import android.view.Window;
 import android.widget.Toast;
 
+import com.loror.lororUtil.dataBus.DataBus;
 import com.loror.lororUtil.view.ViewUtil;
 import com.loror.lororboot.bind.BindHolder;
 import com.loror.lororboot.bind.BindUtils;
 import com.loror.lororboot.bind.DataChangeAble;
-import com.loror.lororboot.dataBus.DataBus;
 import com.loror.lororboot.dataBus.DataBusUtil;
 import com.loror.lororboot.dataChange.DataChangeUtils;
 
@@ -37,7 +37,7 @@ public class LororDialog extends AlertDialog implements DialogInterface.OnDismis
     protected Context context;
     private Intent intent;
 
-    private List<BindHolder> bindHolders = new LinkedList<>();
+    private final List<BindHolder> bindHolders = new LinkedList<>();
     private WeakReference<LororActivity> weakReference;
     private DataBusUtil dataBusUtil;
     private OnDismissListener listener;
