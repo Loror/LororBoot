@@ -27,13 +27,8 @@ compile('com.github.Loror:LororBoot:v1.1.58release') {
     }
 ```
 
-## 如已更新到androidx，请使用androidx版本
+## 如已更新到androidx，请更换到mvvm，可参考mvvmbase
 
-```
-dependencies {
-    compile 'com.github.Loror:LororBootX:v1.1.16'
-}
-```
 
 LororBootX(https://github.com/Loror/LororBootX)
 
