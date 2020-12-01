@@ -30,9 +30,6 @@ compile('com.github.Loror:LororBoot:v1.1.58release') {
 ## 如已更新到androidx，请更换到mvvm，可参考mvvmbase
 
 
-LororBootX(https://github.com/Loror/LororBootX)
-
-
 可参考demo使用，使用时需继承LororActivity，LororFragment，LororDialog，BindAbleItem使用，以上均实现于BindAble接口，也可自己实现BindAble接口复写绑定、事件处理。
 
 ## 主框架bind
