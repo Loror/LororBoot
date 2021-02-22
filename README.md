@@ -28,7 +28,7 @@ compile('com.github.Loror:LororBoot:v1.1.60release') {
 ```
 
 ## 如已更新到androidx，请更换到mvvm，可参考mvvmbase
-## 使用LororUtil(https://www.github.com/Loror/LororUtil)作为支持库，net相关api已移动到LororUtil
+## 使用 LororUtil(https://www.github.com/Loror/LororUtil) 作为支持库，net相关api已移动到LororUtil
 
 
 可参考demo使用，使用时需继承LororActivity，LororFragment，LororDialog，BindAbleItem使用，以上均实现于BindAble接口，也可自己实现BindAble接口复写绑定、事件处理。
