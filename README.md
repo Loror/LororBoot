@@ -6,7 +6,7 @@
 
 ```
 dependencies {
-    compile 'com.github.Loror:LororBoot:v1.1.58release'
+    compile 'com.github.Loror:LororBoot:v1.1.60release'
 }
 
 allprojects {
@@ -20,7 +20,7 @@ allprojects {
 如有v4包等冲突建议引入时排除v4包，框架对recyclerView进行了支持，如排除了support包请手动为你的项目引入recyclerView，
 否则请删除exclude group: 'com.android.support'
 ```
-compile('com.github.Loror:LororBoot:v1.1.58release') {
+compile('com.github.Loror:LororBoot:v1.1.60release') {
         exclude group: 'com.android.support'
         exclude module: 'appcompat-v7'
         exclude module: 'support-v4'
@@ -28,6 +28,7 @@ compile('com.github.Loror:LororBoot:v1.1.58release') {
 ```
 
 ## 如已更新到androidx，请更换到mvvm，可参考mvvmbase
+## 使用LororUtil(https://www.github.com/Loror/LororUtil)作为支持库，net相关api已移动到LororUtil
 
 
 可参考demo使用，使用时需继承LororActivity，LororFragment，LororDialog，BindAbleItem使用，以上均实现于BindAble接口，也可自己实现BindAble接口复写绑定、事件处理。
