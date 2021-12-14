@@ -27,7 +27,7 @@ compile('com.github.Loror:LororBoot:v1.1.60release') {
     }
 ```
 
-## 如已更新到androidx，请更换到mvvm，可参考mvvmbase
+## 如已更新到androidx，请更换到mvvm，使用MVVMase(https://github.com/Loror/MVVMBase)
 ## 使用 LororUtil(https://www.github.com/Loror/LororUtil) 作为支持库，net相关api已移动到LororUtil
 
 
